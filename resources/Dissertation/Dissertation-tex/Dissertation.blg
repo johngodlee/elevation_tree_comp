@@ -1,0 +1,49 @@
+This is BibTeX, Version 0.99d (TeX Live 2015)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: Dissertation.aux
+The style file: agsm.bst
+Database file #1: Dissertation_Ref.bib
+Warning--there's a number but no series in Vass1997
+Warning--empty publisher in Vass1997
+You've used 121 entries,
+            2909 wiz_defined-function locations,
+            1457 strings with 32195 characters,
+and the built_in function-call counts, 883867 in all, are:
+= -- 146790
+> -- 12044
+< -- 6
++ -- 72867
+- -- 3781
+* -- 79963
+:= -- 171146
+add.period$ -- 121
+call.type$ -- 121
+change.case$ -- 1684
+chr.to.int$ -- 121
+cite$ -- 123
+duplicate$ -- 1969
+empty$ -- 4281
+format.name$ -- 4193
+if$ -- 159025
+int.to.chr$ -- 5
+int.to.str$ -- 0
+missing$ -- 123
+newline$ -- 367
+num.names$ -- 1282
+pop$ -- 357
+preamble$ -- 1
+purify$ -- 1815
+quote$ -- 0
+skip$ -- 1676
+stack$ -- 0
+substring$ -- 213073
+swap$ -- 383
+text.length$ -- 1700
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 470
+warning$ -- 2
+while$ -- 2764
+width$ -- 0
+write$ -- 1614
+(There were 2 warnings)

@@ -1,0 +1,27 @@
+\contentsline {chapter}{\numberline {1}Introduction}{1}
+\contentsline {section}{\numberline {1.1}The Importance of understanding range shift patterns}{1}
+\contentsline {section}{\numberline {1.2}The role of biotic interactions}{1}
+\contentsline {section}{\numberline {1.3}Bioclimatic envelope models}{2}
+\contentsline {section}{\numberline {1.4}Tropical elevational gradients as natural laboratories}{2}
+\contentsline {section}{\numberline {1.5}This study, objectives and rationale}{3}
+\contentsline {chapter}{\numberline {2}Methods}{4}
+\contentsline {section}{\numberline {2.1}Study site}{4}
+\contentsline {section}{\numberline {2.2}Species}{5}
+\contentsline {section}{\numberline {2.3}Sampling strategy}{6}
+\contentsline {section}{\numberline {2.4}Measurements}{7}
+\contentsline {section}{\numberline {2.5}Statistical analyses}{11}
+\contentsline {chapter}{\numberline {3}Results}{13}
+\contentsline {section}{\numberline {3.1}Effect of competition on plant traits}{13}
+\contentsline {section}{\numberline {3.2}Variation in competition variables across elevation (H\textsubscript {n3})}{17}
+\contentsline {section}{\numberline {3.3}Variation in abiotic environmental variables across elevation}{18}
+\contentsline {section}{\numberline {3.4}Variation in plant traits across elevation (H\textsubscript {n4}, H\textsubscript {n5})}{19}
+\contentsline {chapter}{\numberline {4}Discussion}{22}
+\contentsline {section}{\numberline {4.1}Effect of competition and elevation on plant traits}{22}
+\contentsline {section}{\numberline {4.2}Variation in plant traits with elevation}{25}
+\contentsline {section}{\numberline {4.3}Predictions for future species migration}{26}
+\contentsline {section}{\numberline {4.4}Limitations of this study}{27}
+\contentsline {section}{\numberline {4.5}Further research}{28}
+\contentsline {chapter}{\numberline {5}Conclusions}{28}
+\contentsline {chapter}{\numberline {6}References}{29}
+\contentsline {chapter}{\numberline {7}Appendices}{35}
+\contentsfinish 
