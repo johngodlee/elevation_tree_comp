@@ -22,6 +22,15 @@ setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 ## Seedlings
 seedlings <- read.csv("data/seedlings.csv")
+
+seedlings <-  seedlings %>%
+	mutate(hi_lo_species = case_when(Species == "AV" | Species == "CR" | 
+																	 Species == "CT" | Species == "DL" | 
+																	 Species == "HG" ~ "hi",
+																	 Species == "ID" | Species == "MS" | 
+																	 Species == "SP" | Species == "TG" ~ "lo"))
+
+
 seedlings_comp <- filter(seedlings, Comp.Y.N. == "Y")
 
 ### Checking variables for collinearity
@@ -216,8 +225,13 @@ stargazer(Competition_Radius_K, type = "latex", summary = F)
 # Plotting rank abundance curve with our species highlighted ----
 
 ## Create summary data frame 
+aberg_census <- aberg_census %>%
+	mutate(genus_species = paste(genus, specie))
+
 aberg_census_summ <- aberg_census %>%
-	mutate(genus_species = paste(genus, specie)) %>%
+	filter(cod %in% c("TRU-02", "TRU-04", "TRU-06", 
+										"TRU-07", "TRU-08", "SPD-01", 
+										"SPD-02", "PAN-01", "PAN-02")) %>%
 	group_by(genus_species) %>%
 	summarise(n = n()) %>%
 	arrange(n) %>%
@@ -240,7 +254,12 @@ ggplot() +
 	geom_point(data = filter(aberg_census_summ, myrcia == T), aes(x = id, y = n), colour = "#53C90E", alpha = 1, size = 5) +
 	geom_point(data = filter(aberg_census_summ, sampled == F), aes(x = id, y = n), colour = "black", alpha = 0.5, size = 1) 
 	
-	
+
+
+length(unique(aberg_census$genus_species))	
+
+length(unique(aberg_census_summ$genus_species))	
+
 # Soil carbon and nitrogen content ----
 
 ggplot(soil, aes(x = site, y = n_per)) + geom_boxplot(aes(colour = site))
@@ -365,10 +384,10 @@ mois_plot <- ggplot(seedlings_rem_na, aes(x = Elevation, y = Soil.mois.mean)) +
 	geom_line(data = soil_mois_pred, aes(x = Elevation, y = (plo + phi) / 2 ), stat = "identity", position = "identity") + 
 	geom_ribbon(data = soil_mois_pred, aes(x = Elevation, ymin = plo, ymax = phi), stat = "identity", position = "identity", alpha = 0.6)
 
-# Interval plots of linear model slopes for each species
+# Interval plots of linear model slopes of traits vs. elevation for each species, separated as to whether they are hi or lowland species ----
 
 fvfm_slope <- seedlings_rem_na %>%
-	group_by(Species) %>%
+	group_by(Species, hi_lo_species) %>%
 	do(mod = lm(D.FvFm ~ Elevation, data = .)) %>%
 	mutate(Slope = summary(mod)$coeff[2],
 				 SE = summary(mod)$coeff[, 2][2],
@@ -376,7 +395,7 @@ fvfm_slope <- seedlings_rem_na %>%
 	dplyr::select(-mod)
 
 spad_slope <- seedlings_rem_na %>%
-	group_by(Species) %>%
+	group_by(Species, hi_lo_species) %>%
 	do(mod = lm(SPAD.mean ~ Elevation, data = .)) %>%
 	mutate(Slope = summary(mod)$coeff[2],
 				 SE = summary(mod)$coeff[, 2][2],
@@ -384,7 +403,7 @@ spad_slope <- seedlings_rem_na %>%
 	dplyr::select(-mod)
 
 leaf_area_slope <- seedlings_rem_na %>%
-	group_by(Species) %>%
+	group_by(Species, hi_lo_species) %>%
 	do(mod = lm(log(Leaf.area) ~ Elevation, data = .)) %>%
 	mutate(Slope = summary(mod)$coeff[2],
 				 SE = summary(mod)$coeff[, 2][2],
@@ -392,7 +411,7 @@ leaf_area_slope <- seedlings_rem_na %>%
 	dplyr::select(-mod)
 
 thick_slope <- seedlings_rem_na %>%
-	group_by(Species) %>%
+	group_by(Species, hi_lo_species) %>%
 	do(mod = lm(Leaf.thick.mean.mm ~ Elevation, data = .)) %>%
 	mutate(Slope = summary(mod)$coeff[2],
 				 SE = summary(mod)$coeff[, 2][2],
@@ -400,7 +419,7 @@ thick_slope <- seedlings_rem_na %>%
 	dplyr::select(-mod)
 
 hl_ratio_slope <- seedlings_rem_na %>%
-	group_by(Species) %>%
+	group_by(Species, hi_lo_species) %>%
 	do(mod = lm(Height.leaf.ratio ~ Elevation, data = .)) %>%
 	mutate(Slope = summary(mod)$coeff[2],
 				 SE = summary(mod)$coeff[, 2][2],
@@ -408,7 +427,7 @@ hl_ratio_slope <- seedlings_rem_na %>%
 	dplyr::select(-mod)
 
 stemvol_slope <- seedlings_rem_na %>%
-	group_by(Species) %>%
+	group_by(Species, hi_lo_species) %>%
 	do(mod = lm(Stem.volume.cm3 ~ Elevation, data = .)) %>%
 	mutate(Slope = summary(mod)$coeff[2],
 				 SE = summary(mod)$coeff[, 2][2],
@@ -422,10 +441,14 @@ lm_sp_slope <- rbind(fvfm_slope,
 										 hl_ratio_slope, 
 										 stemvol_slope)
 
-ggplot(lm_sp_slope, aes(x = Species)) + 
+for(i in unique(lm_sp_slope$trait)) {
+print(ggplot(filter(lm_sp_slope, trait == i), aes(x = Species)) + 
 	geom_point(aes(y = Slope, colour = Species), size = 2) +
 	geom_errorbar(aes(ymin = Slope - SE, ymax = Slope + SE, colour = Species), width = 1) +
-	facet_wrap(~trait, scales = "free")
+	geom_hline(yintercept = 0, linetype = 5) + 
+	facet_wrap(~hi_lo_species, scales = "free_x") + 
+	ggtitle(label = i))
+}
 
 # Comparing random intercept and random slope models - the standardize function has disappeared ----
 
@@ -1343,4 +1366,9 @@ ggplot(stdz.mod_all_fix) +
 															"seed" = "Herbaceous Plants")) +
 	theme(legend.position = "null") +
 	facet_wrap( ~ trait_label, scales = "fixed")
+
+
+# Todo
+	# Clean up code, can probs use lapply or loops for much of calculation
+	# Split analysis by upland and lowland species
 
