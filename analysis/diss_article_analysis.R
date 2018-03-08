@@ -11,11 +11,12 @@ library(stargazer)
 library(reshape2)
 library(lme4)
 library(glmmADMB) 
+library(usdm)
 
 # Set working directory to the location of the source file ----
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
-# Load data ----
+# Load and fix data ----
 
 ## Seedlings
 seedlings <- read.csv("data/seedlings.csv")
@@ -23,10 +24,11 @@ seedlings_comp <- filter(seedlings, Comp.Y.N. == "Y")
 
 ### Checking variables for collinearity
 
-VIF <- vif(seedlings_comp$LAI.4.ring, 
+VIF <- vif(data.frame(seedlings_comp$LAI.4.ring, 
 					 seedlings_comp$Comp.seed.total, 
-					 seedlings_compComp.adult.log.metric, 
-					 seedlings_comp$Elevation)
+					 seedlings_comp$Comp.adult.log.metric, 
+					 seedlings_comp$Elevation))
+VIF  # VIF is less than 4 for all, nearly 1, so no multicollinearity
 
 ### Removing all NA rows for analysis
 
@@ -38,7 +40,7 @@ seedlings_rem_na <- seedlings_comp %>%
 	filter(!is.na(Species))
 
 ## Genus Level migration rates (Feeley et al. 2011)
-Genus_mig_rates <- read.csv("data/genus_mig_rates.csv")
+genus_mig_rates <- read.csv("data/genus_mig_rates.csv")
 
 ## Rank abundance data
 aberg_census <- read.csv("data/aberg.csv")
