@@ -48,13 +48,13 @@ aberg_census <- read.csv("data/aberg.csv")
 ## Soil data 
 soil <- read.csv("data/soil.csv")
 
-# Plotting interaction plots of plant traits over elevation ----
-
 ## Add LMA (Leaf mass / Area)
 seedlings$LMA <- (seedlings$Leaf.mass.dry.g / seedlings$Leaf.area)  
 
 ## Add Height:Leaf Ratio (Height / no. leaves)
 seedlings$Height.leaf.ratio <- (seedlings$Height.cm / seedlings$No.leaves)
+
+# Plotting interaction plots of plant traits over elevation ----
 
 ## Variables vs Elevation.code - Interaction plots - grouped by species
 seedlings_melt_traits <- melt(seedlings, id.vars=c("Individual.code", 
@@ -81,7 +81,6 @@ seedlings_comp$Elevation_rank <- rank(seedlings_comp$Elevation, na.last=TRUE, ti
 ggplot(seedlings_comp, aes(x=Elevation_rank, y=Elevation, colour=Species)) + geom_point()
 
 # Methods tables and plots ----
-
 ## What is the max and min range of each species
 species <- c("HG","AV","CT","SP","CR","MS","TG","DL","ID")
 max <- c(3250, 2250, 2375, 2250, 2875, 2250, 1800, 1800, 1500)
@@ -122,7 +121,7 @@ species_elevcode_tally <- data.frame(table(seedlings_comp$Species, seedlings_com
 stargazer(species_elevcode_tally, type = "latex", summary = F)
 
 # genus level migration rates plot
-ggplot(Genus_mig_rates, aes(x = Genus, y = Migration.rate.m.yr.abund, fill = Genus)) + 
+ggplot(genus_mig_rates, aes(x = genus, y = migration.rate.m.yr.abund, fill = genus)) + 
 geom_bar(stat = "identity")
 
 ## Site level environmental variables (Whitaker?)
@@ -183,9 +182,9 @@ ggplot(seedlings_melt_traits, aes(x=Elevation, y=value, colour = Species)) +
 	geom_smooth(aes(fill = Species, colour = Species), method = lm, se = T) + 
 	facet_wrap(~variable, scales = "free")
 
-# Competition radius calculation ----
+# Competition radius  ----
 
-## Do the calculation
+## Calculate competition radius
 k <- rep(2, 10)
 trees_ha <- c(475, 690, 645, 860, 887, 954, 1060, 1101, 1287, 1417)
 Competition_Radius <- data.frame("site" = camp_loc$Site, "elev_mean" = camp_loc$elev_mean, k, trees_ha)
@@ -197,7 +196,7 @@ Competition_Radius_VC <- filter(Competition_Radius,  site %in% c("PA400", "PA800
 trees_ha_elev <- lm(trees_ha~elev_mean, data = Competition_Radius_VC)
 summary(trees_ha_elev)
 
-## Make a plot of with a linear regression
+## Make a plot of with a linear regression - filling in VC
 ggplot(Competition_Radius, aes(x = elev_mean, y = trees_ha)) + 
 	geom_point() +
 	geom_smooth(method = lm) + 
@@ -229,12 +228,16 @@ aberg_census_summ <- aberg_census %>%
 				 										genus_species == "Schefflera patula" |
 				 										genus_species == "Iriartea deltoidea" |
 				 										genus_species == "Dictyocaryum lamarckianum",
-				 									T, F))
-# NEED TO FIGURE OUT MYRCIA COLOURING
+				 									T, F),
+				 myrcia = case_when(genus_species == "Myrcia splendens" | 
+				 									 	genus_species == "Myrcia fallax" | 
+				 									 	genus_species == "Myrcia rostrata" ~ T))
+
 ggplot() + 
 	geom_point(data = filter(aberg_census_summ, sampled == T), aes(x = id, y = n), colour = "#E03A50FE", alpha = 1, size = 5) +
-	geom_point(data = filter(aberg_census_summ, sampled == F), aes(x = id, y = n), colour = "black", alpha = 0.5, size = 1) #+
-	#geom_point(data = filter(aberg_census_summ, sampled == F), aes(x = id, y = n), colour = "black", alpha = 0.5, size = 1) +
+	geom_point(data = filter(aberg_census_summ, myrcia == T), aes(x = id, y = n), colour = "#53C90E", alpha = 1, size = 5) +
+	geom_point(data = filter(aberg_census_summ, sampled == F), aes(x = id, y = n), colour = "black", alpha = 0.5, size = 1) 
+	
 	
 # Soil Carbon and nitrogen content ----
 
