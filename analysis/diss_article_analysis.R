@@ -12,6 +12,8 @@ library(reshape2)
 library(lme4)
 library(glmmADMB) 
 library(usdm)
+library(MuMIn)
+library(arm)
 
 # Set working directory to the location of the source file ----
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
@@ -239,14 +241,10 @@ ggplot() +
 	geom_point(data = filter(aberg_census_summ, sampled == F), aes(x = id, y = n), colour = "black", alpha = 0.5, size = 1) 
 	
 	
-# Soil Carbon and nitrogen content ----
+# Soil carbon and nitrogen content ----
 
-soil$N <- soil$N....
-soil$C <- soil$C....
-soil <- select(soil, Site, ID.number, Year, Replicate, N, C)
-
-ggplot(soil, aes(x = Site, y = N)) + geom_boxplot(aes(colour = Site))
-ggplot(soil, aes(x = Site, y = C)) + geom_boxplot(aes(colour = Site))
+ggplot(soil, aes(x = site, y = n_per)) + geom_boxplot(aes(colour = site))
+ggplot(soil, aes(x = site, y = c_per)) + geom_boxplot(aes(colour = site))
 
 # Linear mixed models, competition versus elevation ----
 
@@ -260,11 +258,12 @@ LAI4ring_vs_elev_lmer_null <- lm(LAI.4.ring ~ 1, data = seedlings_rem_na)
 comp_seed_vs_elev_lmer <- lmer(Comp.seed.total ~ Elevation + (Elevation|Site), data = seedlings_rem_na, REML = F)
 comp_seed_vs_elev_lmer_slope <- lmer(Comp.seed.total ~ Elevation + (Elevation|Site), data = seedlings_rem_na, REML = F)
 comp_seed_vs_elev_glmer_pois <- glmer(Comp.seed.total ~ Elevation + (1|Site), data = seedlings_rem_na, family = poisson, REML = F)
-comp_seed_vs_elev_glmer_negbi <- glmer(Comp.seed.total ~ Elevation + (1|Site), data = seedlings_D.FvFm, REML = F, family = negative.binomial)
+comp_seed_vs_elev_glmer_negbi <- glmer(Comp.seed.total ~ Elevation + (1|Site), data = seedlings_rem_na, REML = F, 
+																			 family = negative.binomial(theta =  comp_seed_vs_elev_glmer_pois@theta))
 comp_seed_vs_elev_glmer_rand <- glmer(Comp.seed.total ~ (1|Site), data = seedlings_rem_na, family = poisson, REML = F)
 comp_seed_vs_elev_lmer_null <- lm(Comp.seed.total ~ 1, data = seedlings_rem_na)
 
-## Conspecific seedling abundance
+## Conspecific seedling abundance - THESE DON'T CONVERGE, BUT THAT'S FINE BECAUSE THEY AREN'T USED
 comp_seed_same_vs_elev_glmmADMB_pois <- glmmadmb(Comp.seed.same.sp ~ Elevation + (Species|Site), data = seedlings_rem_na, family = "poisson", zeroInflation = T)
 comp_seed_same_vs_elev_glmmADMB_nbinom <- glmmadmb(Comp.seed.same.sp ~ Elevation + (Species|Site), data = seedlings_rem_na, family = "nbinom", zeroInflation = T)
 comp_seed_same_vs_elev_glmmADMB_rand <- glmmadmb(Comp.seed.same.sp ~ (1|Site), data = seedlings_rem_na, family = "nbinom", zeroInflation = T)
@@ -285,6 +284,7 @@ soil_mois_vs_elev_lmer <-  lmer(Soil.mois.mean ~ Elevation + (1|Site), data=seed
 soil_mois_vs_elev_lmer_null <- lmer(Soil.temp.mean ~ (1|Site), data = seedlings_rem_na, REML = F)
 soil_mois_vs_elev_date_lmer <- lmer(Soil.mois.mean ~ Elevation + (1|Site) + (1|Collection.date), data = seedlings_rem_na, REML = F)
 
+### Best fitting models
 stargazer(LAI4ring_vs_elev_lmer, comp_seed_vs_elev_glmer_negbi, comp_adult_log_metric_vs_elev_lmer, summary = F)   
 
 # Linear model fits for env. vs elev.
@@ -298,8 +298,8 @@ LAI4ring_pred <- data.frame(LAI4ring_pred, plo = LAI4ring_pred$LAI.4.ring-2*sqrt
 
 LAI4ring_plot <- ggplot(seedlings_rem_na, aes(x=Elevation, y=LAI.4.ring)) + 
 	geom_point(aes(colour=Site), alpha = 0.8) +
-	layer(data = LAI4ring_pred, geom = "line", mapping=aes(x=Elevation, y=LAI.4.ring), stat = "identity", position = "identity", params=list(na.rm = F)) + 
-	layer(data = LAI4ring_pred, geom = "ribbon", mapping = aes(x=Elevation, ymin=plo, ymax=phi), stat="identity", position="identity", params=list(na.rm = F, alpha = 0.6))
+	geom_line(data = LAI4ring_pred, aes(x = Elevation, y = LAI.4.ring), stat = "identity", position = "identity") + 
+	geom_ribbon(data = LAI4ring_pred, aes(x = Elevation, ymin = plo, ymax = phi), stat = "identity", position = "identity", alpha = 0.6)
 
 ## Total seedling abundance
 Total_seed_pred <- expand.grid(Elevation = c(seq(from=378, to=3224, by=1)), Site = c("PA400", "PA800", "VC", "SP1500", "SP1750", "TRU08", "TRU07", "TRU06", "TRU04", "TRU02"), Comp.seed.total = 0)
@@ -310,10 +310,10 @@ Total_seed_pred <- data.frame(Total_seed_pred, plo = Total_seed_pred$Comp.seed.t
 
 Total_seed_plot <- ggplot(seedlings_rem_na, aes(x = Elevation, y = Comp.seed.total)) + 
 	geom_point(aes(colour=Site), alpha = 0.8) +
-	layer(data = Total_seed_pred, geom='line', mapping = aes(x=Elevation, y = Comp.seed.total), stat = "identity", position = "identity", params = list(na.rm = F)) + 
-	layer(data = Total_seed_pred, geom = "ribbon", mapping = aes(x=Elevation, ymin = plo, ymax = phi), stat = "identity", position = "identity", params = list(na.rm = F, alpha = 0.6))
+	geom_line(data = Total_seed_pred, aes(x = Elevation, y = Comp.seed.total), stat = "identity", position = "identity") + 
+	geom_ribbon(data = Total_seed_pred, aes(x = Elevation, ymin = plo, ymax = phi), stat = "identity", position = "identity", alpha = 0.6)
 
-## Conspecific seedling abundance 
+## Conspecific seedling abundance - THIS PLOT ALSO WON'T WORK BECAUSE OF ABOVE MODELS NOT CONVERGING, IT'S FINE!
 
 Same_seed_pred <- expand.grid(Elevation = c(seq(from=378, to=3224, by=1)), Site = c("PA400", "PA800", "VC", "SP1500", "SP1750", "TRU08", "TRU07", "TRU06", "TRU04", "TRU02"), Comp.seed.same.sp = 0)
 matrix_Same_seed = model.matrix(terms(comp_seed_same_vs_elev_glmmADMB_nbinom), data = Same_seed_pred)
@@ -336,8 +336,8 @@ comp_adult_log_metric_pred <- data.frame(comp_adult_log_metric_pred, plo = comp_
 
 isi_plot <- ggplot(seedlings_rem_na, aes(x = Elevation, y = Comp.adult.log.metric)) + 
 	geom_point(aes(colour=Site), alpha = 0.8) +
-	layer(data = comp_adult_log_metric_pred, geom='line', mapping = aes(x=Elevation, y = (plo + phi) / 2 ), stat = "identity", position = "identity", params = list(na.rm = F)) + 
-	layer(data = comp_adult_log_metric_pred, geom = "ribbon", mapping = aes(x=Elevation, ymin = plo, ymax = phi), stat = "identity", position = "identity", params = list(na.rm = F, alpha = 0.6))
+	geom_line(data = comp_adult_log_metric_pred, aes(x = Elevation, y = (plo + phi) / 2 ), stat = "identity", position = "identity") + 
+	geom_ribbon(data = comp_adult_log_metric_pred, aes(x = Elevation, ymin = plo, ymax = phi), stat = "identity", position = "identity", alpha = 0.6)
 
 ## Soil temperature
 
@@ -349,8 +349,8 @@ soil_temp_pred <- data.frame(soil_temp_pred, plo = soil_temp_pred$soil_temp-2*sq
 
 temp_plot <- ggplot(seedlings_rem_na, aes(x = Elevation, y = Soil.temp.mean)) + 
 	geom_point(aes(colour=Site), alpha = 0.8) +
-	layer(data = soil_temp_pred, geom='line', mapping = aes(x=Elevation, y = (plo + phi) / 2 ), stat = "identity", position = "identity", params = list(na.rm = F)) + 
-	layer(data = soil_temp_pred, geom = "ribbon", mapping = aes(x=Elevation, ymin = plo, ymax = phi), stat = "identity", position = "identity", params = list(na.rm = F, alpha = 0.6))
+	geom_line(data = soil_temp_pred, aes(x = Elevation, y = (plo + phi) / 2 ), stat = "identity", position = "identity") + 
+	geom_ribbon(data = soil_temp_pred, aes(x = Elevation, ymin = plo, ymax = phi), stat = "identity", position = "identity", alpha = 0.6)
 
 ## Soil moisture
 
@@ -362,9 +362,8 @@ soil_mois_pred <- data.frame(soil_mois_pred, plo = soil_mois_pred$soil_mois-2*sq
 
 mois_plot <- ggplot(seedlings_rem_na, aes(x = Elevation, y = Soil.mois.mean)) + 
 	geom_point(aes(colour=Site), alpha = 0.8) +
-	layer(data = soil_mois_pred, geom='line', mapping = aes(x=Elevation, y = (plo + phi) / 2 ), stat = "identity", position = "identity", params = list(na.rm = F)) + 
-	layer(data = soil_mois_pred, geom = "ribbon", mapping = aes(x=Elevation, ymin = plo, ymax = phi), stat = "identity", position = "identity", params = list(na.rm = F, alpha = 0.6))
-mois_plot
+	geom_line(data = soil_mois_pred, aes(x = Elevation, y = (plo + phi) / 2 ), stat = "identity", position = "identity") + 
+	geom_ribbon(data = soil_mois_pred, aes(x = Elevation, ymin = plo, ymax = phi), stat = "identity", position = "identity", alpha = 0.6)
 
 # Interval plots of linear model slopes for each species
 
@@ -374,7 +373,7 @@ fvfm_slope <- seedlings_rem_na %>%
 	mutate(Slope = summary(mod)$coeff[2],
 				 SE = summary(mod)$coeff[, 2][2],
 				 trait = rep("D. Fv/Fm")) %>%
-	select(-mod)
+	dplyr::select(-mod)
 
 spad_slope <- seedlings_rem_na %>%
 	group_by(Species) %>%
@@ -382,7 +381,7 @@ spad_slope <- seedlings_rem_na %>%
 	mutate(Slope = summary(mod)$coeff[2],
 				 SE = summary(mod)$coeff[, 2][2],
 				 trait = rep("SPAD")) %>%
-	select(-mod)
+	dplyr::select(-mod)
 
 leaf_area_slope <- seedlings_rem_na %>%
 	group_by(Species) %>%
@@ -390,7 +389,7 @@ leaf_area_slope <- seedlings_rem_na %>%
 	mutate(Slope = summary(mod)$coeff[2],
 				 SE = summary(mod)$coeff[, 2][2],
 				 trait = rep("Leaf Area")) %>%
-	select(-mod)
+	dplyr::select(-mod)
 
 thick_slope <- seedlings_rem_na %>%
 	group_by(Species) %>%
@@ -398,7 +397,7 @@ thick_slope <- seedlings_rem_na %>%
 	mutate(Slope = summary(mod)$coeff[2],
 				 SE = summary(mod)$coeff[, 2][2],
 				 trait = rep("Leaf thickness")) %>%
-	select(-mod)
+	dplyr::select(-mod)
 
 hl_ratio_slope <- seedlings_rem_na %>%
 	group_by(Species) %>%
@@ -406,7 +405,7 @@ hl_ratio_slope <- seedlings_rem_na %>%
 	mutate(Slope = summary(mod)$coeff[2],
 				 SE = summary(mod)$coeff[, 2][2],
 				 trait = rep("Height:leaf ratio")) %>%
-	select(-mod)
+	dplyr::select(-mod)
 
 stemvol_slope <- seedlings_rem_na %>%
 	group_by(Species) %>%
@@ -414,7 +413,7 @@ stemvol_slope <- seedlings_rem_na %>%
 	mutate(Slope = summary(mod)$coeff[2],
 				 SE = summary(mod)$coeff[, 2][2],
 				 trait = rep("Stem volume")) %>%
-	select(-mod)
+	dplyr::select(-mod)
 
 lm_sp_slope <- rbind(fvfm_slope, 
 										 spad_slope, 
@@ -428,7 +427,10 @@ ggplot(lm_sp_slope, aes(x = Species)) +
 	geom_errorbar(aes(ymin = Slope - SE, ymax = Slope + SE, colour = Species), width = 1) +
 	facet_wrap(~trait, scales = "free")
 
-# Comparing random intercept and random slope models 
+# Comparing random intercept and random slope models - the standardize function has disappeared ----
+
+# Standardize by dividing by SE twice
+?standardize
 
 stdz.mod_fvfm_elev_ri <- standardize(lmer(D.FvFm ~ Elevation + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 stdz.mod_fvfm_elev_rs <- standardize(lmer(D.FvFm ~ Elevation + (Elevation|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
@@ -717,8 +719,7 @@ r2plot <- ggplot(explan_best_phys, aes(x = trait_name_best, group = factor(model
 daicplot
 r2plot
 
-# Effect size graphs for each trait single predictor model 
-
+# Effect size graphs for each trait single predictor model ----
 ggplot(data = explan_best) + 
 	geom_errorbar(aes(x = model_name_best, ymin = slope_best - ss_best, ymax = slope_best + ss_best, colour = factor(model_name_best))) +
 	geom_point(aes(x = model_name_best, y = slope_best, colour = factor(model_name_best)), size = 5) + 
@@ -782,9 +783,9 @@ stdz.mod_fvfm_aic_arr$dAIC <- c(AIC(stdz.mod_fvfm_lai_isi_elev) - AIC(stdz.mod_f
 																AIC(stdz.mod_fvfm_rand) - AIC(stdz.mod_fvfm_rand),
 																AIC(stdz.mod_fvfm_seed_ri) - AIC(stdz.mod_fvfm_rand))
 
-stdz.mod_fvfm_wi <- akaike.weights(stdz.mod_fvfm_aic_arr$stdz.mod_fvfm_aic_val)
+stdz.mod_fvfm_wi <- Weights(stdz.mod_fvfm_aic_arr$stdz.mod_fvfm_aic_val)
 stdz.mod_fvfm_wi
-stdz.mod_fvfm_aic_arr$wi <- stdz.mod_fvfm_wi$weights
+stdz.mod_fvfm_aic_arr$wi <- stdz.mod_fvfm_wi
 stdz.mod_fvfm_aic_arr <- stdz.mod_fvfm_aic_arr %>% dplyr::select(model_name_stdz.mod_fvfm_aic, stdz.mod_fvfm_aic_val, dAIC, wi)
 r1 <- unname(r.squaredGLMM(stdz.mod_fvfm_lai_isi_elev))
 r2 <-   unname(r.squaredGLMM(stdz.mod_fvfm_full))
@@ -871,9 +872,9 @@ stdz.mod_spad_aic_arr$dAIC <- c(AIC(stdz.mod_spad_rand) - AIC(stdz.mod_spad_rand
 
 
 stdz.mod_spad_aic_arr
-stdz.mod_spad_wi <- akaike.weights(stdz.mod_spad_aic_arr$stdz.mod_spad_aic_val)
+stdz.mod_spad_wi <- Weights(stdz.mod_spad_aic_arr$stdz.mod_spad_aic_val)
 stdz.mod_spad_wi
-stdz.mod_spad_aic_arr$wi <- stdz.mod_spad_wi$weights
+stdz.mod_spad_aic_arr$wi <- stdz.mod_spad_wi
 stdz.mod_spad_aic_arr <- stdz.mod_spad_aic_arr %>% dplyr::select(model_name_stdz.mod_spad_aic, stdz.mod_spad_aic_val, dAIC, wi)
 r1 <- unname(r.squaredGLMM(stdz.mod_spad_rand))
 r2 <-   unname(r.squaredGLMM(stdz.mod_spad_seed_ri))
@@ -1058,9 +1059,9 @@ AIC(stdz.mod_area_seed_isi_elev) - AIC(stdz.mod_area_rand),
 AIC(stdz.mod_area_full) - AIC(stdz.mod_area_rand))
 
 stdz.mod_area_aic_arr
-stdz.mod_area_wi <- akaike.weights(stdz.mod_area_aic_arr$stdz.mod_area_aic_val)
+stdz.mod_area_wi <- Weights(stdz.mod_area_aic_arr$stdz.mod_area_aic_val)
 stdz.mod_area_wi
-stdz.mod_area_aic_arr$wi <- stdz.mod_area_wi$weights
+stdz.mod_area_aic_arr$wi <- stdz.mod_area_wi
 stdz.mod_area_aic_arr <- stdz.mod_area_aic_arr %>% dplyr::select(model_name_stdz.mod_area_aic, stdz.mod_area_aic_val, dAIC, wi)
 r1 <- unname(r.squaredGLMM(stdz.mod_area_lai_rs))
 r2 <-   unname(r.squaredGLMM(stdz.mod_area_int))
@@ -1151,9 +1152,9 @@ stdz.mod_stemvol_aic_arr$dAIC <- c(AIC(stdz.mod_stemvol_int) - AIC(stdz.mod_stem
 
 
 stdz.mod_stemvol_aic_arr
-stdz.mod_stemvol_wi <- akaike.weights(stdz.mod_stemvol_aic_arr$stdz.mod_stemvol_aic_val)
+stdz.mod_stemvol_wi <- Weights(stdz.mod_stemvol_aic_arr$stdz.mod_stemvol_aic_val)
 stdz.mod_stemvol_wi
-stdz.mod_stemvol_aic_arr$wi <- stdz.mod_stemvol_wi$weights
+stdz.mod_stemvol_aic_arr$wi <- stdz.mod_stemvol_wi
 stdz.mod_stemvol_aic_arr <- stdz.mod_stemvol_aic_arr %>% dplyr::select(model_name_stdz.mod_stemvol_aic, stdz.mod_stemvol_aic_val, dAIC, wi)
 r1 <- unname(r.squaredGLMM(stdz.mod_stemvol_int))
 r2 <-   unname(r.squaredGLMM(stdz.mod_stemvol_isi_rs))
@@ -1244,9 +1245,9 @@ stdz.mod_thick_aic_arr$dAIC <- c(AIC(stdz.mod_thick_lai_seed_elev) - AIC(stdz.mo
  AIC(stdz.mod_thick_seed_rs) - AIC(stdz.mod_thick_rand))
 
 stdz.mod_thick_aic_arr
-stdz.mod_thick_wi <- akaike.weights(stdz.mod_thick_aic_arr$stdz.mod_thick_aic_val)
+stdz.mod_thick_wi <- Weights(stdz.mod_thick_aic_arr$stdz.mod_thick_aic_val)
 stdz.mod_thick_wi
-stdz.mod_thick_aic_arr$wi <- stdz.mod_thick_wi$weights
+stdz.mod_thick_aic_arr$wi <- stdz.mod_thick_wi
 stdz.mod_thick_aic_arr <- stdz.mod_thick_aic_arr %>% dplyr::select(model_name_stdz.mod_thick_aic, stdz.mod_thick_aic_val, dAIC, wi)
 r1 <- unname(r.squaredGLMM(stdz.mod_thick_lai_seed_elev))
 r2 <-   unname(r.squaredGLMM(stdz.mod_thick_lai_isi_elev))
@@ -1322,13 +1323,24 @@ r.squaredGLMM(stdz.mod_stemvol_int)
 stdz.mod_all_fix <- rbind(stdz.mod_fvfm_fix, stdz.mod_spad_fix, stdz.mod_area_fix,
 													stdz.mod_thick_fix, stdz.mod_hlratio_fix, stdz.mod_stemvol_fix)
 
-# Plot the effect sizes for multi-predictor models
+# Plot the effect sizes for multi-predictor models ----
+
+# Create factor for labelling facets
+stdz.mod_all_fix <- stdz.mod_all_fix %>% 
+	mutate(trait_label = factor(trait, labels = c("D.FvFm", "SPAD",
+																								"Leaf Area", "Leaf Thickness",
+																								"Height:Leaf Ratio", "Stem Volume")))
+
+# Plot it 
 ggplot(stdz.mod_all_fix) +
+	labs(x = "Fixed Effect", y = "Fixed Effect Slope") +
 	geom_errorbar(aes(x = factor, ymin = slope - se, ymax = slope + se, colour = factor)) + 
 	geom_point(aes(x = factor, y = slope, colour = factor), size = 5) + 
-	facet_wrap(~trait, scales = "fixed")
-
-
-
-
+	geom_hline(yintercept = 0, linetype = 5) + 
+	scale_x_discrete(labels = c("elev" = "Elevation", 
+															"isi" = "ISI", 
+															"lai" = "LAI", 
+															"seed" = "Herbaceous Plants")) +
+	theme(legend.position = "null") +
+	facet_wrap( ~ trait_label, scales = "fixed")
 
