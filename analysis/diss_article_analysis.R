@@ -23,6 +23,16 @@ setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 ## Seedlings
 seedlings <- read.csv("data/seedlings.csv")
 
+## Add LMA (Leaf mass / Area)
+seedlings$LMA <- (seedlings$Leaf.mass.dry.g / seedlings$Leaf.area)  
+
+# Calculate chlorophyll content - based on ????
+seedlings$chl <- 0.53 * exp(1)^(0.0364 * seedlings$SPAD.mean)
+
+## Add Height:Leaf Ratio (Height / no. leaves)
+seedlings$Height.leaf.ratio <- (seedlings$Height.cm / seedlings$No.leaves)
+
+# Designate as an upland or lowland species
 seedlings <-  seedlings %>%
 	mutate(hi_lo_species = case_when(Species == "AV" | Species == "CR" | 
 																	 Species == "CT" | Species == "DL" | 
@@ -33,22 +43,22 @@ seedlings <-  seedlings %>%
 
 seedlings_comp <- filter(seedlings, Comp.Y.N. == "Y")
 
-### Checking variables for collinearity
-
-VIF <- vif(data.frame(seedlings_comp$LAI.4.ring, 
-					 seedlings_comp$Comp.seed.total, 
-					 seedlings_comp$Comp.adult.log.metric, 
-					 seedlings_comp$Elevation))
-VIF  # VIF is less than 4 for all, nearly 1, so no multicollinearity
-
 ### Removing all NA rows for analysis
-
 seedlings_rem_na <- seedlings_comp %>%
 	filter(!is.na(LAI.4.ring)) %>%
 	filter(!is.na(Comp.seed.total)) %>%
 	filter(!is.na(Comp.adult.log.metric)) %>%
 	filter(!is.na(Elevation)) %>%
 	filter(!is.na(Species))
+
+
+### Checking variables for collinearity
+VIF <- vif(data.frame(seedlings_comp$LAI.4.ring, 
+											seedlings_comp$Comp.seed.total, 
+											seedlings_comp$Comp.adult.log.metric, 
+											seedlings_comp$Elevation))
+VIF  # VIF is less than 4 for all, nearly 1, so no multicollinearity
+
 
 ## Genus Level migration rates (Feeley et al. 2011)
 genus_mig_rates <- read.csv("data/genus_mig_rates.csv")
@@ -58,12 +68,6 @@ aberg_census <- read.csv("data/aberg.csv")
 
 ## Soil data 
 soil <- read.csv("data/soil.csv")
-
-## Add LMA (Leaf mass / Area)
-seedlings$LMA <- (seedlings$Leaf.mass.dry.g / seedlings$Leaf.area)  
-
-## Add Height:Leaf Ratio (Height / no. leaves)
-seedlings$Height.leaf.ratio <- (seedlings$Height.cm / seedlings$No.leaves)
 
 # Plotting interaction plots of plant traits over elevation ----
 
@@ -75,7 +79,7 @@ seedlings_melt_traits <- melt(seedlings, id.vars=c("Individual.code",
 						 								"Leaf.thick.mean.mm", "SPAD.mean", "D.FvFm"))
 
 ## Make the plot
-ggplot(seedlings_melt_traits, aes(x=Elevation.code, y=value, colour=Species, group=Species)) + stat_summary(fun.y=mean, geom="point") +
+interac_trait_elev_ggplot <- ggplot(seedlings_melt_traits, aes(x=Elevation.code, y=value, colour=Species, group=Species)) + stat_summary(fun.y=mean, geom="point") +
 	stat_summary(fun.y=mean, geom="line") + 
 	scale_x_discrete(limits=c("Top","Middle","Bottom")) + 
 	facet_wrap(~variable, scales = "free")
@@ -83,13 +87,13 @@ ggplot(seedlings_melt_traits, aes(x=Elevation.code, y=value, colour=Species, gro
 # Plotting variation in plant traits across species ----
 
 ## Make the plot
-ggplot(seedlings_melt_traits, aes(x=Species, y=value, colour=Species)) + 
+trait_sp_ggplot <- ggplot(seedlings_melt_traits, aes(x=Species, y=value, colour=Species)) + 
 	geom_point() + 
 	facet_wrap(~variable, scales = "free")
 
 # Plotting all seedlings by elevation ----
 seedlings_comp$Elevation_rank <- rank(seedlings_comp$Elevation, na.last=TRUE, ties.method="random")
-ggplot(seedlings_comp, aes(x=Elevation_rank, y=Elevation, colour=Species)) + geom_point()
+seedlings_elev_ggplot <- ggplot(seedlings_comp, aes(x=Elevation_rank, y=Elevation, colour=Species)) + geom_point()
 
 # Methods tables and plots ----
 ## What is the max and min range of each species
@@ -132,7 +136,7 @@ species_elevcode_tally <- data.frame(table(seedlings_comp$Species, seedlings_com
 stargazer(species_elevcode_tally, type = "latex", summary = F)
 
 # genus level migration rates plot
-ggplot(genus_mig_rates, aes(x = genus, y = migration.rate.m.yr.abund, fill = genus)) + 
+genus_mig_rates_ggplot <- ggplot(genus_mig_rates, aes(x = genus, y = migration.rate.m.yr.abund, fill = genus)) + 
 geom_bar(stat = "identity")
 
 ## Site level environmental variables (Whitaker?)
@@ -149,9 +153,9 @@ Site_Char <- data.frame(Site_Code, Elevation, Annual_Precip, Annual_Air_Temp, Sl
 stargazer(Site_Char, summary = F, type = "latex", column.labels = c("Site Code", "Elevation (m.a.s.l.)", "Annual Precipitation (mm year-1)", "Annual Air Temperature (C)", "Slope (\textdegrees)", "Total C (%)", "Total N (%)", "Soil pH"), rownames = F)
 
 # Plotting ranges and sample locations
-ggplot() + 
+ranges_ggplot <- ggplot() + 
 	geom_abline(aes(intercept = elev_mean, slope = 0), linetype = 2, size = 0.5, data = camp_loc) +
-	geom_point(aes(x = species, y = range, colour = position), size = 3, data = Species_all_loc) + 
+	geom_point(aes(x = species, y = range, colour = position), size = 5, data = Species_all_loc) + 
 	geom_point(aes(x = species, y = range), shape = 15, size = 4, data = ranges) + 
 	geom_segment(aes(x = species, y = min, xend = species, yend = max), data = ranges_spread) + 
 	xlab("Species") + 
@@ -161,34 +165,34 @@ ggplot() +
 # Variables vs Elevation Boxplots ----
 
 seedlings_melt_env <- melt(seedlings_comp, id.vars=c("Individual.code", "Elevation.code", "Species", "Elevation"), 
-													 measure.vars = c("Soil.temp.mean", "Soil.mois.mean", "LAI.4.ring", "Comp.seed.total", "Comp.seed.same.sp", "Comp.adult.total", "Comp.adult.metric", "Comp.adult.log.metric"))
+													 measure.vars = c("Soil.temp.mean", "Soil.mois.mean", "LAI.4.ring", "Comp.adult.total", "Comp.adult.metric", "Comp.adult.log.metric"))
 
-ggplot(seedlings_melt_env, aes(x=Elevation.code, y=value)) + 
+env_elev_box_all_ggplot <- ggplot(seedlings_melt_env, aes(x=Elevation.code, y=value)) + 
 	geom_boxplot() + 
 	facet_wrap(~variable, scales = "free")
 
 # Variables vs Species separated by elevation code boxplots ----
 
-ggplot(seedlings_melt_env, aes(x=Species, y=value, fill = interaction(Elevation.code, Species))) + 
+env_box_sp_ggplot <- ggplot(seedlings_melt_env, aes(x=Species, y=value, fill = interaction(Elevation.code, Species))) + 
 	geom_boxplot(position = position_dodge(), outlier.shape = ) + 
 	facet_wrap(~variable, scales = "free")
 
-ggplot(seedlings_melt_traits, aes(x=Species, y=value, fill = interaction(Elevation.code, Species))) + 
+trait_box_sp_ggplot <- ggplot(seedlings_melt_traits, aes(x=Species, y=value, fill = interaction(Elevation.code, Species))) + 
 	geom_boxplot(position = position_dodge(), outlier.shape = ) + 
 	facet_wrap(~variable, scales = "free")
 
 # Variables vs elevation scatterplots ----
 
-ggplot(seedlings_melt_env, aes(x=Elevation, y=value, colour = Species)) + 
+env_elev_scatter_ggplot <- ggplot(seedlings_melt_env, aes(x=Elevation, y=value, colour = Species)) + 
 	geom_point() + 
 	facet_wrap(~variable, scales = "free")
 
-ggplot(seedlings_melt_env, aes(x=Elevation, y=value, colour = Species)) + 
+env_elev_lm_scatter_ggplot <- ggplot(seedlings_melt_env, aes(x=Elevation, y=value, colour = Species)) + 
 	geom_point() + 
 	geom_smooth(aes(fill = Species, colour = Species), method = lm, se = T) + 
 	facet_wrap(~variable, scales = "free")
 
-ggplot(seedlings_melt_traits, aes(x=Elevation, y=value, colour = Species)) + 
+trait_elev_lm_scatter_ggplot <- ggplot(seedlings_melt_traits, aes(x=Elevation, y=value, colour = Species)) + 
 	geom_point() + 
 	geom_smooth(aes(fill = Species, colour = Species), method = lm, se = T) + 
 	facet_wrap(~variable, scales = "free")
@@ -208,7 +212,7 @@ trees_ha_elev <- lm(trees_ha~elev_mean, data = Competition_Radius_VC)
 summary(trees_ha_elev)
 
 ## Make a plot of with a linear regression - filling in VC
-ggplot(Competition_Radius, aes(x = elev_mean, y = trees_ha)) + 
+comp_radius_interp_ggplot <- ggplot(Competition_Radius, aes(x = elev_mean, y = trees_ha)) + 
 	geom_point() +
 	geom_smooth(method = lm) + 
 	geom_text(aes(label = site), 
@@ -249,10 +253,10 @@ aberg_census_summ <- aberg_census %>%
 				 									 	genus_species == "Myrcia fallax" | 
 				 									 	genus_species == "Myrcia rostrata" ~ T))
 
-ggplot() + 
+rank_abund_ggplot <- ggplot() + 
 	geom_point(data = filter(aberg_census_summ, sampled == T), aes(x = id, y = n), colour = "#E03A50FE", alpha = 1, size = 5) +
 	geom_point(data = filter(aberg_census_summ, myrcia == T), aes(x = id, y = n), colour = "#53C90E", alpha = 1, size = 5) +
-	geom_point(data = filter(aberg_census_summ, sampled == F), aes(x = id, y = n), colour = "black", alpha = 0.5, size = 1) 
+	geom_point(data = filter(aberg_census_summ, sampled == F), aes(x = id, y = n), colour = "black", alpha = 0.5, size = 1)
 	
 
 
@@ -262,8 +266,8 @@ length(unique(aberg_census_summ$genus_species))
 
 # Soil carbon and nitrogen content ----
 
-ggplot(soil, aes(x = site, y = n_per)) + geom_boxplot(aes(colour = site))
-ggplot(soil, aes(x = site, y = c_per)) + geom_boxplot(aes(colour = site))
+soil_carbon_ggplot <- ggplot(soil, aes(x = site, y = n_per)) + geom_boxplot(aes(colour = site))
+soil_nitrogen_ggplot <- ggplot(soil, aes(x = site, y = c_per)) + geom_boxplot(aes(colour = site))
 
 # Linear mixed models, competition versus elevation ----
 
@@ -272,20 +276,6 @@ LAI4ring_vs_elev_lmer <- lmer(LAI.4.ring ~ Elevation + (1|Site), data = seedling
 LAI4ring_vs_elev_lmer_slope <- lmer(LAI.4.ring ~ Elevation + (Elevation|Site), data = seedlings_rem_na, REML = F)
 LAI4ring_vs_elev_lmer_rand <- lmer(LAI.4.ring ~ (1|Site), data = seedlings_rem_na, REML = F)
 LAI4ring_vs_elev_lmer_null <- lm(LAI.4.ring ~ 1, data = seedlings_rem_na)
-
-## Total seedling abundance
-comp_seed_vs_elev_lmer <- lmer(Comp.seed.total ~ Elevation + (Elevation|Site), data = seedlings_rem_na, REML = F)
-comp_seed_vs_elev_lmer_slope <- lmer(Comp.seed.total ~ Elevation + (Elevation|Site), data = seedlings_rem_na, REML = F)
-comp_seed_vs_elev_glmer_pois <- glmer(Comp.seed.total ~ Elevation + (1|Site), data = seedlings_rem_na, family = poisson, REML = F)
-comp_seed_vs_elev_glmer_negbi <- glmer(Comp.seed.total ~ Elevation + (1|Site), data = seedlings_rem_na, REML = F, 
-																			 family = negative.binomial(theta =  comp_seed_vs_elev_glmer_pois@theta))
-comp_seed_vs_elev_glmer_rand <- glmer(Comp.seed.total ~ (1|Site), data = seedlings_rem_na, family = poisson, REML = F)
-comp_seed_vs_elev_lmer_null <- lm(Comp.seed.total ~ 1, data = seedlings_rem_na)
-
-## Conspecific seedling abundance - THESE DON'T CONVERGE, BUT THAT'S FINE BECAUSE THEY AREN'T USED
-comp_seed_same_vs_elev_glmmADMB_pois <- glmmadmb(Comp.seed.same.sp ~ Elevation + (Species|Site), data = seedlings_rem_na, family = "poisson", zeroInflation = T)
-comp_seed_same_vs_elev_glmmADMB_nbinom <- glmmadmb(Comp.seed.same.sp ~ Elevation + (Species|Site), data = seedlings_rem_na, family = "nbinom", zeroInflation = T)
-comp_seed_same_vs_elev_glmmADMB_rand <- glmmadmb(Comp.seed.same.sp ~ (1|Site), data = seedlings_rem_na, family = "nbinom", zeroInflation = T)
 
 ## Adult competition metric
 comp_adult_metric_vs_elev_lmer <- lmer(Comp.adult.metric ~ Elevation + (1|Site), data = seedlings_rem_na, REML = F)
@@ -304,7 +294,7 @@ soil_mois_vs_elev_lmer_null <- lmer(Soil.temp.mean ~ (1|Site), data = seedlings_
 soil_mois_vs_elev_date_lmer <- lmer(Soil.mois.mean ~ Elevation + (1|Site) + (1|Collection.date), data = seedlings_rem_na, REML = F)
 
 ### Best fitting models
-stargazer(LAI4ring_vs_elev_lmer, comp_seed_vs_elev_glmer_negbi, comp_adult_log_metric_vs_elev_lmer, summary = F)   
+stargazer(LAI4ring_vs_elev_lmer, comp_adult_log_metric_vs_elev_lmer, summary = F)   
 
 # Linear model fits for env. vs elev.
 
@@ -319,31 +309,6 @@ LAI4ring_plot <- ggplot(seedlings_rem_na, aes(x=Elevation, y=LAI.4.ring)) +
 	geom_point(aes(colour=Site), alpha = 0.8) +
 	geom_line(data = LAI4ring_pred, aes(x = Elevation, y = LAI.4.ring), stat = "identity", position = "identity") + 
 	geom_ribbon(data = LAI4ring_pred, aes(x = Elevation, ymin = plo, ymax = phi), stat = "identity", position = "identity", alpha = 0.6)
-
-## Total seedling abundance
-Total_seed_pred <- expand.grid(Elevation = c(seq(from=378, to=3224, by=1)), Site = c("PA400", "PA800", "VC", "SP1500", "SP1750", "TRU08", "TRU07", "TRU06", "TRU04", "TRU02"), Comp.seed.total = 0)
-matrix_Total_seed = model.matrix(terms(comp_seed_vs_elev_lmer), data = Total_seed_pred)
-Total_seed_pred$Comp.seed.total = matrix_Total_seed %*% fixef(comp_seed_vs_elev_lmer)
-Total_seed_var <- diag(matrix_Total_seed %*% tcrossprod(vcov(comp_seed_vs_elev_lmer), matrix_Total_seed))
-Total_seed_pred <- data.frame(Total_seed_pred, plo = Total_seed_pred$Comp.seed.total-2*sqrt(Total_seed_var), phi = Total_seed_pred$Comp.seed.total+2*sqrt(Total_seed_var))
-
-Total_seed_plot <- ggplot(seedlings_rem_na, aes(x = Elevation, y = Comp.seed.total)) + 
-	geom_point(aes(colour=Site), alpha = 0.8) +
-	geom_line(data = Total_seed_pred, aes(x = Elevation, y = Comp.seed.total), stat = "identity", position = "identity") + 
-	geom_ribbon(data = Total_seed_pred, aes(x = Elevation, ymin = plo, ymax = phi), stat = "identity", position = "identity", alpha = 0.6)
-
-## Conspecific seedling abundance - THIS PLOT ALSO WON'T WORK BECAUSE OF ABOVE MODELS NOT CONVERGING, IT'S FINE!
-
-Same_seed_pred <- expand.grid(Elevation = c(seq(from=378, to=3224, by=1)), Site = c("PA400", "PA800", "VC", "SP1500", "SP1750", "TRU08", "TRU07", "TRU06", "TRU04", "TRU02"), Comp.seed.same.sp = 0)
-matrix_Same_seed = model.matrix(terms(comp_seed_same_vs_elev_glmmADMB_nbinom), data = Same_seed_pred)
-Same_seed_pred$Comp.seed.same.sp = matrix_Same_seed %*% fixef(comp_seed_same_vs_elev_glmmADMB_nbinom)
-Same_seed_var <- diag(matrix_Same_seed %*% tcrossprod(vcov(comp_seed_same_vs_elev_glmmADMB_nbinom), matrix_Same_seed))
-Same_seed_pred <- data.frame(Same_seed_pred, plo = Same_seed_pred$Comp.seed.same.sp-2*sqrt(Same_seed_var), phi = Same_seed_pred$Comp.seed.same.sp+2*sqrt(Same_seed_var))
-
-Same_seed_plot <- ggplot(seedlings_rem_na, aes(x = Elevation, y = Comp.seed.same.sp)) + 
-	geom_point(aes(colour=Site), alpha = 0.8) +
-	layer(data = Same_seed_pred, geom='line', mapping = aes(x=Elevation, y = Comp.seed.same.sp), stat = "identity", position = "identity", params = list(na.rm = F)) + 
-	layer(data = Same_seed_pred, geom = "ribbon", mapping = aes(x=Elevation, ymin = plo, ymax = phi), stat = "identity", position = "identity", params = list(na.rm = F, alpha = 0.6))
 
 ## Adult competition metric
 
@@ -441,28 +406,24 @@ lm_sp_slope <- rbind(fvfm_slope,
 										 hl_ratio_slope, 
 										 stemvol_slope)
 
+interv_hi_lo_listggplot <- list()
 for(i in unique(lm_sp_slope$trait)) {
-print(ggplot(filter(lm_sp_slope, trait == i), aes(x = Species)) + 
+	interv_hi_lo_listggplot[[i]] <- ggplot(filter(lm_sp_slope, trait == i), aes(x = Species)) + 
 	geom_point(aes(y = Slope, colour = Species), size = 2) +
 	geom_errorbar(aes(ymin = Slope - SE, ymax = Slope + SE, colour = Species), width = 1) +
 	geom_hline(yintercept = 0, linetype = 5) + 
 	facet_wrap(~hi_lo_species, scales = "free_x") + 
-	ggtitle(label = i))
+	ggtitle(label = i)
 }
 
 # Comparing random intercept and random slope models - the standardize function has disappeared ----
 
 # Standardize by dividing by SE twice
-?standardize
-
 stdz.mod_fvfm_elev_ri <- standardize(lmer(D.FvFm ~ Elevation + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 stdz.mod_fvfm_elev_rs <- standardize(lmer(D.FvFm ~ Elevation + (Elevation|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 
 stdz.mod_fvfm_lai_ri <- standardize(lmer(D.FvFm ~ LAI.4.ring + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 stdz.mod_fvfm_lai_rs <- standardize(lmer(D.FvFm ~ LAI.4.ring + (LAI.4.ring|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
-
-stdz.mod_fvfm_seed_ri <- standardize(lmer(D.FvFm ~ Comp.seed.total + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
-stdz.mod_fvfm_seed_rs <- standardize(lmer(D.FvFm ~ Comp.seed.total + (Comp.seed.total|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 
 stdz.mod_fvfm_isi_ri <- standardize(lmer(D.FvFm ~ Comp.adult.log.metric + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 stdz.mod_fvfm_isi_rs <- standardize(lmer(D.FvFm ~ Comp.adult.log.metric + (Comp.adult.log.metric|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
@@ -473,9 +434,6 @@ stdz.mod_spad_elev_rs <- standardize(lmer(SPAD.mean ~ Elevation + (Elevation|Spe
 stdz.mod_spad_lai_ri <- standardize(lmer(SPAD.mean ~ LAI.4.ring + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 stdz.mod_spad_lai_rs <- standardize(lmer(SPAD.mean ~ LAI.4.ring + (LAI.4.ring|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 
-stdz.mod_spad_seed_ri <- standardize(lmer(SPAD.mean ~ Comp.seed.total + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
-stdz.mod_spad_seed_rs <- standardize(lmer(SPAD.mean ~ Comp.seed.total + (Comp.seed.total|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
-
 stdz.mod_spad_isi_ri <- standardize(lmer(SPAD.mean ~ Comp.adult.log.metric + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 stdz.mod_spad_isi_rs <- standardize(lmer(SPAD.mean ~ Comp.adult.log.metric + (Comp.adult.log.metric|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 
@@ -484,9 +442,6 @@ stdz.mod_thick_elev_rs <- standardize(lmer(Leaf.thick.mean.mm ~ Elevation + (Ele
 
 stdz.mod_thick_lai_ri <- standardize(lmer(Leaf.thick.mean.mm ~ LAI.4.ring + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 stdz.mod_thick_lai_rs <- standardize(lmer(Leaf.thick.mean.mm ~ LAI.4.ring + (LAI.4.ring|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
-
-stdz.mod_thick_seed_ri <- standardize(lmer(Leaf.thick.mean.mm ~ Comp.seed.total + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
-stdz.mod_thick_seed_rs <- standardize(lmer(Leaf.thick.mean.mm ~ Comp.seed.total + (Comp.seed.total|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 
 stdz.mod_thick_isi_ri <- standardize(lmer(Leaf.thick.mean.mm ~ Comp.adult.log.metric + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 stdz.mod_thick_isi_rs <- standardize(lmer(Leaf.thick.mean.mm ~ Comp.adult.log.metric + (Comp.adult.log.metric|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
@@ -497,9 +452,6 @@ stdz.mod_hlratio_elev_rs <- standardize(lmer(Height.leaf.ratio ~ Elevation + (El
 stdz.mod_hlratio_lai_ri <- standardize(lmer(Height.leaf.ratio ~ LAI.4.ring + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 stdz.mod_hlratio_lai_rs <- standardize(lmer(Height.leaf.ratio ~ LAI.4.ring + (LAI.4.ring|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 
-stdz.mod_hlratio_seed_ri <- standardize(lmer(Height.leaf.ratio ~ Comp.seed.total + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
-stdz.mod_hlratio_seed_rs <- standardize(lmer(Height.leaf.ratio ~ Comp.seed.total + (Comp.seed.total|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
-
 stdz.mod_hlratio_isi_ri <- standardize(lmer(Height.leaf.ratio ~ Comp.adult.log.metric + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 stdz.mod_hlratio_isi_rs <- standardize(lmer(Height.leaf.ratio ~ Comp.adult.log.metric + (Comp.adult.log.metric|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 
@@ -509,9 +461,6 @@ stdz.mod_area_elev_rs <- standardize(lmer(Leaf.area ~ Elevation + (Elevation|Spe
 stdz.mod_area_lai_ri <- standardize(lmer(Leaf.area ~ LAI.4.ring + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 stdz.mod_area_lai_rs <- standardize(lmer(Leaf.area ~ LAI.4.ring + (LAI.4.ring|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 
-stdz.mod_area_seed_ri <- standardize(lmer(Leaf.area ~ Comp.seed.total + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
-stdz.mod_area_seed_rs <- standardize(lmer(Leaf.area ~ Comp.seed.total + (Comp.seed.total|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
-
 stdz.mod_area_isi_ri <- standardize(lmer(Leaf.area ~ Comp.adult.log.metric + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 stdz.mod_area_isi_rs <- standardize(lmer(Leaf.area ~ Comp.adult.log.metric + (Comp.adult.log.metric|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 
@@ -520,9 +469,6 @@ stdz.mod_stemvol_elev_rs <- standardize(lmer(Stem.volume.cm3 ~ Elevation + (Elev
 
 stdz.mod_stemvol_lai_ri <- standardize(lmer(Stem.volume.cm3 ~ LAI.4.ring + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 stdz.mod_stemvol_lai_rs <- standardize(lmer(Stem.volume.cm3 ~ LAI.4.ring + (LAI.4.ring|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
-
-stdz.mod_stemvol_seed_ri <- standardize(lmer(Stem.volume.cm3 ~ Comp.seed.total + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
-stdz.mod_stemvol_seed_rs <- standardize(lmer(Stem.volume.cm3 ~ Comp.seed.total + (Comp.seed.total|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 
 stdz.mod_stemvol_isi_ri <- standardize(lmer(Stem.volume.cm3 ~ Comp.adult.log.metric + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 stdz.mod_stemvol_isi_rs <- standardize(lmer(Stem.volume.cm3 ~ Comp.adult.log.metric + (Comp.adult.log.metric|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
@@ -535,178 +481,147 @@ stdz.mod_area_null <- standardize(lmer(Leaf.area ~ (1|Species) + (1|Site), data=
 stdz.mod_stemvol_null <- standardize(lmer(Stem.volume.cm3 ~ (1|Species) + (1|Site), data=seedlings_rem_na), standardize.y = T)
 AIC_ri <- c(AIC(stdz.mod_fvfm_elev_ri),
 						AIC(stdz.mod_fvfm_lai_ri),
-						AIC(stdz.mod_fvfm_seed_ri),
 						AIC(stdz.mod_fvfm_isi_ri),
 						AIC(stdz.mod_spad_elev_ri),
 						AIC(stdz.mod_spad_lai_ri),
-						AIC(stdz.mod_spad_seed_ri),
 						AIC(stdz.mod_spad_isi_ri),
 						AIC(stdz.mod_thick_elev_ri),
 						AIC(stdz.mod_thick_lai_ri),
-						AIC(stdz.mod_thick_seed_ri),
 						AIC(stdz.mod_thick_isi_ri),
 						AIC(stdz.mod_hlratio_elev_ri),
 						AIC(stdz.mod_hlratio_lai_ri),
-						AIC(stdz.mod_hlratio_seed_ri),
 						AIC(stdz.mod_hlratio_isi_ri),
 						AIC(stdz.mod_area_elev_ri),
 						AIC(stdz.mod_area_lai_ri),
-						AIC(stdz.mod_area_seed_ri),
 						AIC(stdz.mod_area_isi_ri),
 						AIC(stdz.mod_stemvol_elev_ri),
 						AIC(stdz.mod_stemvol_lai_ri),
-						AIC(stdz.mod_stemvol_seed_ri),
 						AIC(stdz.mod_stemvol_isi_ri))
 
 AIC_rs <- c(AIC(stdz.mod_fvfm_elev_rs),
 						AIC(stdz.mod_fvfm_lai_rs),
-						AIC(stdz.mod_fvfm_seed_rs),
 						AIC(stdz.mod_fvfm_isi_rs),
 						AIC(stdz.mod_spad_elev_rs),
 						AIC(stdz.mod_spad_lai_rs),
-						AIC(stdz.mod_spad_seed_rs),
 						AIC(stdz.mod_spad_isi_rs),
 						AIC(stdz.mod_thick_elev_rs),
 						AIC(stdz.mod_thick_lai_rs),
-						AIC(stdz.mod_thick_seed_rs),
 						AIC(stdz.mod_thick_isi_rs),
 						AIC(stdz.mod_hlratio_elev_rs),
 						AIC(stdz.mod_hlratio_lai_rs),
-						AIC(stdz.mod_hlratio_seed_rs),
 						AIC(stdz.mod_hlratio_isi_rs),
 						AIC(stdz.mod_area_elev_rs),
 						AIC(stdz.mod_area_lai_rs),
-						AIC(stdz.mod_area_seed_rs),
 						AIC(stdz.mod_area_isi_rs),
 						AIC(stdz.mod_stemvol_elev_rs),
 						AIC(stdz.mod_stemvol_lai_rs),
-						AIC(stdz.mod_stemvol_seed_rs),
 						AIC(stdz.mod_stemvol_isi_rs))
 
 AIC_ri - AIC_rs
 
 daic1 <-  AIC(stdz.mod_fvfm_null) - AIC(stdz.mod_fvfm_elev_ri) 
 daic2 <-  AIC(stdz.mod_fvfm_null) - AIC(stdz.mod_fvfm_lai_ri) 
-daic3 <-  AIC(stdz.mod_fvfm_null) - AIC(stdz.mod_fvfm_seed_ri) 
 daic4 <-  AIC(stdz.mod_fvfm_null) - AIC(stdz.mod_fvfm_isi_ri) 
 daic5 <-  AIC(stdz.mod_spad_null) - AIC(stdz.mod_spad_elev_ri) 
 daic6 <-  AIC(stdz.mod_spad_null) - AIC(stdz.mod_spad_lai_ri) 
-daic7 <-  AIC(stdz.mod_spad_null) - AIC(stdz.mod_spad_seed_ri) 
 daic8 <-  AIC(stdz.mod_spad_null) - AIC(stdz.mod_spad_isi_ri) 
 daic9 <-  AIC(stdz.mod_thick_null) - AIC(stdz.mod_thick_elev_ri) 
 daic10 <-  AIC(stdz.mod_thick_null) - AIC(stdz.mod_thick_lai_rs) 
-daic11<-  AIC(stdz.mod_thick_null) - AIC(stdz.mod_thick_seed_ri) 
 daic12<-  AIC(stdz.mod_thick_null) -  AIC(stdz.mod_thick_isi_ri) 
 daic13<-  AIC(stdz.mod_hlratio_null) - AIC(stdz.mod_hlratio_elev_rs) 
 daic14<-  AIC(stdz.mod_hlratio_null) - AIC(stdz.mod_hlratio_lai_ri) 
-daic15<-  AIC(stdz.mod_hlratio_null) - AIC(stdz.mod_hlratio_seed_rs) 
 daic16<-  AIC(stdz.mod_hlratio_null) - AIC(stdz.mod_hlratio_isi_ri) 
 daic17<-  AIC(stdz.mod_area_null) - AIC(stdz.mod_area_elev_rs)
 daic18<-  AIC(stdz.mod_area_null) - AIC(stdz.mod_area_lai_rs) 
-daic19<-  AIC(stdz.mod_area_null) - AIC(stdz.mod_area_seed_ri) 
 daic20<-  AIC(stdz.mod_area_null) - AIC(stdz.mod_area_isi_rs) 
 daic21<-  AIC(stdz.mod_stemvol_null) - AIC(stdz.mod_stemvol_elev_ri) 
 daic22<-  AIC(stdz.mod_stemvol_null) - AIC(stdz.mod_stemvol_lai_ri) 
-daic23<-  AIC(stdz.mod_stemvol_null) - AIC(stdz.mod_stemvol_seed_ri) 
 daic24<-  AIC(stdz.mod_stemvol_null) - AIC(stdz.mod_stemvol_isi_rs) 
 
 
 r1 <-   unname(r.squaredGLMM(stdz.mod_fvfm_elev_ri))
 r2 <-   unname(r.squaredGLMM(stdz.mod_fvfm_lai_ri))
-r3 <-   unname(r.squaredGLMM(stdz.mod_fvfm_seed_ri))
 r4 <-   unname(r.squaredGLMM(stdz.mod_fvfm_isi_ri))
 r5 <-   unname(r.squaredGLMM(stdz.mod_spad_elev_rs))
 r6 <-   unname(r.squaredGLMM(stdz.mod_spad_lai_ri))
-r7 <-   unname(r.squaredGLMM(stdz.mod_spad_seed_ri))
 r8 <-   unname(r.squaredGLMM(stdz.mod_spad_isi_ri))
 r9 <-   unname(r.squaredGLMM(stdz.mod_thick_elev_ri))
 r10 <-   unname(r.squaredGLMM(stdz.mod_thick_lai_rs))
-r11<-   unname(r.squaredGLMM(stdz.mod_thick_seed_ri))
 r12<-   unname(r.squaredGLMM(stdz.mod_thick_isi_ri))
 r13<-   unname(r.squaredGLMM(stdz.mod_hlratio_elev_rs))
 r14<-   unname(r.squaredGLMM(stdz.mod_hlratio_lai_ri))
-r15<-   unname(r.squaredGLMM(stdz.mod_hlratio_seed_rs))
 r16<-   unname(r.squaredGLMM(stdz.mod_hlratio_isi_ri))
 r17<-   unname(r.squaredGLMM(stdz.mod_area_elev_rs))
 r18<-   unname(r.squaredGLMM(stdz.mod_area_lai_rs))
-r19<-   unname(r.squaredGLMM(stdz.mod_area_seed_ri))
 r20<-   unname(r.squaredGLMM(stdz.mod_area_isi_rs))
 r21<-   unname(r.squaredGLMM(stdz.mod_stemvol_elev_ri))
 r22<-   unname(r.squaredGLMM(stdz.mod_stemvol_lai_ri))
-r23<-   unname(r.squaredGLMM(stdz.mod_stemvol_seed_ri))
 r24<-   unname(r.squaredGLMM(stdz.mod_stemvol_isi_rs))
 
 slope1 <-   unname(coef(summary(stdz.mod_fvfm_elev_ri)) [, "Estimate"])
 slope2 <-   unname(coef(summary(stdz.mod_fvfm_lai_ri)) [, "Estimate"])
-slope3 <-   unname(coef(summary(stdz.mod_fvfm_seed_ri)) [, "Estimate"])
 slope4 <-   unname(coef(summary(stdz.mod_fvfm_isi_ri)) [, "Estimate"])
 slope5 <-   unname(coef(summary(stdz.mod_spad_elev_ri)) [, "Estimate"])
 slope6 <-   unname(coef(summary(stdz.mod_spad_lai_ri)) [, "Estimate"])
-slope7 <-   unname(coef(summary(stdz.mod_spad_seed_ri)) [, "Estimate"])
 slope8 <-   unname(coef(summary(stdz.mod_spad_isi_ri)) [, "Estimate"])
 slope9 <-   unname(coef(summary(stdz.mod_thick_elev_ri)) [, "Estimate"])
 slope10 <-   unname(coef(summary(stdz.mod_thick_lai_rs)) [, "Estimate"])
-slope11<-   unname(coef(summary(stdz.mod_thick_seed_ri)) [, "Estimate"])
 slope12<-   unname(coef(summary(stdz.mod_thick_isi_ri)) [, "Estimate"])
 slope13<-   unname(coef(summary(stdz.mod_hlratio_elev_rs)) [, "Estimate"])
 slope14<-   unname(coef(summary(stdz.mod_hlratio_lai_ri)) [, "Estimate"])
-slope15<-   unname(coef(summary(stdz.mod_hlratio_seed_rs)) [, "Estimate"])
 slope16<-   unname(coef(summary(stdz.mod_hlratio_isi_ri)) [, "Estimate"])
 slope17<-   unname(coef(summary(stdz.mod_area_elev_rs)) [, "Estimate"])
 slope18<-   unname(coef(summary(stdz.mod_area_lai_rs)) [, "Estimate"])
-slope19<-   unname(coef(summary(stdz.mod_area_seed_ri)) [, "Estimate"])
 slope20<-   unname(coef(summary(stdz.mod_area_isi_rs)) [, "Estimate"])
 slope21<-   unname(coef(summary(stdz.mod_stemvol_elev_ri)) [, "Estimate"])
 slope22<-   unname(coef(summary(stdz.mod_stemvol_lai_ri)) [, "Estimate"])
-slope23<-   unname(coef(summary(stdz.mod_stemvol_seed_ri)) [, "Estimate"])
 slope24<-   unname(coef(summary(stdz.mod_stemvol_isi_rs)) [, "Estimate"])
 
 ss1 <-   sqrt(diag(vcov(stdz.mod_fvfm_elev_ri)))
 ss2 <-   sqrt(diag(vcov(stdz.mod_fvfm_lai_ri)))
-ss3 <-   sqrt(diag(vcov(stdz.mod_fvfm_seed_ri)))
 ss4 <-   sqrt(diag(vcov(stdz.mod_fvfm_isi_ri)))
 ss5 <-   sqrt(diag(vcov(stdz.mod_spad_elev_ri)))
 ss6 <-   sqrt(diag(vcov(stdz.mod_spad_lai_ri)))
-ss7 <-   sqrt(diag(vcov(stdz.mod_spad_seed_ri)))
 ss8 <-   sqrt(diag(vcov(stdz.mod_spad_isi_ri)))
 ss9 <-   sqrt(diag(vcov(stdz.mod_thick_elev_ri)))
 ss10 <-   sqrt(diag(vcov(stdz.mod_thick_lai_rs)))
-ss11<-   sqrt(diag(vcov(stdz.mod_thick_seed_ri)))
 ss12<-   sqrt(diag(vcov(stdz.mod_thick_isi_ri)))
 ss13<-   sqrt(diag(vcov(stdz.mod_hlratio_elev_rs)))
 ss14<-   sqrt(diag(vcov(stdz.mod_hlratio_lai_ri)))
-ss15<-   sqrt(diag(vcov(stdz.mod_hlratio_seed_rs)))
 ss16<-   sqrt(diag(vcov(stdz.mod_hlratio_isi_ri)))
 ss17<-   sqrt(diag(vcov(stdz.mod_area_elev_rs)))
 ss18<-   sqrt(diag(vcov(stdz.mod_area_lai_rs)))
-ss19<-   sqrt(diag(vcov(stdz.mod_area_seed_ri)))
 ss20<-   sqrt(diag(vcov(stdz.mod_area_isi_rs)))
 ss21<-   sqrt(diag(vcov(stdz.mod_stemvol_elev_ri)))
 ss22<-   sqrt(diag(vcov(stdz.mod_stemvol_lai_ri)))
-ss23<-   sqrt(diag(vcov(stdz.mod_stemvol_seed_ri)))
 ss24<-   sqrt(diag(vcov(stdz.mod_stemvol_isi_rs)))
 
-model_name_rirs <- c("elev", "lai", "seed", "isi","elev", "lai", "seed", "isi","elev", "lai", "seed", "isi","elev", "lai", "seed", "isi","elev", "lai", "seed", "isi","elev", "lai", "seed", "isi")
+model_name_rirs <- c("elev", "lai", "isi", 
+										 "elev", "lai", "isi",
+										 "elev", "lai", "isi",
+										 "elev", "lai", "isi",
+										 "elev", "lai", "isi",
+										 "elev", "lai", "isi")
 delta_aic_rirs <- AIC_ri - AIC_rs
-r2c_best <- c(r1[2], r2[2], r3[2], r4[2],r5[2],r6[2],r7[2],r8[2],r9[2],r10[2],r11[2],r12[2],r13[2],r14[2],r15[2],r16[2],r17[2],r18[2],r19[2],r20[2],r21[2],r22[2],r23[2],r24[2])
-r2m_best <- c(r1[1], r2[1], r3[1], r4[1],r5[1],r6[1],r7[1],r8[1],r9[1],r10[1],r11[1],r12[1],r13[1],r14[1],r15[1],r16[1],r17[1],r18[1],r19[1],r20[1],r21[1],r22[1],r23[1],r24[1])
-slope_best <- c(slope1[2], slope2[2], slope3[2], slope4[2],slope5[2],slope6[2],slope7[2],slope8[2],slope9[2],slope10[2],slope11[2],slope12[2],slope13[2],slope14[2],slope15[2],slope16[2],slope17[2],slope18[2],slope19[2],slope20[2],slope21[2],slope22[2],slope23[2],slope24[2])
-ss_best <- c(ss1[2], ss2[2], ss3[2], ss4[2],ss5[2],ss6[2],ss7[2],ss8[2],ss9[2],ss10[2],ss11[2],ss12[2],ss13[2],ss14[2],ss15[2],ss16[2],ss17[2],ss18[2],ss19[2],ss20[2],ss21[2],ss22[2],ss23[2],ss24[2])
-dAIC_best <- c(daic1 , daic2 , daic3 , daic4 ,daic5 ,daic6 ,daic7 ,daic8 ,daic9 ,daic10 ,daic11 ,daic12 ,daic13 ,daic14 ,daic15 ,daic16 ,daic17 ,daic18 ,daic19 ,daic20 ,daic21 ,daic22 ,daic23 ,daic24 )
-rsri <- c("RI","RI","RI","RI","RI","RS","RI","RS","RI","RS","RI","RI","RI","RI","RI","RS","RI","RS","RS","RS","RI","RI","RI","RS")
+r2c_best <- c(r1[2], r2[2], r4[2],r5[2],r6[2],r8[2],r9[2],r10[2],r12[2],r13[2],r14[2],r16[2],r17[2],r18[2],r20[2],r21[2],r22[2],r24[2])
+r2m_best <- c(r1[1], r2[1], r4[1],r5[1],r6[1],r8[1],r9[1],r10[1],r12[1],r13[1],r14[1],r16[1],r17[1],r18[1],r20[1],r21[1],r22[1],r24[1])
+slope_best <- c(slope1[2], slope2[2], slope4[2],slope5[2],slope6[2],slope8[2],slope9[2],slope10[2],slope12[2],slope13[2],slope14[2],slope16[2],slope17[2],slope18[2],slope20[2],slope21[2],slope22[2],slope24[2])
+ss_best <- c(ss1[2], ss2[2], ss4[2],ss5[2],ss6[2],ss8[2],ss9[2],ss10[2],ss12[2],ss13[2],ss14[2],ss16[2],ss17[2],ss18[2],ss20[2],ss21[2],ss22[2],ss24[2])
+dAIC_best <- c(daic1 , daic2, daic4 ,daic5 ,daic6, daic8 ,daic9 ,daic10 ,daic12 ,daic13 ,daic14 ,daic16 ,daic17 ,daic18, daic20 ,daic21 ,daic22,daic24 )
+rsri <- c("RI","RI","RI","RI","RS","RS","RI","RS","RI","RI","RI","RS","RI","RS","RS","RI","RI","RS")
 stdz.mod_fvfm_cov <- data.frame(model_name_rirs, delta_aic_rirs, rsri, dAIC_best, slope_best, ss_best, r2c_best)
 stargazer(stdz.mod_fvfm_cov, summary = F)
 
 # Plot of dAIC, Slope and R2 for all best fit lmers 
 
-trait_name_best <- c("D.FvFm","D.FvFm","D.FvFm","D.FvFm",
-										 "SPAD","SPAD","SPAD","SPAD",
-										 "Leaf Thickness","Leaf Thickness","Leaf Thickness","Leaf Thickness",
-										 "Height:Leaf Ratio", "Height:Leaf Ratio", "Height:Leaf Ratio", "Height:Leaf Ratio",
-										 "Leaf Area","Leaf Area","Leaf Area","Leaf Area",
-										 "Stem Volume", "Stem Volume", "Stem Volume", "Stem Volume")
-model_name_best <- c("elev", "lai", "seed", "isi","elev", "lai", "seed", "isi","elev", "lai", "seed", "isi","elev", "lai", "seed", "isi","elev", "lai", "seed", "isi","elev", "lai", "seed", "isi")
-rsri_best <- c("RI","RI","RI","RI","RI","RS","RI","RS","RI","RS","RI","RI","RI","RI","RI","RS","RI","RS","RS","RS","RI","RI","RI","RS")
+trait_name_best <- c("D.FvFm","D.FvFm","D.FvFm",
+										 "SPAD","SPAD","SPAD",
+										 "Leaf Thickness","Leaf Thickness","Leaf Thickness",
+										 "Height:Leaf Ratio", "Height:Leaf Ratio","Height:Leaf Ratio",
+										 "Leaf Area","Leaf Area","Leaf Area",
+										 "Stem Volume", "Stem Volume", "Stem Volume")
+model_name_best <- c("elev", "lai", "isi","elev", "lai", "isi","elev", "lai", "isi","elev", "lai", "isi","elev", "lai", "isi","elev", "lai", "isi")
+rsri_best <- c("RI","RI","RI","RI","RS","RS","RI","RS","RI","RI","RI","RS","RI","RS","RS","RI","RI","RS")
 slope_best
 ss_best
 dAIC_best
@@ -721,7 +636,7 @@ explan_best_phys <- filter(explan_best, trait_name_best %in% c("D.FvFm", "SPAD")
 daicplot<- ggplot(explan_best_phys, aes(x = trait_name_best, y = dAIC_best, group = factor(model_name_best))) +geom_bar(stat = "identity", position = position_dodge(), aes(fill = model_name_best)) +
 	theme(legend.position = "right") + 
 	theme(legend.title = element_blank()) +
-	scale_fill_discrete(breaks = c("elev","isi","lai","seed"), labels = c("Elevation", "ISI", "LAI", "Herbaceous Plant Abundance")) +
+	scale_fill_discrete(breaks = c("elev","isi","lai"), labels = c("Elevation", "ISI", "LAI")) +
 	scale_x_discrete(breaks = c("D.FvFm", "SPAD", "Leaf Thickness", "Height:Leaf Ratio", "Leaf Area", "Stem Volume"), labels = c("Photosynthetic\nEfficiency", "Chlorophyll\nContent", "Leaf Thickness", "Leaf:Height Ratio", "Leaf Area", "Stem Volume")) +
 	ylab(expression(paste(Delta,"AIC"[r]))) +
 	xlab("") +
@@ -733,7 +648,7 @@ r2plot <- ggplot(explan_best_phys, aes(x = trait_name_best, group = factor(model
 	geom_bar(stat = "identity", position = position_dodge(), aes(y = r2m_best, fill = model_name_best)) +
 	theme(legend.position = "right") + 
 	theme(legend.title = element_blank()) +
-	scale_fill_discrete(breaks = c("elev","isi","lai","seed"), labels = c("Elevation", "ISI", "LAI", "Herbaceous Plant Abundance")) +
+	scale_fill_discrete(breaks = c("elev","isi","lai"), labels = c("Elevation", "ISI", "LAI")) +
 	ylab(expression(paste("Variance Explained (",R[M]^2,")"))) +
 	scale_x_discrete(breaks = c("D.FvFm", "SPAD", "Leaf Thickness", "Height:Leaf Ratio", "Leaf Area", "Stem Volume"), labels = c("Photosynthetic\nEfficiency", "Chlorophyll\nContent", "Leaf Thickness", "Leaf:Height Ratio", "Leaf Area", "Stem Volume")) +
 	xlab("") + theme_bw() +theme(plot.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +theme(panel.border= element_blank())+theme(axis.line.x = element_line(color="black", size = 1),axis.line.y = element_line(color="black", size = 1)) +
@@ -743,11 +658,11 @@ daicplot
 r2plot
 
 # Effect size graphs for each trait single predictor model ----
-ggplot(data = explan_best) + 
+single_trait_eff_size_lmer_ggplot <- ggplot(data = explan_best) + 
 	geom_errorbar(aes(x = model_name_best, ymin = slope_best - ss_best, ymax = slope_best + ss_best, colour = factor(model_name_best))) +
 	geom_point(aes(x = model_name_best, y = slope_best, colour = factor(model_name_best)), size = 5) + 
 	geom_hline(yintercept = 0, linetype = 5) + 
-	scale_x_discrete("model_name_best", labels = c("elev" = "Elevation", "isi" = "ISI", "lai" = "LAI", "seed" = "Herbaceous Plants")) +
+	scale_x_discrete("model_name_best", labels = c("elev" = "Elevation", "isi" = "ISI", "lai" = "LAI")) +
 	xlab("Fixed Effects") + 
 	ylab("Fixed Effect Slope") +
 	theme(legend.position = "null") +
@@ -918,6 +833,7 @@ stargazer(stdz.mod_spad_aic_arr, summary = F)
 
 summary(stdz.mod_spad_lai_ri)
 pamer.fnc(stdz.mod_spad_lai_seed_isi)
+
 #Creating fixed effect slope graph with standard error bars
 stdz.mod_spad_fix_name <- c("LAI", "ISI", "Elevation", "Comp.seed")                      
 stdz.mod_spad_fix_slope <- c(-0.06607, NA,  NA, NA)
@@ -1292,6 +1208,7 @@ stargazer(stdz.mod_thick_aic_arr, summary = F)
 
 summary(stdz.mod_thick_lai_isi_elev)
 pamer.fnc(stdz.mod_thick_lai_isi_elev)
+
 #Creating fixed effect slope graph with standard error bars
 stdz.mod_thick_fix_name <- c("LAI", "ISI", "Elevation", "Comp.seed")                      
 stdz.mod_thick_fix_slope <- c(-0.13643, -0.02387, 0.29271, NA)
@@ -1355,7 +1272,7 @@ stdz.mod_all_fix <- stdz.mod_all_fix %>%
 																								"Height:Leaf Ratio", "Stem Volume")))
 
 # Plot it 
-ggplot(stdz.mod_all_fix) +
+multi_trait_eff_size_lmer_ggplot <- ggplot(stdz.mod_all_fix) +
 	labs(x = "Fixed Effect", y = "Fixed Effect Slope") +
 	geom_errorbar(aes(x = factor, ymin = slope - se, ymax = slope + se, colour = factor)) + 
 	geom_point(aes(x = factor, y = slope, colour = factor), size = 5) + 
@@ -1371,4 +1288,18 @@ ggplot(stdz.mod_all_fix) +
 # Todo
 	# Clean up code, can probs use lapply or loops for much of calculation
 	# Split analysis by upland and lowland species
+	# Remove herbaceous plant competition from multi-predictor analysis
+
+# Save all plots ----
+
+# Create list of plots using grep
+plot_pattern<-grep("_ggplot", names(.GlobalEnv), value=TRUE)
+ggplot_list<-do.call("list", mget(plot_pattern))
+
+# Compile
+mapply(ggsave, 
+			 file = paste0("img/", names(ggplot_list), ".pdf"), 
+			 plot = ggplot_list, 
+			 width = 30, height = 25, units = "cm")
+
 
