@@ -359,12 +359,12 @@ fvfm_slope <- seedlings_rem_na %>%
 				 trait = rep("D. Fv/Fm")) %>%
 	dplyr::select(-mod)
 
-spad_slope <- seedlings_rem_na %>%
+chl_slope <- seedlings_rem_na %>%
 	group_by(Species, hi_lo_species) %>%
-	do(mod = lm(SPAD.mean ~ Elevation, data = .)) %>%
+	do(mod = lm(chl ~ Elevation, data = .)) %>%
 	mutate(Slope = summary(mod)$coeff[2],
 				 SE = summary(mod)$coeff[, 2][2],
-				 trait = rep("SPAD")) %>%
+				 trait = rep("chl")) %>%
 	dplyr::select(-mod)
 
 leaf_area_slope <- seedlings_rem_na %>%
@@ -400,7 +400,7 @@ stemvol_slope <- seedlings_rem_na %>%
 	dplyr::select(-mod)
 
 lm_sp_slope <- rbind(fvfm_slope, 
-										 spad_slope, 
+										 chl_slope, 
 										 leaf_area_slope, 
 										 thick_slope,
 										 hl_ratio_slope, 
@@ -428,14 +428,14 @@ stdz.mod_fvfm_lai_rs <- standardize(lmer(D.FvFm ~ LAI.4.ring + (LAI.4.ring|Speci
 stdz.mod_fvfm_isi_ri <- standardize(lmer(D.FvFm ~ Comp.adult.log.metric + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 stdz.mod_fvfm_isi_rs <- standardize(lmer(D.FvFm ~ Comp.adult.log.metric + (Comp.adult.log.metric|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 
-stdz.mod_spad_elev_ri <- standardize(lmer(SPAD.mean ~ Elevation + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
-stdz.mod_spad_elev_rs <- standardize(lmer(SPAD.mean ~ Elevation + (Elevation|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
+stdz.mod_chl_elev_ri <- standardize(lmer(chl ~ Elevation + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
+stdz.mod_chl_elev_rs <- standardize(lmer(chl ~ Elevation + (Elevation|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 
-stdz.mod_spad_lai_ri <- standardize(lmer(SPAD.mean ~ LAI.4.ring + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
-stdz.mod_spad_lai_rs <- standardize(lmer(SPAD.mean ~ LAI.4.ring + (LAI.4.ring|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
+stdz.mod_chl_lai_ri <- standardize(lmer(chl ~ LAI.4.ring + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
+stdz.mod_chl_lai_rs <- standardize(lmer(chl ~ LAI.4.ring + (LAI.4.ring|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 
-stdz.mod_spad_isi_ri <- standardize(lmer(SPAD.mean ~ Comp.adult.log.metric + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
-stdz.mod_spad_isi_rs <- standardize(lmer(SPAD.mean ~ Comp.adult.log.metric + (Comp.adult.log.metric|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
+stdz.mod_chl_isi_ri <- standardize(lmer(chl ~ Comp.adult.log.metric + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
+stdz.mod_chl_isi_rs <- standardize(lmer(chl ~ Comp.adult.log.metric + (Comp.adult.log.metric|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 
 stdz.mod_thick_elev_ri <- standardize(lmer(Leaf.thick.mean.mm ~ Elevation + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 stdz.mod_thick_elev_rs <- standardize(lmer(Leaf.thick.mean.mm ~ Elevation + (Elevation|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
@@ -474,7 +474,7 @@ stdz.mod_stemvol_isi_ri <- standardize(lmer(Stem.volume.cm3 ~ Comp.adult.log.met
 stdz.mod_stemvol_isi_rs <- standardize(lmer(Stem.volume.cm3 ~ Comp.adult.log.metric + (Comp.adult.log.metric|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 
 stdz.mod_fvfm_null <- standardize(lmer(D.FvFm ~ (1|Species) + (1|Site), data=seedlings_rem_na), standardize.y = T)
-stdz.mod_spad_null <- standardize(lmer(SPAD.mean ~ (1|Species) + (1|Site), data=seedlings_rem_na), standardize.y = T)
+stdz.mod_chl_null <- standardize(lmer(chl ~ (1|Species) + (1|Site), data=seedlings_rem_na), standardize.y = T)
 stdz.mod_thick_null <- standardize(lmer(Leaf.thick.mean.mm ~ (1|Species) + (1|Site), data=seedlings_rem_na), standardize.y = T)
 stdz.mod_hlratio_null <- standardize(lmer(Height.leaf.ratio ~ (1|Species) + (1|Site), data=seedlings_rem_na), standardize.y = T)
 stdz.mod_area_null <- standardize(lmer(Leaf.area ~ (1|Species) + (1|Site), data=seedlings_rem_na), standardize.y = T)
@@ -482,9 +482,9 @@ stdz.mod_stemvol_null <- standardize(lmer(Stem.volume.cm3 ~ (1|Species) + (1|Sit
 AIC_ri <- c(AIC(stdz.mod_fvfm_elev_ri),
 						AIC(stdz.mod_fvfm_lai_ri),
 						AIC(stdz.mod_fvfm_isi_ri),
-						AIC(stdz.mod_spad_elev_ri),
-						AIC(stdz.mod_spad_lai_ri),
-						AIC(stdz.mod_spad_isi_ri),
+						AIC(stdz.mod_chl_elev_ri),
+						AIC(stdz.mod_chl_lai_ri),
+						AIC(stdz.mod_chl_isi_ri),
 						AIC(stdz.mod_thick_elev_ri),
 						AIC(stdz.mod_thick_lai_ri),
 						AIC(stdz.mod_thick_isi_ri),
@@ -501,9 +501,9 @@ AIC_ri <- c(AIC(stdz.mod_fvfm_elev_ri),
 AIC_rs <- c(AIC(stdz.mod_fvfm_elev_rs),
 						AIC(stdz.mod_fvfm_lai_rs),
 						AIC(stdz.mod_fvfm_isi_rs),
-						AIC(stdz.mod_spad_elev_rs),
-						AIC(stdz.mod_spad_lai_rs),
-						AIC(stdz.mod_spad_isi_rs),
+						AIC(stdz.mod_chl_elev_rs),
+						AIC(stdz.mod_chl_lai_rs),
+						AIC(stdz.mod_chl_isi_rs),
 						AIC(stdz.mod_thick_elev_rs),
 						AIC(stdz.mod_thick_lai_rs),
 						AIC(stdz.mod_thick_isi_rs),
@@ -522,9 +522,9 @@ AIC_ri - AIC_rs
 daic1 <-  AIC(stdz.mod_fvfm_null) - AIC(stdz.mod_fvfm_elev_ri) 
 daic2 <-  AIC(stdz.mod_fvfm_null) - AIC(stdz.mod_fvfm_lai_ri) 
 daic4 <-  AIC(stdz.mod_fvfm_null) - AIC(stdz.mod_fvfm_isi_ri) 
-daic5 <-  AIC(stdz.mod_spad_null) - AIC(stdz.mod_spad_elev_ri) 
-daic6 <-  AIC(stdz.mod_spad_null) - AIC(stdz.mod_spad_lai_ri) 
-daic8 <-  AIC(stdz.mod_spad_null) - AIC(stdz.mod_spad_isi_ri) 
+daic5 <-  AIC(stdz.mod_chl_null) - AIC(stdz.mod_chl_elev_ri) 
+daic6 <-  AIC(stdz.mod_chl_null) - AIC(stdz.mod_chl_lai_ri) 
+daic8 <-  AIC(stdz.mod_chl_null) - AIC(stdz.mod_chl_isi_ri) 
 daic9 <-  AIC(stdz.mod_thick_null) - AIC(stdz.mod_thick_elev_ri) 
 daic10 <-  AIC(stdz.mod_thick_null) - AIC(stdz.mod_thick_lai_rs) 
 daic12<-  AIC(stdz.mod_thick_null) -  AIC(stdz.mod_thick_isi_ri) 
@@ -542,9 +542,9 @@ daic24<-  AIC(stdz.mod_stemvol_null) - AIC(stdz.mod_stemvol_isi_rs)
 r1 <-   unname(r.squaredGLMM(stdz.mod_fvfm_elev_ri))
 r2 <-   unname(r.squaredGLMM(stdz.mod_fvfm_lai_ri))
 r4 <-   unname(r.squaredGLMM(stdz.mod_fvfm_isi_ri))
-r5 <-   unname(r.squaredGLMM(stdz.mod_spad_elev_rs))
-r6 <-   unname(r.squaredGLMM(stdz.mod_spad_lai_ri))
-r8 <-   unname(r.squaredGLMM(stdz.mod_spad_isi_ri))
+r5 <-   unname(r.squaredGLMM(stdz.mod_chl_elev_rs))
+r6 <-   unname(r.squaredGLMM(stdz.mod_chl_lai_ri))
+r8 <-   unname(r.squaredGLMM(stdz.mod_chl_isi_ri))
 r9 <-   unname(r.squaredGLMM(stdz.mod_thick_elev_ri))
 r10 <-   unname(r.squaredGLMM(stdz.mod_thick_lai_rs))
 r12<-   unname(r.squaredGLMM(stdz.mod_thick_isi_ri))
@@ -561,9 +561,9 @@ r24<-   unname(r.squaredGLMM(stdz.mod_stemvol_isi_rs))
 slope1 <-   unname(coef(summary(stdz.mod_fvfm_elev_ri)) [, "Estimate"])
 slope2 <-   unname(coef(summary(stdz.mod_fvfm_lai_ri)) [, "Estimate"])
 slope4 <-   unname(coef(summary(stdz.mod_fvfm_isi_ri)) [, "Estimate"])
-slope5 <-   unname(coef(summary(stdz.mod_spad_elev_ri)) [, "Estimate"])
-slope6 <-   unname(coef(summary(stdz.mod_spad_lai_ri)) [, "Estimate"])
-slope8 <-   unname(coef(summary(stdz.mod_spad_isi_ri)) [, "Estimate"])
+slope5 <-   unname(coef(summary(stdz.mod_chl_elev_ri)) [, "Estimate"])
+slope6 <-   unname(coef(summary(stdz.mod_chl_lai_ri)) [, "Estimate"])
+slope8 <-   unname(coef(summary(stdz.mod_chl_isi_ri)) [, "Estimate"])
 slope9 <-   unname(coef(summary(stdz.mod_thick_elev_ri)) [, "Estimate"])
 slope10 <-   unname(coef(summary(stdz.mod_thick_lai_rs)) [, "Estimate"])
 slope12<-   unname(coef(summary(stdz.mod_thick_isi_ri)) [, "Estimate"])
@@ -580,9 +580,9 @@ slope24<-   unname(coef(summary(stdz.mod_stemvol_isi_rs)) [, "Estimate"])
 ss1 <-   sqrt(diag(vcov(stdz.mod_fvfm_elev_ri)))
 ss2 <-   sqrt(diag(vcov(stdz.mod_fvfm_lai_ri)))
 ss4 <-   sqrt(diag(vcov(stdz.mod_fvfm_isi_ri)))
-ss5 <-   sqrt(diag(vcov(stdz.mod_spad_elev_ri)))
-ss6 <-   sqrt(diag(vcov(stdz.mod_spad_lai_ri)))
-ss8 <-   sqrt(diag(vcov(stdz.mod_spad_isi_ri)))
+ss5 <-   sqrt(diag(vcov(stdz.mod_chl_elev_ri)))
+ss6 <-   sqrt(diag(vcov(stdz.mod_chl_lai_ri)))
+ss8 <-   sqrt(diag(vcov(stdz.mod_chl_isi_ri)))
 ss9 <-   sqrt(diag(vcov(stdz.mod_thick_elev_ri)))
 ss10 <-   sqrt(diag(vcov(stdz.mod_thick_lai_rs)))
 ss12<-   sqrt(diag(vcov(stdz.mod_thick_isi_ri)))
@@ -615,7 +615,7 @@ stargazer(stdz.mod_fvfm_cov, summary = F)
 # Plot of dAIC, Slope and R2 for all best fit lmers 
 
 trait_name_best <- c("D.FvFm","D.FvFm","D.FvFm",
-										 "SPAD","SPAD","SPAD",
+										 "chl","chl","chl",
 										 "Leaf Thickness","Leaf Thickness","Leaf Thickness",
 										 "Height:Leaf Ratio", "Height:Leaf Ratio","Height:Leaf Ratio",
 										 "Leaf Area","Leaf Area","Leaf Area",
@@ -629,19 +629,19 @@ r2c_best
 explan_best <- data.frame(trait_name_best, model_name_best, slope_best, ss_best, dAIC_best, r2c_best, r2m_best)
 explan_best
 explan_best$trait_name_best <- factor(explan_best$trait_name_best, levels = explan_best$trait_name_best)
+explan_best_phys <- explan_best
 
-explan_best_phys <- filter(explan_best, trait_name_best %in% c("D.FvFm", "SPAD"))
+explan_best_phys <- filter(explan_best, trait_name_best %in% c("D.FvFm", "chl"))
 
 # dAIC
 daicplot<- ggplot(explan_best_phys, aes(x = trait_name_best, y = dAIC_best, group = factor(model_name_best))) +geom_bar(stat = "identity", position = position_dodge(), aes(fill = model_name_best)) +
 	theme(legend.position = "right") + 
 	theme(legend.title = element_blank()) +
 	scale_fill_discrete(breaks = c("elev","isi","lai"), labels = c("Elevation", "ISI", "LAI")) +
-	scale_x_discrete(breaks = c("D.FvFm", "SPAD", "Leaf Thickness", "Height:Leaf Ratio", "Leaf Area", "Stem Volume"), labels = c("Photosynthetic\nEfficiency", "Chlorophyll\nContent", "Leaf Thickness", "Leaf:Height Ratio", "Leaf Area", "Stem Volume")) +
+	scale_x_discrete(breaks = c("D.FvFm", "chl", "Leaf Thickness", "Height:Leaf Ratio", "Leaf Area", "Stem Volume"), labels = c("Photosynthetic\nEfficiency", "Chlorophyll\nContent", "Leaf Thickness", "Leaf:Height Ratio", "Leaf Area", "Stem Volume")) +
 	ylab(expression(paste(Delta,"AIC"[r]))) +
 	xlab("") +
-	geom_hline(aes(yintercept = 2), linetype = 5, colour = "red")  + theme_bw() +theme(plot.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +theme(panel.border= element_blank())+theme(axis.line.x = element_line(color="black", size = 1),axis.line.y = element_line(color="black", size = 1)) +
-	theme(axis.text = element_text(size = 25), axis.title = element_text(size = 25))
+	geom_hline(aes(yintercept = 2), linetype = 5, colour = "red")  + theme_bw() +theme(plot.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +theme(panel.border= element_blank())+theme(axis.line.x = element_line(color="black", size = 1),axis.line.y = element_line(color="black", size = 1)) 
 
 # R^2
 r2plot <- ggplot(explan_best_phys, aes(x = trait_name_best, group = factor(model_name_best)))  +
@@ -650,11 +650,10 @@ r2plot <- ggplot(explan_best_phys, aes(x = trait_name_best, group = factor(model
 	theme(legend.title = element_blank()) +
 	scale_fill_discrete(breaks = c("elev","isi","lai"), labels = c("Elevation", "ISI", "LAI")) +
 	ylab(expression(paste("Variance Explained (",R[M]^2,")"))) +
-	scale_x_discrete(breaks = c("D.FvFm", "SPAD", "Leaf Thickness", "Height:Leaf Ratio", "Leaf Area", "Stem Volume"), labels = c("Photosynthetic\nEfficiency", "Chlorophyll\nContent", "Leaf Thickness", "Leaf:Height Ratio", "Leaf Area", "Stem Volume")) +
-	xlab("") + theme_bw() +theme(plot.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +theme(panel.border= element_blank())+theme(axis.line.x = element_line(color="black", size = 1),axis.line.y = element_line(color="black", size = 1)) +
-	theme(axis.text = element_text(size = 25), axis.title = element_text(size = 25))
+	scale_x_discrete(breaks = c("D.FvFm", "chl", "Leaf Thickness", "Height:Leaf Ratio", "Leaf Area", "Stem Volume"), labels = c("Photosynthetic\nEfficiency", "Chlorophyll\nContent", "Leaf Thickness", "Leaf:Height Ratio", "Leaf Area", "Stem Volume")) +
+	xlab("") + theme_bw() +theme(plot.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +theme(panel.border= element_blank())+theme(axis.line.x = element_line(color="black", size = 1),axis.line.y = element_line(color="black", size = 1)) 
 
-daicplot
+daicplot 
 r2plot
 
 # Effect size graphs for each trait single predictor model ----
