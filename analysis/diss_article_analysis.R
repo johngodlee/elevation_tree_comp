@@ -82,7 +82,8 @@ seedlings_melt_traits <- melt(seedlings, id.vars=c("Individual.code",
 interac_trait_elev_ggplot <- ggplot(seedlings_melt_traits, aes(x=Elevation.code, y=value, colour=Species, group=Species)) + stat_summary(fun.y=mean, geom="point") +
 	stat_summary(fun.y=mean, geom="line") + 
 	scale_x_discrete(limits=c("Top","Middle","Bottom")) + 
-	facet_wrap(~variable, scales = "free")
+	facet_wrap(~variable, scales = "free") + 
+	theme_classic()
 
 # Plotting variation in plant traits across species ----
 
@@ -159,7 +160,9 @@ ranges_ggplot <- ggplot() +
 	geom_point(aes(x = species, y = range), shape = 15, size = 4, data = ranges) + 
 	geom_segment(aes(x = species, y = min, xend = species, yend = max), data = ranges_spread) + 
 	xlab("Species") + 
-	ylab("Elevation (m)")
+	ylab("Elevation (m)") + 
+	scale_colour_discrete(name = "Plot position") +
+	theme_classic() 
 
 
 # Variables vs Elevation Boxplots ----
@@ -192,10 +195,19 @@ env_elev_lm_scatter_ggplot <- ggplot(seedlings_melt_env, aes(x=Elevation, y=valu
 	geom_smooth(aes(fill = Species, colour = Species), method = lm, se = T) + 
 	facet_wrap(~variable, scales = "free")
 
-trait_elev_lm_scatter_ggplot <- ggplot(seedlings_melt_traits, aes(x=Elevation, y=value, colour = Species)) + 
-	geom_point() + 
+phys_trait_elev_lm_scatter_ggplot <- ggplot(filter(seedlings_melt_traits, variable %in% c("D.FvFm", "SPAD.mean")), 
+																							aes(x=Elevation, y=value)) + 
+	geom_point(aes(colour = Species)) + 
 	geom_smooth(aes(fill = Species, colour = Species), method = lm, se = T) + 
-	facet_wrap(~variable, scales = "free")
+	facet_wrap(~variable, scales = "free") + 
+	theme_classic()
+
+trait_elev_lm_scatter_ggplot <- ggplot(seedlings_melt_traits, 
+																			 aes(x=Elevation, y=value)) + 
+	geom_point(aes(colour = Species)) + 
+	geom_smooth(aes(fill = Species, colour = Species), method = lm, se = T) + 
+	facet_wrap(~variable, scales = "free") + 
+	theme_classic()
 
 # Competition radius  ----
 
@@ -258,7 +270,6 @@ rank_abund_ggplot <- ggplot() +
 	geom_point(data = filter(aberg_census_summ, myrcia == T), aes(x = id, y = n), colour = "#53C90E", alpha = 1, size = 5) +
 	geom_point(data = filter(aberg_census_summ, sampled == F), aes(x = id, y = n), colour = "black", alpha = 0.5, size = 1)
 	
-
 
 length(unique(aberg_census$genus_species))	
 
@@ -419,8 +430,8 @@ for(i in unique(lm_sp_slope$trait)) {
 # Comparing random intercept and random slope models - the standardize function has disappeared ----
 
 # Standardize by dividing by SE twice
-stdz.mod_fvfm_elev_ri <- standardize(lmer(D.FvFm ~ Elevation + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
-stdz.mod_fvfm_elev_rs <- standardize(lmer(D.FvFm ~ Elevation + (Elevation|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
+stdz.mod_fvfm_elev_ri <- standardize(lmer(D.FvFm ~ Elevation.code + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
+stdz.mod_fvfm_elev_rs <- standardize(lmer(D.FvFm ~ Elevation.code + (Elevation.code|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 
 stdz.mod_fvfm_lai_ri <- standardize(lmer(D.FvFm ~ LAI.4.ring + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 stdz.mod_fvfm_lai_rs <- standardize(lmer(D.FvFm ~ LAI.4.ring + (LAI.4.ring|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
@@ -428,8 +439,8 @@ stdz.mod_fvfm_lai_rs <- standardize(lmer(D.FvFm ~ LAI.4.ring + (LAI.4.ring|Speci
 stdz.mod_fvfm_isi_ri <- standardize(lmer(D.FvFm ~ Comp.adult.log.metric + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 stdz.mod_fvfm_isi_rs <- standardize(lmer(D.FvFm ~ Comp.adult.log.metric + (Comp.adult.log.metric|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 
-stdz.mod_chl_elev_ri <- standardize(lmer(chl ~ Elevation + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
-stdz.mod_chl_elev_rs <- standardize(lmer(chl ~ Elevation + (Elevation|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
+stdz.mod_chl_elev_ri <- standardize(lmer(chl ~ Elevation.code + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
+stdz.mod_chl_elev_rs <- standardize(lmer(chl ~ Elevation.code + (Elevation.code|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 
 stdz.mod_chl_lai_ri <- standardize(lmer(chl ~ LAI.4.ring + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 stdz.mod_chl_lai_rs <- standardize(lmer(chl ~ LAI.4.ring + (LAI.4.ring|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
@@ -437,8 +448,8 @@ stdz.mod_chl_lai_rs <- standardize(lmer(chl ~ LAI.4.ring + (LAI.4.ring|Species) 
 stdz.mod_chl_isi_ri <- standardize(lmer(chl ~ Comp.adult.log.metric + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 stdz.mod_chl_isi_rs <- standardize(lmer(chl ~ Comp.adult.log.metric + (Comp.adult.log.metric|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 
-stdz.mod_thick_elev_ri <- standardize(lmer(Leaf.thick.mean.mm ~ Elevation + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
-stdz.mod_thick_elev_rs <- standardize(lmer(Leaf.thick.mean.mm ~ Elevation + (Elevation|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
+stdz.mod_thick_elev_ri <- standardize(lmer(Leaf.thick.mean.mm ~ Elevation.code + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
+stdz.mod_thick_elev_rs <- standardize(lmer(Leaf.thick.mean.mm ~ Elevation.code + (Elevation.code|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 
 stdz.mod_thick_lai_ri <- standardize(lmer(Leaf.thick.mean.mm ~ LAI.4.ring + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 stdz.mod_thick_lai_rs <- standardize(lmer(Leaf.thick.mean.mm ~ LAI.4.ring + (LAI.4.ring|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
@@ -446,8 +457,8 @@ stdz.mod_thick_lai_rs <- standardize(lmer(Leaf.thick.mean.mm ~ LAI.4.ring + (LAI
 stdz.mod_thick_isi_ri <- standardize(lmer(Leaf.thick.mean.mm ~ Comp.adult.log.metric + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 stdz.mod_thick_isi_rs <- standardize(lmer(Leaf.thick.mean.mm ~ Comp.adult.log.metric + (Comp.adult.log.metric|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 
-stdz.mod_hlratio_elev_ri <- standardize(lmer(Height.leaf.ratio ~ Elevation + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
-stdz.mod_hlratio_elev_rs <- standardize(lmer(Height.leaf.ratio ~ Elevation + (Elevation|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
+stdz.mod_hlratio_elev_ri <- standardize(lmer(Height.leaf.ratio ~ Elevation.code + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
+stdz.mod_hlratio_elev_rs <- standardize(lmer(Height.leaf.ratio ~ Elevation.code + (Elevation.code|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 
 stdz.mod_hlratio_lai_ri <- standardize(lmer(Height.leaf.ratio ~ LAI.4.ring + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 stdz.mod_hlratio_lai_rs <- standardize(lmer(Height.leaf.ratio ~ LAI.4.ring + (LAI.4.ring|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
@@ -455,8 +466,8 @@ stdz.mod_hlratio_lai_rs <- standardize(lmer(Height.leaf.ratio ~ LAI.4.ring + (LA
 stdz.mod_hlratio_isi_ri <- standardize(lmer(Height.leaf.ratio ~ Comp.adult.log.metric + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 stdz.mod_hlratio_isi_rs <- standardize(lmer(Height.leaf.ratio ~ Comp.adult.log.metric + (Comp.adult.log.metric|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 
-stdz.mod_area_elev_ri <- standardize(lmer(Leaf.area ~ Elevation + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
-stdz.mod_area_elev_rs <- standardize(lmer(Leaf.area ~ Elevation + (Elevation|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
+stdz.mod_area_elev_ri <- standardize(lmer(Leaf.area ~ Elevation.code + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
+stdz.mod_area_elev_rs <- standardize(lmer(Leaf.area ~ Elevation.code + (Elevation.code|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 
 stdz.mod_area_lai_ri <- standardize(lmer(Leaf.area ~ LAI.4.ring + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 stdz.mod_area_lai_rs <- standardize(lmer(Leaf.area ~ LAI.4.ring + (LAI.4.ring|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
@@ -464,8 +475,8 @@ stdz.mod_area_lai_rs <- standardize(lmer(Leaf.area ~ LAI.4.ring + (LAI.4.ring|Sp
 stdz.mod_area_isi_ri <- standardize(lmer(Leaf.area ~ Comp.adult.log.metric + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 stdz.mod_area_isi_rs <- standardize(lmer(Leaf.area ~ Comp.adult.log.metric + (Comp.adult.log.metric|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 
-stdz.mod_stemvol_elev_ri <- standardize(lmer(Stem.volume.cm3 ~ Elevation + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
-stdz.mod_stemvol_elev_rs <- standardize(lmer(Stem.volume.cm3 ~ Elevation + (Elevation|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
+stdz.mod_stemvol_elev_ri <- standardize(lmer(Stem.volume.cm3 ~ Elevation.code + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
+stdz.mod_stemvol_elev_rs <- standardize(lmer(Stem.volume.cm3 ~ Elevation.code + (Elevation.code|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 
 stdz.mod_stemvol_lai_ri <- standardize(lmer(Stem.volume.cm3 ~ LAI.4.ring + (1|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 stdz.mod_stemvol_lai_rs <- standardize(lmer(Stem.volume.cm3 ~ LAI.4.ring + (LAI.4.ring|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
@@ -631,54 +642,79 @@ explan_best
 explan_best$trait_name_best <- factor(explan_best$trait_name_best, levels = explan_best$trait_name_best)
 explan_best_phys <- explan_best
 
-explan_best_phys <- filter(explan_best, trait_name_best %in% c("D.FvFm", "chl"))
+#explan_best_phys <- filter(explan_best, trait_name_best %in% c("D.FvFm", "chl"))
 
 # dAIC
-daicplot<- ggplot(explan_best_phys, aes(x = trait_name_best, y = dAIC_best, group = factor(model_name_best))) +geom_bar(stat = "identity", position = position_dodge(), aes(fill = model_name_best)) +
+daicplot_ggplot<- ggplot(explan_best_phys, aes(x = trait_name_best, y = dAIC_best, group = factor(model_name_best))) + 
+	geom_bar(stat = "identity", position = position_dodge(), aes(fill = model_name_best), colour = "black") +
 	theme(legend.position = "right") + 
 	theme(legend.title = element_blank()) +
-	scale_fill_discrete(breaks = c("elev","isi","lai"), labels = c("Elevation", "ISI", "LAI")) +
+	scale_fill_discrete(breaks = c("elev","isi","lai"), labels = c("Elevation.code", "ISI", "LAI")) +
 	scale_x_discrete(breaks = c("D.FvFm", "chl", "Leaf Thickness", "Height:Leaf Ratio", "Leaf Area", "Stem Volume"), labels = c("Photosynthetic\nEfficiency", "Chlorophyll\nContent", "Leaf Thickness", "Leaf:Height Ratio", "Leaf Area", "Stem Volume")) +
 	ylab(expression(paste(Delta,"AIC"[r]))) +
 	xlab("") +
-	geom_hline(aes(yintercept = 2), linetype = 5, colour = "red")  + theme_bw() +theme(plot.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +theme(panel.border= element_blank())+theme(axis.line.x = element_line(color="black", size = 1),axis.line.y = element_line(color="black", size = 1)) 
+	geom_hline(aes(yintercept = 2), linetype = 5, colour = "red")  + 
+	theme_bw() +
+	theme(plot.background = element_blank(), 
+				panel.grid.major = element_blank(), 
+				panel.grid.minor = element_blank()) + 
+	theme(panel.border= element_blank()) + 
+	theme(axis.line.x = element_line(color="black", size = 1), 
+				axis.line.y = element_line(color="black", size = 1)) +
+	guides(fill=guide_legend(title="Fixed effect"))
+
 
 # R^2
-r2plot <- ggplot(explan_best_phys, aes(x = trait_name_best, group = factor(model_name_best)))  +
-	geom_bar(stat = "identity", position = position_dodge(), aes(y = r2m_best, fill = model_name_best)) +
+r2plot_ggplot <- ggplot(explan_best_phys, aes(x = trait_name_best, group = factor(model_name_best)))  +
+	geom_bar(stat = "identity", position = position_dodge(),
+					 aes(y = r2c_best, fill = model_name_best), colour = "black", alpha = 0.2) +
+	geom_bar(stat = "identity", position = position_dodge(),
+					 aes(y = r2m_best, fill = model_name_best), colour = "black") +
 	theme(legend.position = "right") + 
 	theme(legend.title = element_blank()) +
-	scale_fill_discrete(breaks = c("elev","isi","lai"), labels = c("Elevation", "ISI", "LAI")) +
-	ylab(expression(paste("Variance Explained (",R[M]^2,")"))) +
-	scale_x_discrete(breaks = c("D.FvFm", "chl", "Leaf Thickness", "Height:Leaf Ratio", "Leaf Area", "Stem Volume"), labels = c("Photosynthetic\nEfficiency", "Chlorophyll\nContent", "Leaf Thickness", "Leaf:Height Ratio", "Leaf Area", "Stem Volume")) +
-	xlab("") + theme_bw() +theme(plot.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +theme(panel.border= element_blank())+theme(axis.line.x = element_line(color="black", size = 1),axis.line.y = element_line(color="black", size = 1)) 
+	scale_fill_discrete(breaks = c("elev","isi","lai"), labels = c("Elevation.code", "ISI", "LAI")) +
+	ylab(expression(paste("Variance explained by fixed effect (",R[C]^2,")"))) +
+	scale_x_discrete(breaks = c("D.FvFm", "chl", "Leaf Thickness", "Height:Leaf Ratio", "Leaf Area", "Stem Volume"), 
+									 labels = c("Photosynthetic\nEfficiency", "Chlorophyll\nContent", "Leaf Thickness", "Leaf:Height Ratio", "Leaf Area", "Stem Volume")) +
+	xlab("") + 
+	theme_bw() +
+	theme(plot.background = element_blank(), 
+				panel.grid.major = element_blank(), 
+				panel.grid.minor = element_blank()) + 
+	theme(panel.border= element_blank())+ 
+	theme(axis.line.x = element_line(color="black", size = 1),
+				axis.line.y = element_line(color="black", size = 1))  + 
+	guides(fill=guide_legend(title="Fixed effect"))
 
-daicplot 
-r2plot
+
 
 # Effect size graphs for each trait single predictor model ----
 single_trait_eff_size_lmer_ggplot <- ggplot(data = explan_best) + 
 	geom_errorbar(aes(x = model_name_best, ymin = slope_best - ss_best, ymax = slope_best + ss_best, colour = factor(model_name_best))) +
 	geom_point(aes(x = model_name_best, y = slope_best, colour = factor(model_name_best)), size = 5) + 
 	geom_hline(yintercept = 0, linetype = 5) + 
-	scale_x_discrete("model_name_best", labels = c("elev" = "Elevation", "isi" = "ISI", "lai" = "LAI")) +
+	scale_x_discrete("model_name_best", labels = c("elev" = "Elevation.code", "isi" = "ISI", "lai" = "LAI")) +
 	xlab("Fixed Effects") + 
 	ylab("Fixed Effect Slope") +
+	theme_bw() + 
+	theme(strip.background =element_rect(fill=NA))+
+	theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + 
 	theme(legend.position = "null") +
 	facet_wrap(~trait_name_best, scales = "fixed")
-	
+
+
 # Combined predictor linear mixed models ----
 
 # D.FvFm
-stdz.mod_fvfm_full <- standardize(lmer(D.FvFm ~ LAI.4.ring + Comp.seed.total + Comp.adult.log.metric + Elevation + (1|Species) + (1|Site) , data=seedlings_rem_na,  REML = F), standardize.y = T)
+stdz.mod_fvfm_full <- standardize(lmer(D.FvFm ~ LAI.4.ring + Comp.seed.total + Comp.adult.log.metric + Elevation.code + (1|Species) + (1|Site) , data=seedlings_rem_na,  REML = F), standardize.y = T)
 
 stdz.mod_fvfm_lai_seed_isi <- standardize(lmer(D.FvFm ~ LAI.4.ring + Comp.seed.total + Comp.adult.log.metric + (1|Species) + (1|Site) , data=seedlings_rem_na,  REML = F), standardize.y = T)
 
-stdz.mod_fvfm_lai_seed_elev <- standardize(lmer(D.FvFm ~ LAI.4.ring + Comp.seed.total + Elevation + (1|Species) + (1|Site) , data=seedlings_rem_na,  REML = F), standardize.y = T)
+stdz.mod_fvfm_lai_seed_elev <- standardize(lmer(D.FvFm ~ LAI.4.ring + Comp.seed.total + Elevation.code + (1|Species) + (1|Site) , data=seedlings_rem_na,  REML = F), standardize.y = T)
 
-stdz.mod_fvfm_lai_isi_elev <- standardize(lmer(D.FvFm ~ LAI.4.ring + Comp.adult.log.metric + Elevation + (1|Species) + (1|Site), data=seedlings_rem_na,  REML = F), standardize.y = T)
+stdz.mod_fvfm_lai_isi_elev <- standardize(lmer(D.FvFm ~ LAI.4.ring + Comp.adult.log.metric + Elevation.code + (1|Species) + (1|Site), data=seedlings_rem_na,  REML = F), standardize.y = T)
 
-stdz.mod_fvfm_seed_isi_elev <- standardize(lmer(D.FvFm ~ Comp.seed.total + Comp.adult.log.metric + Elevation + (1|Species) + (1|Site), data=seedlings_rem_na,  REML = F), standardize.y = T)
+stdz.mod_fvfm_seed_isi_elev <- standardize(lmer(D.FvFm ~ Comp.seed.total + Comp.adult.log.metric + Elevation.code + (1|Species) + (1|Site), data=seedlings_rem_na,  REML = F), standardize.y = T)
 
 stdz.mod_fvfm_rand <- standardize(lmer(D.FvFm ~ (1|Species) + (1|Site), data=seedlings_rem_na, REML = F), standardize.y = T)
 
@@ -744,28 +780,28 @@ stargazer(stdz.mod_fvfm_aic_arr, summary = F)
 summary(stdz.mod_fvfm_lai_isi_elev)
 pamer.fnc(stdz.mod_fvfm_lai_isi_elev)
 # Creating fixed effect slope graph with standard error bars
-stdz.mod_fvfm_fix_name <- c("LAI", "ISI", "Elevation", "Comp.seed")                      
+stdz.mod_fvfm_fix_name <- c("LAI", "ISI", "Elevation.code", "Comp.seed")                      
 stdz.mod_fvfm_fix_slope <- c(0.11454, -0.12582, 0.36059, NA)
 stdz.mod_fvfm_fix_se <- c(0.06910, 0.06756, 0.10562, NA)
 stdz.mod_fvfm_fix_trait <- rep("fvfm", 4)
 stdz.mod_fvfm_fix <- data.frame("factor" = stdz.mod_fvfm_fix_name, "slope" = stdz.mod_fvfm_fix_slope, "se" = stdz.mod_fvfm_fix_se, "trait" = stdz.mod_fvfm_fix_trait)
 stdz.mod_fvfm_fix
-stdz.mod_fvfm_sort <- c("Elevation", "ISI", "LAI", "Comp.seed")
+stdz.mod_fvfm_sort <- c("Elevation.code", "ISI", "LAI", "Comp.seed")
 stdz.mod_fvfm_fix <- stdz.mod_fvfm_fix %>% slice(match(stdz.mod_fvfm_sort, stdz.mod_fvfm_fix_name))
 stdz.mod_fvfm_fix$stdz.mod_fvfm_fix_name <- factor(stdz.mod_fvfm_fix$stdz.mod_fvfm_fix_name, levels = stdz.mod_fvfm_fix$stdz.mod_fvfm_fix_name)
 stdz.mod_fvfm_fix
 
 # SPAD, working out the error structure
 #SPAD.mean, Comparison of models, 'ri' was mostly more parsimonious (lower AIC) so using that throughout the models in this section
-stdz.mod_spad_full <- standardize(lmer(SPAD.mean ~ LAI.4.ring + Comp.seed.total + Comp.adult.log.metric + Elevation + (1|Species) + (1|Site) , data=seedlings_rem_na,  REML = F), standardize.y = T)
+stdz.mod_spad_full <- standardize(lmer(SPAD.mean ~ LAI.4.ring + Comp.seed.total + Comp.adult.log.metric + Elevation.code + (1|Species) + (1|Site) , data=seedlings_rem_na,  REML = F), standardize.y = T)
 
 stdz.mod_spad_lai_seed_isi <- standardize(lmer(SPAD.mean ~ LAI.4.ring + Comp.seed.total + Comp.adult.log.metric + (1|Species) + (1|Site) , data=seedlings_rem_na,  REML = F), standardize.y = T)
 
-stdz.mod_spad_lai_seed_elev <- standardize(lmer(SPAD.mean ~ LAI.4.ring + Comp.seed.total + Elevation + (1|Species) + (1|Site) , data=seedlings_rem_na,  REML = F), standardize.y = T)
+stdz.mod_spad_lai_seed_elev <- standardize(lmer(SPAD.mean ~ LAI.4.ring + Comp.seed.total + Elevation.code + (1|Species) + (1|Site) , data=seedlings_rem_na,  REML = F), standardize.y = T)
 
-stdz.mod_spad_lai_isi_elev <- standardize(lmer(SPAD.mean ~ LAI.4.ring + Comp.adult.log.metric + Elevation + (1|Species) + (1|Site), data=seedlings_rem_na,  REML = F), standardize.y = T)
+stdz.mod_spad_lai_isi_elev <- standardize(lmer(SPAD.mean ~ LAI.4.ring + Comp.adult.log.metric + Elevation.code + (1|Species) + (1|Site), data=seedlings_rem_na,  REML = F), standardize.y = T)
 
-stdz.mod_spad_seed_isi_elev <- standardize(lmer(SPAD.mean ~ Comp.seed.total + Comp.adult.log.metric + Elevation + (1|Species) + (1|Site), data=seedlings_rem_na,  REML = F), standardize.y = T)
+stdz.mod_spad_seed_isi_elev <- standardize(lmer(SPAD.mean ~ Comp.seed.total + Comp.adult.log.metric + Elevation.code + (1|Species) + (1|Site), data=seedlings_rem_na,  REML = F), standardize.y = T)
 
 stdz.mod_spad_rand <- standardize(lmer(SPAD.mean ~ (1|Species) + (1|Site), data=seedlings_rem_na, REML = F), standardize.y = T)
 
@@ -834,29 +870,29 @@ summary(stdz.mod_spad_lai_ri)
 pamer.fnc(stdz.mod_spad_lai_seed_isi)
 
 #Creating fixed effect slope graph with standard error bars
-stdz.mod_spad_fix_name <- c("LAI", "ISI", "Elevation", "Comp.seed")                      
+stdz.mod_spad_fix_name <- c("LAI", "ISI", "Elevation.code", "Comp.seed")                      
 stdz.mod_spad_fix_slope <- c(-0.06607, NA,  NA, NA)
 stdz.mod_spad_fix_se <- c(0.06725,NA , NA, NA)
 stdz.mod_spad_fix_trait <- rep("spad", 4)
 stdz.mod_spad_fix <- data.frame("factor" = stdz.mod_spad_fix_name, "slope" = stdz.mod_spad_fix_slope, "se" = stdz.mod_spad_fix_se, "trait" = stdz.mod_spad_fix_trait)
 stdz.mod_spad_fix
-stdz.mod_spad_sort <- c("Elevation", "ISI", "LAI", "Comp.seed")
+stdz.mod_spad_sort <- c("Elevation.code", "ISI", "LAI", "Comp.seed")
 stdz.mod_spad_fix <- stdz.mod_spad_fix %>% slice(match(stdz.mod_spad_sort, stdz.mod_spad_fix_name))
 stdz.mod_spad_fix$stdz.mod_spad_fix_name <- factor(stdz.mod_spad_fix$stdz.mod_spad_fix_name, levels = stdz.mod_spad_fix$stdz.mod_spad_fix_name)
 stdz.mod_spad_fix
 
 #Height.leaf.ratio
-stdz.mod_hlratio_full <- standardize(lmer(Height.leaf.ratio ~ LAI.4.ring + Comp.seed.total + Comp.adult.log.metric + Elevation + (1|Species) + (1|Site) , data=seedlings_rem_na,  REML = F), standardize.y = T)
+stdz.mod_hlratio_full <- standardize(lmer(Height.leaf.ratio ~ LAI.4.ring + Comp.seed.total + Comp.adult.log.metric + Elevation.code + (1|Species) + (1|Site) , data=seedlings_rem_na,  REML = F), standardize.y = T)
 
-stdz.mod_hlratio_int <- standardize(lmer(Height.leaf.ratio ~ LAI.4.ring + Comp.seed.total + Comp.adult.log.metric + Elevation + (Elevation + Comp.seed.total|Species) + (1|Site) , data=seedlings_rem_na,  REML = F), standardize.y = T)
+stdz.mod_hlratio_int <- standardize(lmer(Height.leaf.ratio ~ LAI.4.ring + Comp.seed.total + Comp.adult.log.metric + Elevation.code + (Elevation.code + Comp.seed.total|Species) + (1|Site) , data=seedlings_rem_na,  REML = F), standardize.y = T)
 
 stdz.mod_hlratio_lai_seed_isi <- standardize(lmer(Height.leaf.ratio ~ LAI.4.ring + Comp.seed.total + Comp.adult.log.metric + (1|Species) + (1|Site) , data=seedlings_rem_na,  REML = F), standardize.y = T)
 
-stdz.mod_hlratio_lai_seed_elev <- standardize(lmer(Height.leaf.ratio ~ LAI.4.ring + Comp.seed.total + Elevation + (1|Species) + (1|Site) , data=seedlings_rem_na,  REML = F), standardize.y = T)
+stdz.mod_hlratio_lai_seed_elev <- standardize(lmer(Height.leaf.ratio ~ LAI.4.ring + Comp.seed.total + Elevation.code + (1|Species) + (1|Site) , data=seedlings_rem_na,  REML = F), standardize.y = T)
 
-stdz.mod_hlratio_lai_isi_elev <- standardize(lmer(Height.leaf.ratio ~ LAI.4.ring + Comp.adult.log.metric + Elevation + (1|Species) + (1|Site), data=seedlings_rem_na,  REML = F), standardize.y = T)
+stdz.mod_hlratio_lai_isi_elev <- standardize(lmer(Height.leaf.ratio ~ LAI.4.ring + Comp.adult.log.metric + Elevation.code + (1|Species) + (1|Site), data=seedlings_rem_na,  REML = F), standardize.y = T)
 
-stdz.mod_hlratio_seed_isi_elev <- standardize(lmer(Height.leaf.ratio ~ Comp.seed.total + Comp.adult.log.metric + Elevation + (1|Species) + (1|Site), data=seedlings_rem_na,  REML = F), standardize.y = T)
+stdz.mod_hlratio_seed_isi_elev <- standardize(lmer(Height.leaf.ratio ~ Comp.seed.total + Comp.adult.log.metric + Elevation.code + (1|Species) + (1|Site), data=seedlings_rem_na,  REML = F), standardize.y = T)
 
 stdz.mod_hlratio_rand <- standardize(lmer(Height.leaf.ratio ~ (1|Species) + (1|Site), data=seedlings_rem_na, REML = F), standardize.y = T)
 
@@ -928,29 +964,29 @@ summary(stdz.mod_hlratio_seed_isi_elev)
 
 summary(stdz.mod_hlratio_int)
 #Creating fixed effect slope graph with standard error bars
-stdz.mod_hlratio_fix_name <- c("LAI", "ISI", "Elevation", "Comp.seed")                      
+stdz.mod_hlratio_fix_name <- c("LAI", "ISI", "Elevation.code", "Comp.seed")                      
 stdz.mod_hlratio_fix_slope <- c(-0.10258, 0.01219, -0.14145 , 0.02634)
 stdz.mod_hlratio_fix_se <- c(0.05014, 0.04830, 0.12770, 0.08709)
 stdz.mod_hlratio_fix_trait <- rep("hlratio", 4)
 stdz.mod_hlratio_fix <- data.frame("factor" = stdz.mod_hlratio_fix_name, "slope" = stdz.mod_hlratio_fix_slope, "se" = stdz.mod_hlratio_fix_se, "trait" = stdz.mod_hlratio_fix_trait)
 stdz.mod_hlratio_fix
-stdz.mod_hlratio_sort <- c("Elevation", "ISI", "LAI", "Comp.seed")
+stdz.mod_hlratio_sort <- c("Elevation.code", "ISI", "LAI", "Comp.seed")
 stdz.mod_hlratio_fix <- stdz.mod_hlratio_fix %>% slice(match(stdz.mod_hlratio_sort, stdz.mod_hlratio_fix_name))
 stdz.mod_hlratio_fix$stdz.mod_hlratio_fix_name <- factor(stdz.mod_hlratio_fix$stdz.mod_hlratio_fix_name, levels = stdz.mod_hlratio_fix$stdz.mod_hlratio_fix_name)
 stdz.mod_hlratio_fix
 
 #Leaf.area
-stdz.mod_area_full <- standardize(lmer(Leaf.area ~ LAI.4.ring + Comp.seed.total + Comp.adult.log.metric + Elevation + (1|Species) + (1|Site) , data=seedlings_rem_na,  REML = F), standardize.y = T)
+stdz.mod_area_full <- standardize(lmer(Leaf.area ~ LAI.4.ring + Comp.seed.total + Comp.adult.log.metric + Elevation.code + (1|Species) + (1|Site) , data=seedlings_rem_na,  REML = F), standardize.y = T)
 
-stdz.mod_area_int <- standardize(lmer(Leaf.area ~ LAI.4.ring + Comp.seed.total + Comp.adult.log.metric + Elevation + (1 + LAI.4.ring + Comp.seed.total + Elevation|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
+stdz.mod_area_int <- standardize(lmer(Leaf.area ~ LAI.4.ring + Comp.seed.total + Comp.adult.log.metric + Elevation.code + (1 + LAI.4.ring + Comp.seed.total + Elevation.code|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 
 stdz.mod_area_lai_seed_isi <- standardize(lmer(Leaf.area ~ LAI.4.ring + Comp.seed.total + Comp.adult.log.metric + (1|Species) + (1|Site) , data=seedlings_rem_na,  REML = F), standardize.y = T)
 
-stdz.mod_area_lai_seed_elev <- standardize(lmer(Leaf.area ~ LAI.4.ring + Comp.seed.total + Elevation + (1|Species) + (1|Site) , data=seedlings_rem_na,  REML = F), standardize.y = T)
+stdz.mod_area_lai_seed_elev <- standardize(lmer(Leaf.area ~ LAI.4.ring + Comp.seed.total + Elevation.code + (1|Species) + (1|Site) , data=seedlings_rem_na,  REML = F), standardize.y = T)
 
-stdz.mod_area_lai_isi_elev <- standardize(lmer(Leaf.area ~ LAI.4.ring + Comp.adult.log.metric + Elevation + (1|Species) + (1|Site), data=seedlings_rem_na,  REML = F), standardize.y = T)
+stdz.mod_area_lai_isi_elev <- standardize(lmer(Leaf.area ~ LAI.4.ring + Comp.adult.log.metric + Elevation.code + (1|Species) + (1|Site), data=seedlings_rem_na,  REML = F), standardize.y = T)
 
-stdz.mod_area_seed_isi_elev <- standardize(lmer(Leaf.area ~ Comp.seed.total + Comp.adult.log.metric + Elevation + (1|Species) + (1|Site), data=seedlings_rem_na,  REML = F), standardize.y = T)
+stdz.mod_area_seed_isi_elev <- standardize(lmer(Leaf.area ~ Comp.seed.total + Comp.adult.log.metric + Elevation.code + (1|Species) + (1|Site), data=seedlings_rem_na,  REML = F), standardize.y = T)
 
 stdz.mod_area_rand <- standardize(lmer(Leaf.area ~ (1|Species) + (1|Site), data=seedlings_rem_na, REML = F),standardize.y = T)
 
@@ -1022,28 +1058,28 @@ stargazer(stdz.mod_area_aic_arr, summary = F)
 summary(stdz.mod_area_int)
 pamer.fnc(stdz.mod_area_int)
 #Creating fixed effect slope graph with standard error bars
-stdz.mod_area_fix_name <- c("LAI", "ISI", "Elevation", "Comp.seed")                      
+stdz.mod_area_fix_name <- c("LAI", "ISI", "Elevation.code", "Comp.seed")                      
 stdz.mod_area_fix_slope <- c(-0.06569, -0.01211, -0.37745, 0.10623)
 stdz.mod_area_fix_se <- c(0.08959, 0.05213, 0.35761, 0.10254)
 stdz.mod_area_fix_trait <- rep("area", 4)
 stdz.mod_area_fix <- data.frame("factor" = stdz.mod_area_fix_name, "slope" = stdz.mod_area_fix_slope, "se" = stdz.mod_area_fix_se, "trait" = stdz.mod_area_fix_trait)
 stdz.mod_area_fix
-stdz.mod_area_sort <- c("Elevation", "ISI", "LAI", "Comp.seed")
+stdz.mod_area_sort <- c("Elevation.code", "ISI", "LAI", "Comp.seed")
 stdz.mod_area_fix <- stdz.mod_area_fix %>% slice(match(stdz.mod_area_sort, stdz.mod_area_fix_name))
 stdz.mod_area_fix$stdz.mod_area_fix_name <- factor(stdz.mod_area_fix$stdz.mod_area_fix_name, levels = stdz.mod_area_fix$stdz.mod_area_fix_name)
 
 #Stem Volume
-stdz.mod_stemvol_full <- standardize(lmer(Stem.volume.cm3 ~ LAI.4.ring + Comp.seed.total + Comp.adult.log.metric + Elevation + (1|Species) + (1|Site) , data=seedlings_rem_na,  REML = F), standardize.y = T)
+stdz.mod_stemvol_full <- standardize(lmer(Stem.volume.cm3 ~ LAI.4.ring + Comp.seed.total + Comp.adult.log.metric + Elevation.code + (1|Species) + (1|Site) , data=seedlings_rem_na,  REML = F), standardize.y = T)
 
-stdz.mod_stemvol_int <- standardize(lmer(Stem.volume.cm3 ~ LAI.4.ring + Comp.seed.total + Comp.adult.log.metric + Elevation + (1 + Comp.adult.log.metric|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
+stdz.mod_stemvol_int <- standardize(lmer(Stem.volume.cm3 ~ LAI.4.ring + Comp.seed.total + Comp.adult.log.metric + Elevation.code + (1 + Comp.adult.log.metric|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 
 stdz.mod_stemvol_lai_seed_isi <- standardize(lmer(Stem.volume.cm3 ~ LAI.4.ring + Comp.seed.total + Comp.adult.log.metric + (1|Species) + (1|Site) , data=seedlings_rem_na,  REML = F), standardize.y = T)
 
-stdz.mod_stemvol_lai_seed_elev <- standardize(lmer(Stem.volume.cm3 ~ LAI.4.ring + Comp.seed.total + Elevation + (1|Species) + (1|Site) , data=seedlings_rem_na,  REML = F), standardize.y = T)
+stdz.mod_stemvol_lai_seed_elev <- standardize(lmer(Stem.volume.cm3 ~ LAI.4.ring + Comp.seed.total + Elevation.code + (1|Species) + (1|Site) , data=seedlings_rem_na,  REML = F), standardize.y = T)
 
-stdz.mod_stemvol_lai_isi_elev <- standardize(lmer(Stem.volume.cm3 ~ LAI.4.ring + Comp.adult.log.metric + Elevation + (1|Species) + (1|Site), data=seedlings_rem_na,  REML = F), standardize.y = T)
+stdz.mod_stemvol_lai_isi_elev <- standardize(lmer(Stem.volume.cm3 ~ LAI.4.ring + Comp.adult.log.metric + Elevation.code + (1|Species) + (1|Site), data=seedlings_rem_na,  REML = F), standardize.y = T)
 
-stdz.mod_stemvol_seed_isi_elev <- standardize(lmer(Stem.volume.cm3 ~ Comp.seed.total + Comp.adult.log.metric + Elevation + (1|Species) + (1|Site), data=seedlings_rem_na,  REML = F), standardize.y = T)
+stdz.mod_stemvol_seed_isi_elev <- standardize(lmer(Stem.volume.cm3 ~ Comp.seed.total + Comp.adult.log.metric + Elevation.code + (1|Species) + (1|Site), data=seedlings_rem_na,  REML = F), standardize.y = T)
 
 stdz.mod_stemvol_rand <- standardize(lmer(Stem.volume.cm3 ~ (1|Species) + (1|Site), data=seedlings_rem_na, REML = F),standardize.y = T)
 
@@ -1115,29 +1151,29 @@ stargazer(stdz.mod_stemvol_aic_arr, summary = F)
 summary(stdz.mod_stemvol_int)
 pamer.fnc(stdz.mod_stemvol_int)
 #Creating fixed effect slope graph with standard error bars
-stdz.mod_stemvol_fix_name <- c("LAI", "ISI", "Elevation", "Comp.seed")                      
+stdz.mod_stemvol_fix_name <- c("LAI", "ISI", "Elevation.code", "Comp.seed")                      
 stdz.mod_stemvol_fix_slope <- c(-0.05366, -0.19821, 0.31046, -0.06353)
 stdz.mod_stemvol_fix_se <- c(0.05709, 0.11863, 0.13184, 0.05322)
 stdz.mod_stemvol_fix_trait <- rep("stemvol", 4)
 stdz.mod_stemvol_fix <- data.frame("factor" = stdz.mod_stemvol_fix_name, "slope" = stdz.mod_stemvol_fix_slope, "se" = stdz.mod_stemvol_fix_se, "trait" = stdz.mod_stemvol_fix_trait)
 stdz.mod_stemvol_fix
-stdz.mod_stemvol_sort <- c("Elevation", "ISI", "LAI", "Comp.seed")
+stdz.mod_stemvol_sort <- c("Elevation.code", "ISI", "LAI", "Comp.seed")
 stdz.mod_stemvol_fix <- stdz.mod_stemvol_fix %>% slice(match(stdz.mod_stemvol_sort, stdz.mod_stemvol_fix_name))
 stdz.mod_stemvol_fix$stdz.mod_stemvol_fix_name <- factor(stdz.mod_stemvol_fix$stdz.mod_stemvol_fix_name, levels = stdz.mod_stemvol_fix$stdz.mod_stemvol_fix_name)
 stdz.mod_stemvol_fix
 
 #Leaf Thickness
-stdz.mod_thick_full <- standardize(lmer(Leaf.thick.mean.mm ~ LAI.4.ring + Comp.seed.total + Comp.adult.log.metric + Elevation + (1|Species) + (1|Site) , data=seedlings_rem_na,  REML = F), standardize.y = T)
+stdz.mod_thick_full <- standardize(lmer(Leaf.thick.mean.mm ~ LAI.4.ring + Comp.seed.total + Comp.adult.log.metric + Elevation.code + (1|Species) + (1|Site) , data=seedlings_rem_na,  REML = F), standardize.y = T)
 
-stdz.mod_thick_int <- standardize(lmer(Leaf.thick.mean.mm ~ LAI.4.ring + Comp.seed.total + Comp.adult.log.metric + Elevation + (1 + Comp.seed.total|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
+stdz.mod_thick_int <- standardize(lmer(Leaf.thick.mean.mm ~ LAI.4.ring + Comp.seed.total + Comp.adult.log.metric + Elevation.code + (1 + Comp.seed.total|Species) + (1|Site), data = seedlings_rem_na, REML = F), standardize.y = T)
 
 stdz.mod_thick_lai_seed_isi <- standardize(lmer(Leaf.thick.mean.mm ~ LAI.4.ring + Comp.seed.total + Comp.adult.log.metric + (1|Species) + (1|Site) , data=seedlings_rem_na,  REML = F), standardize.y = T)
 
-stdz.mod_thick_lai_seed_elev <- standardize(lmer(Leaf.thick.mean.mm ~ LAI.4.ring + Comp.seed.total + Elevation + (1|Species) + (1|Site) , data=seedlings_rem_na,  REML = F), standardize.y = T)
+stdz.mod_thick_lai_seed_elev <- standardize(lmer(Leaf.thick.mean.mm ~ LAI.4.ring + Comp.seed.total + Elevation.code + (1|Species) + (1|Site) , data=seedlings_rem_na,  REML = F), standardize.y = T)
 
-stdz.mod_thick_lai_isi_elev <- standardize(lmer(Leaf.thick.mean.mm ~ LAI.4.ring + Comp.adult.log.metric + Elevation + (1|Species) + (1|Site), data=seedlings_rem_na,  REML = F), standardize.y = T)
+stdz.mod_thick_lai_isi_elev <- standardize(lmer(Leaf.thick.mean.mm ~ LAI.4.ring + Comp.adult.log.metric + Elevation.code + (1|Species) + (1|Site), data=seedlings_rem_na,  REML = F), standardize.y = T)
 
-stdz.mod_thick_seed_isi_elev <- standardize(lmer(Leaf.thick.mean.mm ~ Comp.seed.total + Comp.adult.log.metric + Elevation + (1|Species) + (1|Site), data=seedlings_rem_na,  REML = F), standardize.y = T)
+stdz.mod_thick_seed_isi_elev <- standardize(lmer(Leaf.thick.mean.mm ~ Comp.seed.total + Comp.adult.log.metric + Elevation.code + (1|Species) + (1|Site), data=seedlings_rem_na,  REML = F), standardize.y = T)
 
 stdz.mod_thick_rand <- standardize(lmer(Leaf.thick.mean.mm ~ (1|Species) + (1|Site), data=seedlings_rem_na, REML = F),standardize.y = T)
 
@@ -1209,19 +1245,19 @@ summary(stdz.mod_thick_lai_isi_elev)
 pamer.fnc(stdz.mod_thick_lai_isi_elev)
 
 #Creating fixed effect slope graph with standard error bars
-stdz.mod_thick_fix_name <- c("LAI", "ISI", "Elevation", "Comp.seed")                      
+stdz.mod_thick_fix_name <- c("LAI", "ISI", "Elevation.code", "Comp.seed")                      
 stdz.mod_thick_fix_slope <- c(-0.13643, -0.02387, 0.29271, NA)
 stdz.mod_thick_fix_se <- c(0.04091, 0.03878, 0.08471, NA)
 stdz.mod_thick_fix_trait <- rep("thick", 4)
 stdz.mod_thick_fix <- data.frame("factor" = stdz.mod_thick_fix_name, "slope" = stdz.mod_thick_fix_slope, "se" = stdz.mod_thick_fix_se, "trait" = stdz.mod_thick_fix_trait)
-stdz.mod_thick_sort <- c("Elevation", "ISI", "LAI", "Comp.seed")
+stdz.mod_thick_sort <- c("Elevation.code", "ISI", "LAI", "Comp.seed")
 stdz.mod_thick_fix <- stdz.mod_thick_fix %>% slice(match(stdz.mod_thick_sort, stdz.mod_thick_fix_name))
 stdz.mod_thick_fix$stdz.mod_thick_fix_name <- factor(stdz.mod_thick_fix$stdz.mod_thick_fix_name, levels = stdz.mod_thick_fix$stdz.mod_thick_fix_name)
 stdz.mod_thick_fix
 stdz.mod_thick_fix_plot1 <- ggplot() + geom_errorbar(data = stdz.mod_thick_fix, aes(x = stdz.mod_thick_fix_name, ymin = stdz.mod_thick_fix_slope - stdz.mod_thick_fix_se, ymax = stdz.mod_thick_fix_slope + stdz.mod_thick_fix_se, colour = stdz.mod_thick_fix_name)) 
 stdz.mod_thick_fix_plot2 <- stdz.mod_thick_fix_plot1 + geom_point(data=stdz.mod_thick_fix, aes(x = stdz.mod_thick_fix_name, y = stdz.mod_thick_fix_slope, colour = stdz.mod_thick_fix_name), size = 5)
 stdz.mod_thick_fix_plot3 <- stdz.mod_thick_fix_plot2 + theme_bw() +theme(plot.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank() )+theme(panel.border= element_blank())+theme(axis.line.x = element_line(color="black", size = 1),axis.line.y = element_line(color="black", size = 1)) + theme(legend.position = "right")+ xlab("Fixed Effects") + ylab(expression(paste("Fixed Effect Slope")))
-stdz.mod_thick_fix_plot4 <- stdz.mod_thick_fix_plot3 + theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14)) + theme(legend.position = "none") + ggtitle("Leaf Thickness") + theme(axis.title.x = element_blank())+ geom_hline(yintercept = 0, linetype = 5) + annotate("text", x = 4, y = 0, label = "NA", size = 10) + ylim(-0.75, 0.75) +  scale_x_discrete("stdz.mod_fvfm_fix_name", labels = c("Elevation" = "Elevation", "ISI" = "ISI", "LAI" = "LAI", "Comp.seed" = "Herbaceous Plants"))
+stdz.mod_thick_fix_plot4 <- stdz.mod_thick_fix_plot3 + theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14)) + theme(legend.position = "none") + ggtitle("Leaf Thickness") + theme(axis.title.x = element_blank())+ geom_hline(yintercept = 0, linetype = 5) + annotate("text", x = 4, y = 0, label = "NA", size = 10) + ylim(-0.75, 0.75) +  scale_x_discrete("stdz.mod_fvfm_fix_name", labels = c("Elevation.code" = "Elevation.code", "ISI" = "ISI", "LAI" = "LAI", "Comp.seed" = "Herbaceous Plants"))
 stdz.mod_thick_fix_plot4
 
 best_model_name <- c("D.FvFm", "SPAD", "Leaf Thickness", "Height:Leaf Ratio", "Leaf Area", "Stem Volume")
@@ -1276,7 +1312,7 @@ multi_trait_eff_size_lmer_ggplot <- ggplot(stdz.mod_all_fix) +
 	geom_errorbar(aes(x = factor, ymin = slope - se, ymax = slope + se, colour = factor)) + 
 	geom_point(aes(x = factor, y = slope, colour = factor), size = 5) + 
 	geom_hline(yintercept = 0, linetype = 5) + 
-	scale_x_discrete(labels = c("elev" = "Elevation", 
+	scale_x_discrete(labels = c("elev" = "Elevation.code", 
 															"isi" = "ISI", 
 															"lai" = "LAI", 
 															"seed" = "Herbaceous Plants")) +
@@ -1297,7 +1333,7 @@ ggplot_list<-do.call("list", mget(plot_pattern))
 
 # Compile
 mapply(ggsave, 
-			 file = paste0("img/", names(ggplot_list), ".pdf"), 
+			 file = paste0("img/", names(ggplot_list), ".png"), 
 			 plot = ggplot_list, 
 			 width = 30, height = 25, units = "cm")
 
