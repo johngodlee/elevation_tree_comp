@@ -186,9 +186,13 @@ trait_box_sp_ggplot <- ggplot(seedlings_melt_traits, aes(x=Species, y=value, fil
 
 # Variables vs elevation scatterplots ----
 
-env_elev_scatter_ggplot <- ggplot(seedlings_melt_env, aes(x=Elevation, y=value, colour = Species)) + 
+(env_elev_scatter_ggplot <- ggplot(seedlings_melt_env, aes(x=Elevation, y=value, colour = Species)) + 
 	geom_point() + 
-	facet_wrap(~variable, scales = "free")
+	facet_wrap(~variable, scales = "free") + 
+  theme_classic() + 
+  labs(y = ""))
+
+ggsave
 
 env_elev_lm_scatter_ggplot <- ggplot(seedlings_melt_env, aes(x=Elevation, y=value, colour = Species)) + 
 	geom_point() + 

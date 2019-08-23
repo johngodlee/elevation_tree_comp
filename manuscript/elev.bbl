@@ -1,0 +1,205 @@
+\begin{thebibliography}{xx}
+
+\harvarditem[Ara\'{u}jo et~al.]{Ara\'{u}jo, Thuiller \harvardand\
+  Pearson}{2006}{Araujo2006}
+Ara\'{u}jo, M.~B., Thuiller, W. \harvardand\ Pearson, R.~G.  \harvardyearleft
+  2006\harvardyearright , `Climate warming and the decline of amphibians and
+  reptiles in europe', {\em Journal of Biogeography} {\bf 33},~1712--1728.
+
+\harvarditem[Bellard et~al.]{Bellard, Bertelsmeier, Leadley, Thuiller
+  \harvardand\ Courchamp}{2012}{Bellard2012}
+Bellard, C., Bertelsmeier, C., Leadley, P., Thuiller, W. \harvardand\
+  Courchamp, F.  \harvardyearleft 2012\harvardyearright , `Impacts of climate
+  change on the future of biodiversity', {\em Ecology Letters} {\bf
+  15},~365--377.
+
+\harvarditem[Berry et~al.]{Berry, Dawson, Harrison \harvardand\
+  Pearson}{2002}{Berry2002}
+Berry, P.~M., Dawson, T.~P., Harrison, P.~A. \harvardand\ Pearson, R.~G.
+  \harvardyearleft 2002\harvardyearright , `Modelling potential impacts of
+  climate change on the bioclimatic envelope of species in britain and
+  ireland', {\em Global Ecology \& Biogeography} {\bf 11},~453--462.
+
+\harvarditem[Campbell et~al.]{Campbell, Atkinson, {Zaragoza-Castells},
+  Lundmark, Atkin \harvardand\ Hurry}{2007}{Campbell2007}
+Campbell, C., Atkinson, L., {Zaragoza-Castells}, J., Lundmark, M., Atkin, O.
+  \harvardand\ Hurry, V.  \harvardyearleft 2007\harvardyearright , `Acclimation
+  of photosynthesis and respiration is asynchronous in response to changes in
+  temperature regardless of plant functional group', {\em New Phytologist} {\bf
+  176},~375--389.
+
+\harvarditem[Chen et~al.]{Chen, Hill, Ohlem\"{u}ller, Roy \harvardand\
+  Thomas}{2011}{Chen2011}
+Chen, I., Hill, J.~K., Ohlem\"{u}ller, R., Roy, D.~B. \harvardand\ Thomas,
+  C.~D.  \harvardyearleft 2011\harvardyearright , `Rapid range of species
+  associated with high levels of climate warming', {\em Science} {\bf
+  333},~1024--1026.
+
+\harvarditem[Colwell et~al.]{Colwell, Brehm, Cardel\'{u}s, Gilman \harvardand\
+  Longino}{2008}{Colwell2008}
+Colwell, R.~K., Brehm, G., Cardel\'{u}s, C.~L., Gilman, A.~C. \harvardand\
+  Longino, J.~T.  \harvardyearleft 2008\harvardyearright , `Global warming,
+  elevational range shifts and lowland biotic attrition in the wet tropics',
+  {\em Science} {\bf 322},~258--261.
+
+\harvarditem[Davis et~al.]{Davis, Wrage \harvardand\ Reich}{1998}{Davis1998}
+Davis, M.~A., Wrage, K.~J. \harvardand\ Reich, P.~B.  \harvardyearleft
+  1998\harvardyearright , `Competition between tree seedlings and herbaceous
+  vegetation: support for a theory of resource supply and demand', {\em Journal
+  of Ecology} {\bf 86},~652--661.
+
+\harvarditem[Dobson et~al.]{Dobson, Lodge, Alder, Cumming, Keymer, McGlade,
+  Mooney, Rusak, Sala, Wolters, Wall, Winfree \harvardand\
+  Xenopoulos}{2006}{Dobson2011}
+Dobson, A., Lodge, D., Alder, J., Cumming, G.~S., Keymer, J., McGlade, J.,
+  Mooney, H., Rusak, J.~A., Sala, O., Wolters, V., Wall, D., Winfree, R.
+  \harvardand\ Xenopoulos, M.~A.  \harvardyearleft 2006\harvardyearright ,
+  `Habitat loss, trophic collapse, and the decline of ecosystem services', {\em
+  Ecology} {\bf 87}(8),~1915--1924.
+
+\harvarditem[Ettinger et~al.]{Ettinger, Ford \harvardand\
+  {HilleRisLambers}}{2011}{Ettinger2011}
+Ettinger, A.~K., Ford, K.~R. \harvardand\ {HilleRisLambers}, J.
+  \harvardyearleft 2011\harvardyearright , `Climate determines upper, but not
+  lowe, altitudinal range limits of pacific northwest conifers', {\em Ecology}
+  {\bf 92}(6),~1323--1331.
+
+\harvarditem[Feeley et~al.]{Feeley, Malhi, Zelazowski \harvardand\
+  Silman}{2012}{Feeley2012}
+Feeley, K.~J., Malhi, Y., Zelazowski, P. \harvardand\ Silman, M.~R.
+  \harvardyearleft 2012\harvardyearright , `The relative importance of
+  deforestation, precipitation change, and temperature sensitivity in
+  determining the future distributions and diversity of amazonian plant
+  species', {\em Global Change Biology} {\bf 18},~2636--2647.
+
+\harvarditem[Feeley et~al.]{Feeley, Silman, Bush, Farfan, Cabrera, Malhi, Meir,
+  Revilla, Quisiyupanqui \harvardand\ Saatchi}{2011}{Feeley2011}
+Feeley, K.~J., Silman, M.~R., Bush, M.~B., Farfan, W., Cabrera, K.~G., Malhi,
+  Y., Meir, P., Revilla, N.~S., Quisiyupanqui, M. N.~R. \harvardand\ Saatchi,
+  S.  \harvardyearleft 2011\harvardyearright , `Upslope migration of andean
+  trees', {\em Journal of Biogeography} {\bf 38},~783--791.
+
+\harvarditem{Gelman \harvardand\ Su}{2018}{}
+Gelman, A. \harvardand\ Su, Y.-S.  \harvardyearleft 2018\harvardyearright ,
+  {\em arm: Data analysis using regression and multilevel/hierarchical models}.
+\newblock R package version 1.10-1.
+\newline\harvardurl{https://CRAN.R-project.org/package=arm}
+
+\harvarditem[Girardin et~al.]{Girardin, Espejob, Doughty, Huasco, Metcalfe,
+  {Durand-Baca}, Marthews, Aragao, {Farf\`{a}n-Rios}, {Garc\`{i}a-Cabrera},
+  Halladay, Fisher, {Galiano-Cabrera}, {Huaraca-Quispe}, {Alzamora-Taype},
+  {Eguiluz-Mora}, {Salinas-Revilla}, Silman, Meir \harvardand\
+  Malhi}{2014}{Girardin2014}
+Girardin, C. A.~J., Espejob, J. E.~S., Doughty, C.~E., Huasco, W.~H., Metcalfe,
+  D.~B., {Durand-Baca}, L., Marthews, T.~R., Aragao, L. E. O.~C.,
+  {Farf\`{a}n-Rios}, W., {Garc\`{i}a-Cabrera}, K., Halladay, K., Fisher, J.~B.,
+  {Galiano-Cabrera}, D.~F., {Huaraca-Quispe}, L.~P., {Alzamora-Taype}, I.,
+  {Eguiluz-Mora}, L., {Salinas-Revilla}, N., Silman, M.~R., Meir, P.
+  \harvardand\ Malhi, Y.  \harvardyearleft 2014\harvardyearright ,
+  `Productivity and carbon allocation in a tropical montane cloud forest in the
+  peruvian andes', {\em Plant Ecology \& Diversity} {\bf 7}(1-2),~107--123.
+
+\harvarditem[Gruber et~al.]{Gruber, Nakagawa, Laws \harvardand\
+  Jamieson}{2011}{Grueber2011}
+Gruber, C.~E., Nakagawa, S., Laws, R.~J. \harvardand\ Jamieson, I.~G.
+  \harvardyearleft 2011\harvardyearright , `Multimodel inference in ecology and
+  evolution: challenges and solutions', {\em Journal of Evolutionary Biology}
+  {\bf 24},~699--711.
+
+\harvarditem{Hegyi}{1974}{Hegyi1974}
+Hegyi, F.  \harvardyearleft 1974\harvardyearright , A simulation model for
+  managing jack-pine stands, {\em in} `Royal College of Forestry, editor',
+  Royal College of Forestry, Stockholm, Sweden, pp.~74--90.
+
+\harvarditem{Hillyer \harvardand\ Silman}{2010}{Hillyer2010}
+Hillyer, R. \harvardand\ Silman, M.~R.  \harvardyearleft 2010\harvardyearright
+  , `Changes in species interactions across a 2.5 km elevation gradient:
+  effects on plant migration in response to climate change', {\em Global Change
+  Biology} {\bf 16},~3205--3214.
+
+\harvarditem{Hughes}{2000}{Hughes2000}
+Hughes, L.  \harvardyearleft 2000\harvardyearright , `Biological consequences
+  of global warming: is the signal already apparent?', {\em Trends in Ecology
+  and Evolution} {\bf 15}(2),~56--61.
+
+\harvarditem[Isbell et~al.]{Isbell, Calcagno, Hector, Connolly, Harpole, Reich,
+  Scherer-Lorenzen, Schmid, Tilman, {van Rujiven}, Weigelt, Wilsey, Zavaleta
+  \harvardand\ Loreau}{2011}{Isbell2011}
+Isbell, F., Calcagno, V., Hector, A., Connolly, J., Harpole, W.~S., Reich,
+  P.~B., Scherer-Lorenzen, M., Schmid, B., Tilman, D., {van Rujiven}, J.,
+  Weigelt, A., Wilsey, B.~J., Zavaleta, E.~S. \harvardand\ Loreau, M.
+  \harvardyearleft 2011\harvardyearright , `Hugh plant diversity is needed to
+  maintain ecosystem services', {\em Nature} {\bf 477},~199--203.
+
+\harvarditem[Lee et~al.]{Lee, {von Gadow}, Chung, Lee \harvardand\
+  Shin}{2004}{Lee2004}
+Lee, W., {von Gadow}, K., Chung, D., Lee, J. \harvardand\ Shin, M.
+  \harvardyearleft 2004\harvardyearright , `Dbh growth model for \textit{Pinus
+  densiflora} and \textit{Quercus variabilis} mixed forests in central korea',
+  {\em Ecological Modelling} {\bf 176},~187--200.
+
+\harvarditem[Malhi et~al.]{Malhi, Silman, Salinas, Bush, Meir \harvardand\
+  Saatchi}{2010}{Malhi2010}
+Malhi, Y., Silman, M., Salinas, N., Bush, M., Meir, P. \harvardand\ Saatchi, S.
+   \harvardyearleft 2010\harvardyearright , `Introduction: elevation gradients
+  in the tropics: laboratories for ecosystem ecology and global change
+  research', {\em Global Change Biology} {\bf 16},~3171--3175.
+
+\harvarditem{Maxwell \harvardand\ Johnson}{2000}{Maxwell2000}
+Maxwell, K. \harvardand\ Johnson, G.~N.  \harvardyearleft 2000\harvardyearright
+  , `Chlorophyll fluorescence - a practical guide', {\em Journal of
+  Experimental Botany} {\bf 51}(345),~659--668.
+
+\harvarditem[Myers et~al.]{Myers, Mittermeier, Mittermeier, {da Fonseca}
+  \harvardand\ Kent}{2000}{Myers2000}
+Myers, N., Mittermeier, R.~A., Mittermeier, C.~G., {da Fonseca}, G. A.~B.
+  \harvardand\ Kent, J.  \harvardyearleft 2000\harvardyearright , `Biodiversity
+  hotspots for conservation priorities', {\em Nature} {\bf 403},~853--858.
+
+\harvarditem{Parmesan}{2006}{Parmesan2006}
+Parmesan, C.  \harvardyearleft 2006\harvardyearright , `Ecological and
+  evolutionary responses to recent climate change', {\em Annual Review of
+  Ecology, Evolutio nand Systematics} {\bf 37},~637--669.
+
+\harvarditem{Pearson \harvardand\ Dawson}{2003}{Pearson2003}
+Pearson, R.~G. \harvardand\ Dawson, T.~P.  \harvardyearleft
+  2003\harvardyearright , `Predicting the impacts of climate change on the
+  distribution of species: are bioclimate envelope models useful?', {\em Global
+  Ecology \& Biogeography} {\bf 12},~361--371.
+
+\harvarditem[Peterson et~al.]{Peterson, Ball \harvardand\
+  Cohoon}{2002}{Peterson2002}
+Peterson, A.~T., Ball, L.~G. \harvardand\ Cohoon, K.~P.  \harvardyearleft
+  2002\harvardyearright , `Predicting distributions of mexican birds using
+  ecological niche modelling methods', {\em Ibis} {\bf 144},~E27--E32.
+
+\harvarditem[Seifert et~al.]{Seifert, Seifert, Seydack, Durrheim \harvardand\
+  {von Gadow}}{2014}{Seifert2014}
+Seifert, T., Seifert, S., Seydack, A., Durrheim, G. \harvardand\ {von Gadow},
+  K.  \harvardyearleft 2014\harvardyearright , `Competition effects in an
+  afrotemperate forest', {\em Forest Ecosystems} {\bf 1}(13),~1--15.
+
+\harvarditem[Sinclair et~al.]{Sinclair, White \harvardand\
+  Newell}{2010}{Sinclair2010}
+Sinclair, S.~J., White, M.~D. \harvardand\ Newell, G.~R.  \harvardyearleft
+  2010\harvardyearright , `How useful are species distribution models for
+  managing biodiversity under future climates?', {\em Ecology and Society} {\bf
+  15}(1),~1--13.
+
+\harvarditem[Thuiller et~al.]{Thuiller, Richardson, Py\v{s}ek, Midgley, Hughes
+  \harvardand\ Rouget}{2005}{Thuiller2005}
+Thuiller, W., Richardson, D.~M., Py\v{s}ek, P., Midgley, G.~F., Hughes, G.~O.
+  \harvardand\ Rouget, M.  \harvardyearleft 2005\harvardyearright ,
+  `Niche-based modelling as a tool for predicting the risk of alien plant
+  invasions at a global scale', {\em Global Change Biology} {\bf
+  11},~2234--2250.
+
+\harvarditem[{Van der Putten} et~al.]{{Van der Putten}, Macel \harvardand\
+  Visser}{2010}{Putten2010}
+{Van der Putten}, W.~H., Macel, M. \harvardand\ Visser, M.~E.  \harvardyearleft
+  2010\harvardyearright , `Predicting species distribution and abundance
+  responses to climate change: why it is essential to include biotic
+  interactions across trophic levels', {\em Philosophical Transactions of the
+  Royal Society B: Biological Sciences} {\bf 365},~2025--2034.
+
+\end{thebibliography}
