@@ -15,6 +15,7 @@ library(ggplot2)  # ggplot()
 library(tidyr)  # gather()
 library(stargazer)  # stargazer()
 library(stringr)  # str_extract()
+library(ggrepel)  # geom_label_repel()
 
 # Set working directory
 # setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
@@ -72,7 +73,7 @@ seedlings_clean <- seedlings %>%
     -SPAD.1, -SPAD.2, -SPAD.3,
     -Leaf.thick.1.mm, -Leaf.thick.2.mm, -Leaf.thick.3.mm,
     -Comp.Y.N.) %>%
-  rename("site" = "Site",
+  dplyr::rename("site" = "Site",
     "elev_code" = "Elevation.code",
     "species" = "Species", 
     "ind_code" = "Individual.code",
@@ -118,21 +119,19 @@ seedlings_clean <- seedlings %>%
 # Create traits only dataframe, for plotting and analysis
 seedlings_traits <- seedlings_clean %>%
   dplyr::select(species, elev_code, elev,
-    leaf_area_cm2, leaf_mass_dry_g, stem_vol_cm3, lma, 
+    leaf_area_cm2, stem_vol_cm3, 
     leaf_height_ratio, leaf_thick_mean_mm, leaf_chl, d_fvfm) %>%
   group_by(species, elev_code) 
 
 # Create labels for plotting trait data
 traits_levels <- c("d_fvfm", "leaf_height_ratio", "leaf_area_cm2", "leaf_chl", 
-  "leaf_mass_dry_g", "leaf_thick_mean_mm", "lma", "stem_vol_cm3")
+  "leaf_thick_mean_mm", "stem_vol_cm3")
   
-traits_labels <- c(
-  expression("Chlorophyll-"*alpha), 
+traits_labels <- c(  
   expression("D" ~ F[v] / F[m]), 
   expression("Leaf:height" ~ "ratio" ~ (n ~ cm^-1)), 
   expression("Leaf" ~ "area" ~ (cm^2)),
-  expression("Leaf" ~ "biomass" ~ "(g)"),
-  expression("LMA" ~ (g ~ cm^-2)),
+  expression("Chlorophyll-"*alpha), 
   expression("Mean" ~ "leaf" ~ "thickness" ~ "(mm)"),
   expression("Stem" ~ "vol." ~ (cm^3))
   )
@@ -154,21 +153,19 @@ seedlings_traits_gather <- seedlings_traits %>%
 
 # Create labels for plotting environmental data
 env_levels <- c("soil_temp_mean", "soil_mois_mean",
-      "lai", "comp_seed_total", "comp_adult_total", "comp_adult_metric_log")
+      "lai", "comp_adult_metric_log")
 
 env_labels <- c(
   expression("Mean" ~ "soil" ~ "temp" ~ (degree * C)),
   expression("Mean" ~ "soil" ~ "mois" ~ ('%')),
   expression("LAI" (m^2 ~ m^{-2})),
-  expression("Herb." ~ "plant" ~ "abundance" (n ~ 3.14 ~ m^{-2})),
-  expression("Adult" ~ "tree" ~ "abundance" (n ~ 78.54 ~ m^{-2})),
   expression("Iterative" ~ "Seedling" ~ "Index"))
 
 # Create long format dataframe for facet wrapping environmental data
 seedlings_env_gather <- seedlings_clean %>%
   dplyr::select(species, elev,
     soil_temp_mean, soil_mois_mean, 
-    lai, comp_seed_total, comp_adult_total, comp_adult_metric_log) %>%
+    lai, comp_seed_total, comp_adult_metric_log) %>%
   gather(key = "var", value = "value", -species, -elev) %>%
   mutate(var_exp = factor(var, 
     levels = env_levels,
@@ -181,6 +178,7 @@ spaghetti <- ggplot(seedlings_traits_elev_code_summ, aes(x = elev_code, y = valu
   geom_point() + 
   geom_line() + 
   facet_wrap(~var_exp, scales = "free_y", labeller = label_parsed) + 
+  labs(x = "Species range", "") + 
   theme_classic() +
   theme(panel.grid.major.x = element_line(colour = "grey"))
 
@@ -191,7 +189,9 @@ ggsave(file="../manuscript/img/spaghetti.pdf", plot=spaghetti, width=10, height=
 box <- ggplot(seedlings_traits_gather, aes(x=species, y=value)) + 
   geom_boxplot(aes(fill = species), colour = "black") + 
   facet_wrap(~var_exp, scales = "free_y", labeller = label_parsed) + 
-  theme_classic()
+  labs(x = "Species", y = "") + 
+  theme_classic() + 
+  theme(legend.position = "none")
 
 ggsave(file="../manuscript/img/box.pdf", plot=box, width=10, height=5)
 
@@ -217,11 +217,15 @@ writeLines(stargazer(species_elevcode_tally,
 close(fileConn)
 
 # Genus level migration rates plot
-mig <- ggplot(genus_mig_rates, aes(x = genus, y = mig_rate_abund_m, fill = genus)) + 
-  geom_bar(stat = "identity") + 
-    theme_classic() + 
-    labs(x = "Genus", y = expression("Migration" ~ "rate" ~ (m ~ y^-1))) + 
-    theme(legend.position = "none")
+mig <- ggplot(genus_mig_rates, aes(x = genus, y = mig_rate_basal_m, fill = genus)) + 
+  geom_bar(stat = "identity", colour = "black") + 
+  geom_text(aes(x = genus, y = mig_rate_basal_m, 
+    label = mig_rate_basal_m, vjust = ifelse(mig_rate_basal_m > 0, -0.6, 1.5))) +
+  geom_hline(aes(yintercept = 0)) + 
+  theme_classic() + 
+  labs(x = "Genus", y = expression("Migration" ~ "rate" ~ (m ~ y^-1))) + 
+  theme(legend.position = "none") + 
+  ylim(-2, 22)
 
 ggsave(file="../manuscript/img/mig.pdf", plot=mig, width=10, height=5)
 
@@ -235,32 +239,41 @@ close(fileConn)
 ranges_spread <- ranges %>%
   spread(max_min, range)
 
+species_site_elev <- species_site_elev %>%
+  mutate(position_exp = case_when(
+    position == "top" ~ "Top",
+    position == "middle" ~ "Middle",
+    position == "bottom" ~ "Bottom"
+  ))
+
 ranges_ggplot <- ggplot() + 
   geom_abline(aes(intercept = elev_mean, slope = 0), 
     linetype = 2, size = 0.5, 
     data = camp_loc) +
-  geom_point(aes(x = species, y = range, colour = position), 
-    size = 5, 
-    data = species_site_elev) + 
+  geom_segment(aes(x = species, y = min, xend = species, yend = max), 
+    data = ranges_spread) + 
   geom_point(aes(x = species, y = range),
     shape = 15, size = 4, 
     data = ranges) + 
-  geom_segment(aes(x = species, y = min, xend = species, yend = max), 
-    data = ranges_spread) + 
+  geom_point(aes(x = species, y = range, fill = position_exp), 
+    size = 3, shape = 21, colour = "black",
+    data = species_site_elev) + 
   xlab("Species") + 
   ylab("Elevation (m)") + 
-  scale_colour_discrete(name = "Plot position") +
+  scale_fill_discrete(name = "Plot position") +
   theme_classic()
 
 ggsave(file = "../manuscript/img/ranges.pdf", plot = ranges_ggplot, width = 10, height = 5)
 
 # Trait variables scatterplots with linear model fits
 traits_elev_scatter <- ggplot(seedlings_traits_gather, aes(x=elev, y = value, colour = species)) + 
-    geom_point() + 
-    geom_smooth(aes(fill = species, colour = species), method = lm, se = T) + 
-    facet_wrap(~var_exp, scales = "free", labeller = label_parsed) + 
-    theme_classic() + 
-    labs(y = "")
+  geom_point() + 
+  geom_smooth(aes(fill = species, colour = species), method = lm, se = T) + 
+  facet_wrap(~var_exp, scales = "free", labeller = label_parsed) + 
+  scale_fill_discrete(name = "Species") +
+  scale_colour_discrete(name = "Species") +
+  theme_classic() + 
+  labs(x = "Elevation (m)", y = "")
 
 ggsave(file = "../manuscript/img/traits_elev_scatter.pdf", plot = traits_elev_scatter, width = 10, height = 5)
 
@@ -306,6 +319,19 @@ lm_df$response <- gsub("\\..*", "", lm_df$mod)
 
 lm_df$species <- gsub(".*\\.", "", lm_df$mod)
 
+# Add plot labels column
+lm_df <- lm_df %>%
+  mutate(response_exp = factor(response, 
+  levels = c("d_fvfm", "leaf_chl", "leaf_height_ratio", 
+    "leaf_area_cm2", "stem_vol_cm3", "leaf_thick_mean_mm"), 
+  labels = c(
+    expression("D" ~ F[v] / F[m]), 
+    expression("Chlorophyll-"*alpha), 
+    expression("Leaf:height" ~ "ratio" ~ (n ~ cm^-1)), 
+    expression("Leaf" ~ "area" ~ (cm^2)),
+    expression("Stem" ~ "vol." ~ (cm^3)),
+    expression("Mean" ~ "leaf" ~ "thickness" ~ "(mm)"))))
+
 ## Plot
 traits_elev_slopes <- ggplot() + 
   geom_point(data = lm_df, 
@@ -315,7 +341,8 @@ traits_elev_slopes <- ggplot() +
     aes(x = species, ymin = slope - se, ymax = slope + se, colour = species),
     width = 1) + 
   geom_hline(yintercept = 0, linetype = 5) + 
-  facet_wrap(~response, scales = "free_y") + 
+  facet_wrap(~response_exp, scales = "free_y", labeller = label_parsed) + 
+  labs(x = "Species", y = "Slope") + 
   theme_classic() + 
   theme(legend.position = "none")
 
@@ -338,11 +365,12 @@ trees_ha_elev <- lm(trees_ha~elev_mean, data = comp_radius_vc)
 
 ## Make a plot of with a linear regression - filling in VC
 comp_radius_fit <- ggplot(comp_radius, aes(x = elev_mean, y = trees_ha)) + 
-  geom_point() +
-  geom_smooth(method = lm) + 
-  geom_text(aes(label = site), 
+  geom_smooth(method = lm, colour = "#8F1811") + 
+  geom_label_repel(aes(label = site), 
     colour = c(rep("black", 2),"red",rep("black", 7)),
-    hjust =-0.2, size = 4) + 
+    label.padding = 0.2, point.padding = 0.2, hjust = -0.2, 
+    min.segment.length = 0, size = 4) + 
+  geom_point(colour = c(rep("black", 2),"red",rep("black", 7))) +
   scale_x_continuous(limits = c(0, 3600)) + 
   ylab(expression(Trees~ha^"-1")) + xlab("Elevation (m)") + 
   theme_classic()
@@ -371,30 +399,31 @@ aberg_census_summ <- aberg_census %>%
   summarise(n = n()) %>%
   arrange(n) %>%
   mutate(id = seq(from =  length(.$n), to = 1, by = -1),
-    sampled = if_else(genus_species == "Alzatea verticillata" | 
-        genus_species == "Tapirira guianensis" | 
-        genus_species == "Clethra revoluta" | 
-        genus_species == "Clusia thurifera" | 
-        genus_species == "Hedyosmum goudotianum" | 
-        genus_species == "Schefflera patula" |
-        genus_species == "Iriartea deltoidea" |
-        genus_species == "Dictyocaryum lamarckianum",
-      T, F),
-    myrcia = case_when(genus_species == "Myrcia splendens" | 
-        genus_species == "Myrcia fallax" | 
-        genus_species == "Myrcia rostrata" ~ T))
+    sampled = case_when(genus_species == "Alzatea verticillata" ~ "Sampled", 
+        genus_species == "Tapirira guianensis"~ "Sampled",
+        genus_species == "Clethra revoluta"~ "Sampled",
+        genus_species == "Clusia thurifera"~ "Sampled",
+        genus_species == "Hedyosmum goudotianum"~ "Sampled",
+        genus_species == "Schefflera patula" ~ "Sampled",
+        genus_species == "Iriartea deltoidea" ~ "Sampled",
+        genus_species == "Dictyocaryum lamarckianum" ~ "Sampled",
+      genus_species == "Myrcia splendens"~ "Myrcia sp.",
+        genus_species == "Myrcia fallax"~ "Myrcia sp.",
+        genus_species == "Myrcia rostrata" ~ "Myrcia sp.",
+      TRUE ~ "Not sampled")) %>%
+  mutate(sampled = factor(sampled, 
+    levels = c("Not sampled", "Sampled", "Myrcia sp."),
+    labels = c("Not sampled", "Sampled", "Myrcia sp.")))
 
 rank_abund <- ggplot() + 
-  geom_point(data = filter(aberg_census_summ, sampled == T), 
-    aes(x = id, y = n), 
-    colour = "#E03A50FE", alpha = 1, size = 5) +
-  geom_point(data = filter(aberg_census_summ, myrcia == T), 
-    aes(x = id, y = n), 
-    colour = "#53C90E", alpha = 1, size = 5) +
-  geom_point(data = filter(aberg_census_summ, sampled == F), 
-    aes(x = id, y = n), 
-    colour = "black", alpha = 0.5, size = 1) + 
+  geom_point(data = aberg_census_summ, 
+    aes(x = id, y = n, fill = sampled, size = sampled), shape = 21) + 
+  scale_size_manual(name = "", 
+     values = c(1,4,4), labels = c("Not sampled", "Sampled", "Myrcia sp.")) + 
   theme_classic() + 
+  scale_fill_manual(name = "", values = c("#000000", "#5DAB41", "#B03333"),
+    labels = c("Not sampled", "Sampled", "Myrcia sp.")) + 
+  theme(legend.position = c(.8,.75)) + 
   labs(x = "Rank", y = "N")
 
 ggsave(file = "../manuscript/img/rank_abund.pdf", plot = rank_abund, width = 10, height = 5)
@@ -404,7 +433,7 @@ ggsave(file = "../manuscript/img/rank_abund.pdf", plot = rank_abund, width = 10,
 ## Create predictors
 predictors <- seedlings_clean %>%
   dplyr::select(species, site, comp_adult_metric_log_scale, 
-elev_scale, lai_scale, comp_seed_total_scale)
+elev_scale, lai_scale)
 
 ## Create responses
 responses <- seedlings_clean %>%
@@ -413,14 +442,14 @@ responses <- seedlings_clean %>%
 
 ## Create models
 mod_list_intercept <- lapply(responses, function(x){
-  lapply(predictors[3:6], function(y){
+  lapply(predictors[3:5], function(y){
     lmer(x ~ y + (1|predictors$species) + (1|predictors$site),
       REML = F)
   })
 })
 
 mod_list_slope <- lapply(responses, function(x){
-  lapply(predictors[3:6], function(y){
+  lapply(predictors[3:5], function(y){
     lmer(x ~ y + (y|predictors$species) + (1|predictors$site),
       REML = F)
   })
@@ -520,13 +549,12 @@ daic_intercept_slope <- mod_output %>%
   mutate(
     fixed_eff = c(
       rep("comp_adult_metric_log_scale", times = 6),
-      rep("comp_seed_total_scale", times = 6),
       rep("elev_scale", times = 6),
       rep("lai_scale", times = 6)
       ),
     response = c(
       rep(c("d_fvfm", "leaf_area_cm2", "leaf_chl", 
-        "leaf_height_ratio", "leaf_thick_mean_mm", "stem_vol_cm3"), times = 4)
+        "leaf_height_ratio", "leaf_thick_mean_mm", "stem_vol_cm3"), times = 3)
     ),
     daic_rsri = abs(aic_intercept) - abs(aic_slope)) %>%
   mutate(best_model = case_when(
@@ -617,3 +645,238 @@ ggsave(file = "../manuscript/img/single_pred_daic.pdf", plot = single_pred_daic,
 
 # Find best multiple predictor model for each response variable
 
+## Create models
+mod_list_multi <- lapply(responses, function(x){
+  mod_list <- list(
+    "elev_scale~comp_adult_metric_log_scale~lai_scale" = 
+      lmer(x ~ predictors$elev_scale + predictors$comp_adult_metric_log_scale + predictors$lai_scale + 
+          (1|predictors$species) + (1|predictors$site),
+        REML = F),
+    "elev_scale~comp_adult_metric_log_scale" = 
+      lmer(x ~ predictors$elev_scale + predictors$comp_adult_metric_log_scale + 
+          (1|predictors$species) + (1|predictors$site),
+        REML = F),
+    "elev_scale~lai_scale" = 
+      lmer(x ~ predictors$elev_scale + predictors$lai_scale + 
+          (1|predictors$species) + (1|predictors$site),
+        REML = F),
+    "comp_adult_metric_log_scale~lai_scale" = 
+      lmer(x ~ predictors$comp_adult_metric_log_scale + predictors$lai_scale + 
+          (1|predictors$species) + (1|predictors$site),
+        REML = F),
+    "elev_scale" = 
+      lmer(x ~ predictors$elev_scale + 
+          (1|predictors$species) + (1|predictors$site),
+        REML = F),
+    "lai_scale" = 
+      lmer(x ~ predictors$lai_scale + 
+          (1|predictors$species) + (1|predictors$site),
+        REML = F),
+    "comp_adult_metric_log_scale" = lmer(x ~ predictors$comp_adult_metric_log_scale + 
+        (1|predictors$species) + (1|predictors$site),
+      REML = F),
+    "NA" = lmer(x ~ (1|predictors$species) + (1|predictors$site), REML = FALSE))
+    })
+
+
+
+## Rename models
+for(x in 1:length(mod_list_multi)){
+  names(mod_list_multi[[x]]) <- paste0(names(mod_list_multi[[x]]), "-", names(mod_list_multi[x]))
+}
+
+## Collapse list of models
+mod_list_multi_collapse <- unlist(mod_list_multi)
+
+## Clean names
+names(mod_list_multi_collapse) <- gsub(".*\\.", "", names(mod_list_multi_collapse))
+
+
+## Extract model fit stats
+mod_multi_output <- as.data.frame(t(as.data.frame(lapply(mod_list_multi_collapse, function(i) AIC(i)))))
+names(mod_multi_output)[names(mod_multi_output) == 'V1'] <- "AIC"
+
+## Convert rownames to columns
+mod_multi_output <- rownames_to_column(mod_multi_output, "model")
+
+## Create column of response variables, fixed effects, and slope/intercept for grouping
+mod_multi_output$fixed_eff <- gsub('.[^.]*$', '', mod_multi_output$model)
+
+mod_multi_output$response <- gsub(".*\\.", "", mod_multi_output$model)
+
+## Calculate fit statistics
+mod_multi_output <- mod_multi_output %>%
+  group_by(response) %>%
+  mutate(akaike_weight = Weights(AIC)) %>%
+  ungroup() %>%
+  mutate(r2m = unlist(unname(lapply(mod_list_multi_collapse, function(i) r.squaredGLMM(i)[1]))),
+    r2c = unlist(unname(lapply(mod_list_multi_collapse, function(i) r.squaredGLMM(i)[2]))))
+
+## Extract fixed effect slopes with standard error bars
+mod_list_summ <- lapply(mod_list_multi_collapse, function(i){
+  summary(i)
+})
+
+get_coeffs <- function(x){
+  stopifnot(x$objClass == "lmerMod")
+  slope = x$coefficients[2]
+  se = x$coefficients[4]
+  
+  coeffs = c(slope, se)
+  return(coeffs)
+}
+
+mod_list_coeff <- lapply(mod_list_summ, get_coeffs)
+
+mod_multi_output$model_slope <- unname(unlist(lapply(mod_list_coeff, "[[", 1)))
+
+mod_multi_output$model_se <- unname(unlist(lapply(mod_list_coeff, "[[", 2)))
+
+## Mark random effects models
+mod_multi_output$is_rand <- ifelse(mod_multi_output$fixed_eff == "NA", TRUE, FALSE)
+
+# Make stargazer tables, one for each response variable, highlighting best model and ordered by AIC
+mod_multi_output_split <- split(mod_multi_output, f = mod_multi_output$response)
+
+
+fileConn <- file("../manuscript/include/comp_radius.tex")
+writeLines(stargazer(comp_radius_k, summary = FALSE, type = "latex",
+  rownames = F, label = "comp_radius", digit.separate = 0), fileConn)
+close(fileConn)
+
+multi_mod_stargaze <- function(x){
+  fileConn <-
+    file(paste0(
+      "../manuscript/include/",
+      first(x$response),
+      "_model_comparison.tex"
+    ))
+  
+  writeLines(
+    stargazer(
+      x %>%
+        mutate(
+          fixed_eff_exp = str_replace_all(
+            fixed_eff,
+            c(
+              "elev_scale" = "Elev",
+              "comp_adult_metric_log_scale" = "ISI",
+              "lai_scale" = "LAI",
+              "." = " + "
+            )
+          ),
+          daicr = x$AIC[grepl("NA\\.", x$model)] - AIC,
+          AIC = round(AIC, digits = 1),
+          daicr = round(daicr, digits = 1),
+          akaike_weight = round(akaike_weight, digits = 3),
+          r2c = round(r2c, digits = 3),
+          r2m = round(r2m, digits = 3),
+          model_slope = round(model_slope, digits = 2),
+          model_se = round(model_slope, digits = 3)
+        ) %>%
+        dplyr::select(
+          fixed_eff_exp,
+          AIC,
+          daicr,
+          akaike_weight,
+          r2c,
+          r2m,
+          model_slope,
+          model_se
+        ),
+      summary = FALSE,
+      title = first(x$response),
+      rownames = FALSE,
+      label = paste(first(x$response, "model_comparison")),
+      digits = 3,
+      digit.separate = 0
+    ),
+    fileConn
+  )
+  close(fileConn)
+}
+
+lapply(mod_multi_output_split, multi_mod_stargaze)
+
+# Manually identify best models, turn tables bold for best models in shell script
+best_models <- mod_list_multi_collapse[c(1, 14, 17, 25, 33, 41)]
+
+# Get slopes and standard errors for each fixed effect
+
+## Set up an empty dataframe
+best_model_effects_df <- data.frame(
+  model = rep(names(best_models), times = 3),
+  fixed_eff = rep(c("elev_scale", "comp_adult_metric_log_scale", "lai_scale"), times = 6),
+  fixed_eff_slope = NA,
+  fixed_eff_se = NA)
+
+## Get slopes
+best_model_slopes <- lapply(best_models, function(x){
+  x@beta[2:4]
+})
+
+best_model_slopes_df <- data.frame(matrix(unlist(best_model_slopes), 
+  nrow=length(best_model_slopes), 
+  byrow=T))
+
+names(best_model_slopes_df) <- c("elev_scale", "comp_adult_metric_log_scale", "lai_scale")
+
+best_model_slopes_df$model <- names(best_models)
+
+best_model_slopes_df_gather <- gather(best_model_slopes_df, key = "fixed_eff", value = "slope", -model)
+
+## Get standard errors
+best_model_se <- lapply(best_models, function(x){
+  sqrt(diag(vcov(x)))[2:4]
+})
+
+best_model_se_df <- data.frame(matrix(unlist(best_model_se), 
+  nrow=length(best_model_se), 
+  byrow=T))
+
+names(best_model_se_df) <- c("elev_scale", "comp_adult_metric_log_scale", "lai_scale")
+
+best_model_se_df$model <- names(best_models)
+
+best_model_se_df_gather <- gather(best_model_se_df, key = "fixed_eff", value = "se", -model)
+
+## Combine dataframes
+best_model_effects_df <- left_join(best_model_slopes_df_gather, best_model_se_df_gather, 
+  by = c("model", "fixed_eff"))
+
+best_model_effects_df <- best_model_effects_df %>%
+  mutate(fixed_eff_exp = case_when(
+    fixed_eff == "elev_scale" ~ "Elev.",
+    fixed_eff == "comp_adult_metric_log_scale" ~ "ISI",
+    fixed_eff == "lai_scale" ~ "LAI"),
+    response = gsub("-", "", str_extract(.$model, "-.*$"))) %>%
+  mutate(response_exp = factor(response, 
+    levels = c("d_fvfm", "leaf_chl", "leaf_height_ratio", 
+      "leaf_area_cm2", "stem_vol_cm3", "leaf_thick_mean_mm"), 
+    labels = c(
+      expression("D" ~ F[v] / F[m]), 
+      expression("Chlorophyll-"*alpha), 
+      expression("Leaf:height" ~ "ratio" ~ (n ~ cm^-1)), 
+      expression("Leaf" ~ "area" ~ (cm^2)),
+      expression("Stem" ~ "vol." ~ (cm^3)),
+      expression("Mean" ~ "leaf" ~ "thickness" ~ "(mm)")
+    )))
+
+# Plot slopes and standard errors
+multi_pred_slope <- ggplot(best_model_effects_df) + 
+  geom_errorbar(aes(x = fixed_eff_exp, ymin = slope - se, ymax = slope + se, 
+    colour = fixed_eff_exp)) + 
+  geom_point(aes(x = fixed_eff_exp, y = slope, fill = fixed_eff_exp), 
+    shape = 21, colour = "black", size = 2) + 
+  geom_text(data = filter(best_model_effects_df, is.na(slope)), 
+    aes(x = fixed_eff_exp, y = 0, label = "NA"),
+    size = 5) + 
+  geom_hline(aes(yintercept = 0), linetype = 5) + 
+  facet_wrap(~response_exp, scales = "free_y", labeller = label_parsed) + 
+  labs(x = "Fixed Effect", y = "Slope") + 
+  theme_classic() + 
+  theme(legend.position = "none")
+
+ggsave(file="../manuscript/img/multi_pred_slope.pdf", plot=multi_pred_slope, width=10, height=5)
+
+  

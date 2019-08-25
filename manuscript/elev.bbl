@@ -1,10 +1,21 @@
 \begin{thebibliography}{xx}
 
+\harvarditem{Akaike}{1992}{Akaike1992}
+Akaike, H.  \harvardyearleft 1992\harvardyearright , `Information theory and an
+  extension of the maximum likelihood principle', {\em Breakthroughs in
+  Statistics} pp.~610--624.
+
 \harvarditem[Ara\'{u}jo et~al.]{Ara\'{u}jo, Thuiller \harvardand\
   Pearson}{2006}{Araujo2006}
 Ara\'{u}jo, M.~B., Thuiller, W. \harvardand\ Pearson, R.~G.  \harvardyearleft
   2006\harvardyearright , `Climate warming and the decline of amphibians and
   reptiles in europe', {\em Journal of Biogeography} {\bf 33},~1712--1728.
+
+\harvarditem[Bates et~al.]{Bates, M\"{a}chler, Bolker \harvardand\
+  Walker}{2015}{Bates2015}
+Bates, D., M\"{a}chler, M., Bolker, B.~M. \harvardand\ Walker, S.~C.
+  \harvardyearleft 2015\harvardyearright , `Fitting linear mixed-effects models
+  using lme4', {\em Journal of Statistical Software} {\bf 67}(1),~1--48.
 
 \harvarditem[Bellard et~al.]{Bellard, Bertelsmeier, Leadley, Thuiller
   \harvardand\ Courchamp}{2012}{Bellard2012}
@@ -41,6 +52,11 @@ Colwell, R.~K., Brehm, G., Cardel\'{u}s, C.~L., Gilman, A.~C. \harvardand\
   Longino, J.~T.  \harvardyearleft 2008\harvardyearright , `Global warming,
   elevational range shifts and lowland biotic attrition in the wet tropics',
   {\em Science} {\bf 322},~258--261.
+
+\harvarditem{Corlett \harvardand\ Westcott}{2013}{Corlett2013}
+Corlett, R.~T. \harvardand\ Westcott, D.~A.  \harvardyearleft
+  2013\harvardyearright , `Will plant movemenets keep up with climate change',
+  {\em Trends in Ecology \& Evolution} {\bf 28}(8),~482--488.
 
 \harvarditem[Davis et~al.]{Davis, Wrage \harvardand\ Reich}{1998}{Davis1998}
 Davis, M.~A., Wrage, K.~J. \harvardand\ Reich, P.~B.  \harvardyearleft
@@ -172,6 +188,12 @@ Pearson, R.~G. \harvardand\ Dawson, T.~P.  \harvardyearleft
 Peterson, A.~T., Ball, L.~G. \harvardand\ Cohoon, K.~P.  \harvardyearleft
   2002\harvardyearright , `Predicting distributions of mexican birds using
   ecological niche modelling methods', {\em Ibis} {\bf 144},~E27--E32.
+
+\harvarditem{{R Core Team}}{2019}{R2019}
+{R Core Team}  \harvardyearleft 2019\harvardyearright , {\em R: A Language and
+  Environment for Statistical Computing}, R Foundation for Statistical
+  Computing, Vienna, Austria.
+\newline\harvardurl{https://www.R-project.org/}
 
 \harvarditem[Seifert et~al.]{Seifert, Seifert, Seydack, Durrheim \harvardand\
   {von Gadow}}{2014}{Seifert2014}

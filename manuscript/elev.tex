@@ -1,67 +1,70 @@
-% Report Template
-% Compile with XeLaTeX
-\documentclass[a4paper,11pt]{article}
-% \usepackage{fontspec}
-% \setmainfont{EB Garamond}
+% John L. Godlee (johngodlee@gmail.com)
+
+\documentclass[a4paper, 11pt]{article}
 %
-\usepackage{amsmath}   %Better maths and more symbols
-\usepackage{textcomp}
+\usepackage{amsmath}   % Better maths and more symbols
+%
 \usepackage{siunitx}
 %
-\usepackage[margin=1.5cm]{geometry}  %set margin width all around page
-\usepackage{setspace}
-\usepackage[compact]{titlesec}
+\usepackage{geometry}  % Set margins
+	\geometry{left=2.2cm,
+		right=2.2cm,
+		top=2.2cm,
+		bottom=2cm}
+\parskip 0.5cm
+%\twocolumn
 %
-\usepackage{graphics}
+\usepackage{pdflscape} % Allow landscape pages nested in pdf
+%
+\usepackage{graphics}  % Insert images easily
 \usepackage{graphicx}
-\graphicspath{ {img/} }  %Graphics saved in same directory as .tex file
-\usepackage{float}  %Fancy graphics placement [H] [H!] arguments
+\graphicspath{ {img/} }
+\usepackage{float}  % Fancy graphics placement [H] [H!] arguments
+\usepackage{subfig}
 %
 \usepackage{caption}
 %
-\usepackage{multirow}  % Table cells spanning multiple rows
+\usepackage{enumerate}
 %
-\usepackage{enumitem}    % Enumerated lists in the same format as bullet lists
-%
-\usepackage{natbib}    %Bibliography management  %Use author/date citations
-\bibliographystyle{agsm}
+\usepackage{natbib}    % Bibliography management - Use author/date citations
+\bibliographystyle{agsmnourl}  % Use my custom agsm bibliography template which never includes URLs in articles
 \usepackage{url}
 \usepackage{cite}
 %
-\usepackage{color}
-\newcommand{\todo}[1]{\textcolor{red}{#1}}   % \todo{NOTE TO SELF WRITTEN IN RED}
-%
 \usepackage{lineno}
 \linenumbers
+%
+\usepackage{eurosym}
+\usepackage{textcomp}
+\newcommand{\textapprox}{\raisebox{0.5ex}{\texttildelow}}
+%
+\usepackage{color} 
+\newcommand{\todo}[1]{\textcolor{red}{#1}}   % \todo{NOTE TO SELF WRITTEN IN RED}
+
+\title{Changes in forest structure along an elevational gradient in the Peruvian Andes cause species-specific stress responses in tree seedlings}
+\author{John L. Godlee}
 
 %--------------------------------------------------------------
 \begin{document}
 %--------------------------------------------------------------
-\setlength{\parskip}{10pt}   %space after paragraphs
-\setlength{\headsep}{30pt} %space at page top
-\setlength{\parindent}{0pt} %length of indent at start of par
-%
-\titlespacing{\section}{0pt}{*3}{*-0.1} %Position section titles  {indent}{*spaceabove}{*spacebelow}
-\titlespacing{\subsection}{0pt}{*-0.5}{*0} %Position subsection titles  {indent}{*spaceabove}{*spacebelow}
-\titlespacing{\subsubsection}{0pt}{*0}{*0} %Position subsubsection titles  {indent}{*spaceabove}{*spacebelow}
-%
-\pagenumbering{arabic}  %Add page numbering
-%
-\raggedright %align text to the left with long words taken to the next line
-%--------------------------------------------------------------
-\begin{center}{\LARGE{Changes in forest structure along an elevational gradient in the Peruvian Andes cause species-specific stress responses in tree seedlings}}\end{center}  %Insert Title
 
-\section{Abstract}
-4 bullet points (1) research conducted + rationale, (2) central methods, (3) key results, (4) main conclusions including key points of discussion. 
+\maketitle{}
+
+\begin{abstract}
+
+	4 bullet points (1) research conducted + rationale, (2) central methods, (3) key results, (4) main conclusions including key points of discussion. 
+	
+\end{abstract}
+
 
 \section{Introduction}
-Rapid anthropogenic climate change is causing many species, across a wide range of taxa, to shift their distributions in space \citep{Hughes2000, Parmesan2006, Chen2011}. The primary forces driving this are an increase in temperature and changes in precipitation regime \citep{Corlett2013, McCain2011 }. \citet{Chen2011} estimates that across a range of taxonomic groups, species are experiencing mean latitudinal and altitudinal migration rates of 17.6 $\pm$ 2.9 km and 12.2 $\pm$ 1.8 m per decade, respectively. For sessile taxa such as trees, range shifts occur as a result of differential recruitment and mortality over space, at the leading and trailing edges of their range \citep{}. In communities of long-lived tree species, the forest ecosystem may not shift in equilibrium with the climate as trees are resilient to gradual changes in climate, developing large root systems and below-ground water and nutrient reserves to buffer against stressful conditions; adult trees may persist where more sensitive seedlings perish \citep{}. Previous studies have suggested that the ability of tree species to respond to changes in mean annual temperature and precipitation regime will be important in determining species success over the coming century \citep{Colwell2008, Chen2011, Feeley2012}. Species responses may occur either in the form of adaptation, \textit{i.e.} changes in phenology, physiology and morphology, or through range shifts over space \citep{Bellard2012}. Range shifts of tree species have been observed in many studies across the world, particularly in temperate and sub-arctic regions \citep{} where temperature change is the most extreme \citep{}, while the number of studies documenting adaptational responses are few, potentially indicating that climate change is occurring so rapidly as to prevent effective adaptational responses \citep{}. Predicting range shifts across space has become an active field of research, (see \citealt{Bellard2012} and references therein). Understanding species range shifts can aid in the identification of species assemblages at risk of extinction and can inform conservation strategies to mitigate the effects of climate change on biodiversity and ecosystem functionality \citep{}.
+Rapid anthropogenic climate change is causing many species, across a wide range of taxa, to shift their distributions in space \citep{Hughes2000, Parmesan2006, Chen2011}. The primary forces driving this are an increase in temperature and changes in precipitation regime \citep{Corlett2013, McCain2011}. \citet{Chen2011} estimates that across a range of taxonomic groups, species are experiencing mean latitudinal and altitudinal migration rates of 17.6 $\pm$ 2.9 km and 12.2 $\pm$ 1.8 m per decade, respectively. For sessile taxa such as trees, range shifts occur as a result of differential recruitment and mortality over space, at the leading and trailing edges of their range \citep{}. In communities of long-lived tree species, the forest ecosystem may not shift in equilibrium with the climate as trees are resilient to gradual changes in climate, developing large root systems and below-ground water and nutrient reserves to buffer against stressful conditions; adult trees may persist where more sensitive seedlings perish \citep{}. Previous studies have suggested that the ability of tree species to respond to changes in mean annual temperature and precipitation regime will be important in determining species success over the coming century \citep{Colwell2008, Chen2011, Feeley2012}. Species responses may occur either in the form of adaptation, \textit{i.e.} changes in phenology, physiology and morphology, or through range shifts over space \citep{Bellard2012}. Range shifts of tree species have been observed in many studies across the world, particularly in temperate, sub-arctic and mountainous regions \citep{} where temperature change is the most extreme \citep{}, while the number of studies documenting adaptational responses are few, potentially indicating that climate change is occurring so rapidly as to prevent effective adaptational responses \citep{}. Predicting range shifts across space has become an active field of research, (see \citealt{Bellard2012} and references therein). Understanding species range shifts can aid in the identification of species assemblages at risk of extinction and can inform conservation strategies to mitigate the effects of climate change on biodiversity and ecosystem functionality \citep{}.
 
-The majority of species distribution models used to predict species range shifts as a conservation tool have used bioclimatic envelopes to constrain species' ranges \citep{Pearson2003}. Bioclimatic envelopes are constructed by correlating current species range extent with observed environmental conditions within those boundaries, then projecting spatially explicit climate trends into the future under different climate change scenarios to predict how species range boundaries will adjust in response (e.g. \citealt{Berry2002, Peterson2002, Thuiller2005, Araujo2006}) \citep{Sinclair2010}. These models have been criticised often for being overly simplistic, especially when applied at the local scale \citep{}, where other factors that have not been considered by the bioclimatic envelope model become important limiting factors for a species. Such factors include unmeasured environmental variables, physical factors such as topography, and biotic interactions with other species \citep{Davis1998, Putten2010, Ettinger2011}. When range shifts in a rapidly changing climate are driven by a single environmental variable like mean annual temperature, it is possible that a species will move into an area that is sub-optimal in other ways than those predicted by the model, if range shifts outstrip acclimatory/adaptive potential \citep{}. Range shifts into sub-optimal habitats may lead to reductions in local species abundance and/or richness \citep{Colwell2008}, changes in community composition \citep{}, ecosystem functioning \citep{Bellard2012}, and ecosystem service provision that are not predicted by bioclimatic envelope models \citep{Dobson2011, Isbell2011}. In order to accurately predict range shifts and their consequences for future ecosystem assembly, it is important that predictive range models be expanded to include variables which describe habitat as well as climate, and consider ecosystem level effects rather than simply species level effects \citep{}.
+The majority of species distribution models used to predict species range shifts as a conservation tool have used bioclimatic envelopes to constrain species' ranges \citep{Pearson2003, Sinclair2010}. Bioclimatic envelopes are constructed by correlating current species range extent with observed environmental conditions within those boundaries, then projecting spatially explicit climate trends into the future under different climate change scenarios to predict how species range boundaries will adjust in response (e.g. \citealt{Berry2002, Peterson2002, Thuiller2005, Araujo2006}). These models have been criticised often for being overly simplistic, especially when applied at the local scale \citep{}, where other factors that have not been considered by the bioclimatic envelope model become important limiting factors for a species. Such factors include unmeasured environmental variables, physical factors such as topography, and biotic interactions with other species \citep{Davis1998, Putten2010, Ettinger2011}. When range shifts in a rapidly changing climate are driven by a single environmental variable like mean annual temperature, it is possible that a species will move into an area that is sub-optimal in other ways than those predicted by the model if range shifts outstrip acclimatory/adaptive potential \citep{}. Range shifts into sub-optimal habitats may lead to reductions in local species abundance and/or richness \citep{Colwell2008}, changes in community composition \citep{}, ecosystem functioning \citep{Bellard2012}, and ecosystem service provision that are not predicted by bioclimatic envelope models \citep{Dobson2011, Isbell2011}. In order to accurately predict range shifts and their consequences for future ecosystem assembly, it is important that predictive range models be expanded to include variables which describe habitat as well as climate, and consider ecosystem level effects rather than simply species level effects \citep{}.
 
-Forest trees, particularly those in moist tropical forests, often experience high levels of mortality during the seedling recruitment stage, creating a demographic bottleneck citep{Coomes2000}. Many seedlings perish due to suboptimal shade regimes created by the arrangement of adult trees creating canopy above them \citep{}. The seedlings of many tropical tree species are highly adapted to shade \citep{}, meaning that if a seedling germinates in an open space, mortality by UV-B damage to photosynthetic machinery is quite probable \citep{}. Seedlings may also compete with adult trees for nutrients \citep{}, although there is some separation between seedling and adult tree rooting depths for most species \citep{}, especially for the largest trees \citep{}. This mortality bottleneck provides a limiting factor to the success of tropical forest tree species experiencing range shifts. If seedlings germinate in areas that are only sparsely shaded, UV-B damage may occur leading to loss of photosynthetic capacity \citep{}, reducing growth rates and occasionally resulting in seedling mortality \citep{}.  
+Forest trees, particularly those in moist tropical forests, often experience high levels of mortality during the seedling recruitment stage, creating a demographic bottleneck \citep{Coomes2000}. Many seedlings perish due to suboptimal shade regimes created by the arrangement of adult trees creating canopy above them \citep{}. The seedlings of many tropical tree species are highly adapted to shade \citep{}, meaning that if a seedling germinates in an open space, mortality by UV-B and heat damage to photosynthetic machinery is quite probable \citep{}. Seedlings may also compete with adult trees for nutrients \citep{}, although there is some separation between seedling and adult tree rooting depths for most species \citep{}, especially for the largest trees \citep{}. This mortality bottleneck provides a limiting factor to the success of tropical forest tree species experiencing range shifts. If seedlings germinate in areas that are only sparsely shaded, damage may occur leading to loss of photosynthetic capacity \citep{}, reducing growth rates and occasionally resulting in seedling mortality \citep{}.  
 
-In montane cloud forests, elevational range shifts are occurring more rapidly than in other areas \citep{} \todo{WHY?}. As mean annual temperatures rise, plant species are figuratively pushed up-slope, with higher recruitment at the upslope edge of their range and higher mortality at the downslope edge of their range \citep{}. Particularly in the tropics, as altitude increases, UV-B concentration increases, with many species found at high altitudes \citep{} having specific adaptations to avoid UV-B damage to photosynthetic machinery, such as \todo{WHAT?}. Species found at low altitudes however, are less adapted to high UV-B environments, instead having adaptations to make the most of the diminished light levels found under thick tree canopy, particularly during the seedling growth stage \citep{}. It therefore follows that as lowland species move upslope in response to increasing temperature, they may experience increased levels of damaging UV-B radiation as they recruit into areas of forest with thinner canopies. This may lead to species' ranges narrowing form the bottom up, with increased mortality due to temperature at the bottom of the elevational range, but without increased recruitment at the top end of the elevational range due to increased mortality via UV-B exposure.
+In montane cloud forests, elevational range shifts are occurring more rapidly than in other areas \citep{}. As mean annual temperatures rise, plant species are figuratively pushed up-slope, with higher recruitment at the upslope edge of their range and higher mortality at the downslope edge of their range \citep{}. Particularly in the tropics, as altitude increases, UV-B concentration increases, with many species found at high altitudes \citep{} having specific adaptations to avoid UV-B damage to photosynthetic machinery, such as vertically stacked palisade mesophyll cells and thick cuticles to reduce UV-B absorption, and generally smaller thicker leaves \citep{}. Species found at low altitudes however, are less adapted to high UV-B environments, instead having adaptations to make the most of the diminished light levels found under thick tree canopy, particularly during the seedling growth stage \citep{}. Montane forest physical structure also varies with elevation. Lowland forests often have lower tree density, with relatively few young trees in the light-deprived understorey, but a higher canopy cover due to adult trees being larger. Plant ground cover is generally greater at higher altitudes, with many epiphytic and ground-level herbaceous. It therefore follows that as lowland species move upslope in response to increasing temperature, they may experience increased levels of damaging UV-B radiation as they recruit into areas of forest with thinner canopies. This may lead to species' ranges narrowing form the bottom up, with increased mortality due to temperature at the bottom of the elevational range, but without increased recruitment at the top end of the elevational range due to increased mortality via UV-B exposure.
 
 In this study, we investigated the effects of variation in adult tree canopy structure and size distribution on seedling growth form and photosynthetic stress, across an elevational gradient in the Peruvian Andes, spanning lowland wet forest and montane cloud forest. Our aim was to assess the role of biotic effects of the existing forest structure on the potential recruitment probability of tree seedlings, in order to increase our knowledge of the dynamics of montane cloud forest tree species elevational range shifts. We tested three hypotheses: 1) Within a species, seedlings growing at higher elevations would experience higher levels of photosynthetic stress than those at lower elevations, 2) Species would differ in their degree of acclimation to variation in adult tree canopy structure and size distribution, 3) A combination of biotic and abiotic explanatory variables would best explain variation in seedling morphological and physiological traits across their elevational range.  
 
@@ -69,14 +72,28 @@ In this study, we investigated the effects of variation in adult tree canopy str
 \subsection{Study Site}
 Data collection was conducted across 10 permanent 1 ha forest plots in the Kos\~{n}ipata Valley of Man\'{u} National Park, Peru (-13\textdegree N, -71\textdegree W, Figure \ref{fig:sites}, Table \ref{table:sitechar}). The Kos\~{n}ipata Valley has been identified as a migration corridor for lowland species to migrate to higher elevations in response to temperature increase \citep{Feeley2011} and so is an appropriate location to study range shift drivers. Plots are situated between 400 and 3200 m.a.s.l. along this migration corridor (Table \ref{table:sitechar}, Figure \ref{fig:range_plot}). The plots form part of a larger plot network established by the Andes Biodiversity and Ecosystem Research Group (ABERG) in 2003 \citep{Malhi2010, Girardin2014}, and are located within the "Tropical Andes" biodiversity hotspot identified in \citet{Myers2000}. The plots used in this study contain 719 tree species, and the valley as a whole contains 1167 tree species \citep{}.
 
+\begin{figure}[H]
+\includegraphics[width=\textwidth]{sites}
+\centering
+\caption{Maps showing the location of the study area and plot locations. (A) The site location within Peru with elevation shading, showing the proximity to Man\'{u} National Park (white area). (B) The location of the 1 ha plots within the Kos\~{n}ipata Valley. (C) An enlargement of the Trocha Union and San Pedro plot groups. Red crosses indicate plot location, white lines in maps (B) and (C) indicate roads, text labels in (B) and (C) are plot codes, dark green areas in (B) and (C) denote the bounds of Man\'{u} National Park.}
+\label{fig:sites}
+\end{figure}
+
 \subsection{Study species} 
 We chose nine tree species for comparison from a total of 719 identified species within the 10 study plots. Species were selected according to their contrasting ranges (Figure \ref{fig:range_plot}), differences in genus migratory pattern \citep{Feeley2011}, and because each species is dominant across it's range in the Kos\~{n}ipata Valley (ABERG, unpublished data, \todo{Appendix VI}). Despite having no quantitative range shift prediction information, \textit{Iriartea deltoidea} and \textit{Dictyocaryum lamarckianum} were included in order to observe potential differences in response between monocot and dicot species, as both are monocots. Both \textit{I. deltoidea} and \textit{D. lamarckianum} are large-seeded palm species, as such, they are expected to be migrating upslope, similar to other large-seeded palms \citep{Hillyer2010}. Seedlings of \textit{Myrcia spp.} are difficult to reliably identify to species in the field due to similar morphology and were thus sampled as a composite of three potential species: \textit{Myrcia splendens}, \textit{M. fallax}, and \textit{M. rostrata}, the only \textit{Myrcia} species known to be present in our plots from ABERG censuses. They are referred to as \textit{Myrcia spp.} from here on. 
 
 \begin{figure}[H]
-\includegraphics[width=\textwidth]{ranges_ggplot}
+\includegraphics[width=\textwidth]{ranges}
 \centering
 \caption{Elevation of study plots for each species (coloured points) with the upper and lower range extents for each species (black squares). Plot elevations are marked as dashed lines.}
 \label{fig:ranges_ggplot}
+\end{figure}
+
+\begin{figure}[H]
+\includegraphics[width=\textwidth]{rank_abund}
+\centering
+\caption{Rank abundance curve of all individuals \textgreater{}10 cm DBH of all species found in the plots measured in this study. Census data from 2014 (ABERG, unpublished data). Species sampled as part of this study are highlighted in red. \textit{Myrcia} species which form the composite \textit{Myrcia} spp. are highlighted in green.}
+\label{fig:rank_abund}
 \end{figure}
 
 \subsection{Sampling and Measurement}
@@ -119,6 +136,25 @@ C_R = 2 \times \sqrt{\frac{10,000}{N}}
 
 where $N$ is the number of trees \textgreater10 cm DBH per ha (stand density). Stand density data was taken from ABERG census data within each plot (ABERG unpublished data) and used to interpolate values $C_R$ for plot VC, for which no stand density data exists, by fitting the elevation of the plot to a a linear regression between elevation and trees ha\textsuperscript{-1} for the remaining plots (Figure \todo{S1}). $C_R$ was rounded to the nearest metre for ease of measurement (Table \ref{table:CR}). 
 
+
+
+\begin{figure}[H]
+\includegraphics[width=\textwidth]{comp_radius_fit}
+\centering
+\caption{Linear regression with 95\% confidence interval of number of trees per hectare for each site, used to estimate number of trees per hectare for site VC. $R^2$ = 0.896, $F_{(1,7)}$ = 579.5, $p$ \textless{} 0.001.}
+\label{fig:comp_radius_fit}
+\end{figure}
+
+\begin{figure}[H]
+\includegraphics[width=\textwidth]{mig}
+\centering
+\caption{Estimated elevational migration rates of selected genera of which species are studied here. Migration rates are estimated using shifts in the centre of gravity of basal area as measured in the ABERG 1 Ha plot network.}
+\label{fig:comp_radius_fit}
+\end{figure}
+
+
+
+
 \subsection{Statistical Analysis}
 A matrix of single predictor linear mixed effects models were compared to test for the presence and strength of the causal relationship between each competition variable and each plant trait. All model variables were standardised to allow easy comparison of effect sizes, according to \citep{Gelman2008, Grueber2011, Gelman2018}. Model comparison was performed on models fitted using Maximum Likelihood (ML) estimates \todo{according to}. Model quality was compared using Akaike Information Criteria ($AIC$) \citep{Akaike1992}, Akaike weights ($W_i$), and fixed effect marginal pseudo-R\textsuperscript{2} values ($R_M^2$). 
 
@@ -140,48 +176,62 @@ All statistical analyses were conducted using R, version 3.2.4 \citep{R2019}. Li
 
 Physiological leaf trait models were not of a better quality when species were given their own slopes. All morphological traits had at least one model where a random slope structure for species produced a model of better quality. Leaf area was better using a random slope for all except herbaceous plant abundance.
 
-Within each species, the degree to which plant traits varied over their elevational range differed significantly according to linear models of the effect of species on plant trait slope \todo{WHAT IS THE LINEAR MODEL RESULT? VARIANCE EXPLAINED} (Figure \ref{fig:interac_trait_elev_ggplot}, Figure \ref{fig:trait_elev_lm_scatter_ggplot}).
+Within each species, the degree to which plant traits varied over their elevational range differed significantly according to linear models of the effect of species on plant trait slope \todo{WHAT IS THE LINEAR MODEL RESULT? VARIANCE EXPLAINED} (Figure \ref{fig:spaghetti}, Figure \ref{fig:trait_elev_lm_scatter_ggplot}).
 
 Single fixed effect mixed effects models were better than random effects models in 15/24 cases ($\Delta$AIC\textsubscript{r}>2) (Figure \ref{fig:daicplot_ggplot}).  However, competition variables account for only a small percentage of the variance in each plant trait, with the highest $R_M^2$ being ISI predicting stem volume ($R_M^2$ = 4.3\%) (Figure \ref{fig:r2plot_ggplot}). Elevation has a greater influence over plant traits than any competition variable in all cases.
 
 \begin{figure}[H]
-\includegraphics[width=\textwidth]{interac_trait_elev_ggplot}
+\includegraphics[width=\textwidth]{box}
+\centering
+\caption{Box plots showing the variation in plant trait values within each species.}
+\label{fig:box}
+\end{figure}
+
+\begin{figure}[H]
+\includegraphics[width=\textwidth]{spaghetti}
 \centering
 \caption{Interaction plots showing the variation in plant trait values within each species.}
-\label{fig:interac_trait_elev_ggplot}
+\label{fig:spaghetti}
 \end{figure}
 
 
 \begin{figure}[H]
-\includegraphics[width=\textwidth]{trait_elev_lm_scatter_ggplot}
+\includegraphics[width=\textwidth]{traits_elev_scatter}
 \centering
 \caption{Scatter plots with linear model fits for each species, showing the variation in plant stress variables and plant traits across elevation.}
-\label{fig:trait_elev_lm_scatter_ggplot}
+\label{fig:traits_elev_scatter}
 \end{figure}
 
 
 \begin{figure}[H]
-\includegraphics[width=\textwidth]{single_trait_eff_size_lmer_ggplot}
+\includegraphics[width=\textwidth]{traits_elev_slopes}
 \centering
 \caption{Interval plots showing the effect sizes (slopes) of each fixed effect in single fixed effect linear mixed effects models of plant traits against forest structure variables and elevation, for comparison.}
-\label{fig:single_trait_eff_size_lmer_ggplot}
+\label{fig:traits_elev_slopes}
 \end{figure}
 
 \begin{figure}[H]
-\includegraphics[width=\textwidth]{daicplot_ggplot}
+\includegraphics[width=\textwidth]{single_pred_daic}
 \centering
 \caption{The difference in AIC values between each single fixed effect model and a corresponding random effects model using no fixed effects. A higher $\Delta$AIC\textsubscript{r} means the model is of higher quality than the random effects model. Horizontal dashed red line indicates the level at which a model is not appreciably better quality than the corresponding random effects model.}
-\label{fig:daicplot_ggplot}
+\label{fig:single_pred_daic}
 \end{figure}
 
 \begin{figure}[H]
-\includegraphics[width=\textwidth]{r2plot_ggplot}
+\includegraphics[width=\textwidth]{single_pred_r2m}
 \centering
 \caption{The variance explained by each single fixed effect model. The pale bars indicate the variance explained by the whole model while the bold bars indicate the variance explained just by the fixed effect in the model.}
-\label{fig:r2plot_ggplot}
+\label{fig:single_pred_r2m}
 \end{figure}
 
 Table \ref{tab:best_fit_multi} shows the fixed effects and model fit measures from the best fitting multiple fixed effect models used to predict plant traits. For plant traits where one or more of the single fixed effect models was better when using a random slope (Figure \ref{fig:traits_dAIC}), the species slopes were allowed to vary for those fixed effects (Table \ref{tab:best_fit_multi}) in some model iterations. 
+
+\begin{figure}[H]
+\includegraphics[width=\textwidth]{multi_pred_slope}
+\centering
+\caption{}
+\label{fig:multi_pred_slope}
+\end{figure}
 
 All of the best models except the one predicting SPAD included elevation as a fixed effect alongside competition variables. All of the best models were better than a model using only elevation (Appendix IV). The best models for leaf:height ratio, leaf area and stem volume used random slopes for all the fixed effects identified as varying among species in the single predictor models. The fixed effects in the multiple fixed effect models still accounted for a small percentage of the variation in plant traits, ranging from 0.4\% (SPAD), to 17.3\% (stem volume).
 

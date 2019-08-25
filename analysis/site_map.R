@@ -63,26 +63,27 @@ manu_df = join(manu_p, manu_wdpa@data, by="id")
 # Plot of peru with manu outline on top ----
 
 peru_map_ggplot <- ggplot(data = elev_peru_df, aes(x = lon, y = lat)) +
-	geom_raster(aes(fill=elev)) + 
-	geom_polygon(data = manu_df, aes(x = long, y = lat, group = group), 
-							 fill = "grey", colour = "white", alpha = 0.5) + 
-	coord_cartesian() + 
-	scale_fill_viridis() + 
-	theme_classic() + 
-	guides(fill = guide_legend(title="Elevation (m)"))
+  geom_tile(aes(fill = elev)) + 
+  geom_polygon(data = manu_df, aes(x = long, y = lat, group = group), 
+    fill = "grey", colour = "white", alpha = 0.4) + 
+  coord_quickmap() + 
+  scale_fill_viridis() + 
+  theme_classic() + 
+  guides(fill = guide_legend(title="Elevation (m)")) + 
+  labs(y = "Latitude", x = "Longitude")
 
-
+ggsave(filename = "../manuscript/img/peru_map.pdf", plot = peru_map_ggplot, width = 5, height = 9)
 
 # Create objects for map of study site ----
 # Find out the position of each plot from mean of seedling locations
 site_loc <- seedlings %>%
-	group_by(Site) %>%
-	dplyr::summarise(lat_mean = mean(Lat.DD),
-									 lon_mean = mean(Long.DD),
-									 elev = mean(Elevation))
+  group_by(Site) %>%
+  dplyr::summarise(lat_mean = mean(Lat.DD),
+    lon_mean = mean(Long.DD),
+    elev = mean(Elevation))
 
 # Create bounding box for map based on extent of plot locations
-site_bbox <- as(raster::extent(-71.75, -71,25, -13.25, -12.5), "SpatialPolygons")
+site_bbox <- as(raster::extent(-71.75, -71.25, -13.25, -12.5), "SpatialPolygons")
 
 # Crop elevation dem to site locations
 elevation_clipped <- crop(elevation_all, extent(site_bbox))
@@ -197,4 +198,5 @@ peru_google_ggmap +
   geom_point(data = PER_rds, aes(x=long, y=lat), colour = "red2", alpha = 1, size = 0.8) + 
   xlab(expression(paste("Longitude ("*degree*")"))) + ylab(expression(paste("Latitude ("*degree*")"))) +
   theme(axis.text = element_text(size = 20), axis.title = element_text(size = 20))
+
 
