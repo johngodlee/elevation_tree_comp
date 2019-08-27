@@ -52,6 +52,7 @@ seedlings_clean <- seedlings %>%
   filter(!is.na(Comp.adult.log.metric)) %>%
   filter(!is.na(Elevation)) %>%
   filter(!is.na(Species)) %>%
+  filter(!Species %in% c("ID", "DL")) %>%
   mutate(LMA = Leaf.mass.dry.g / Leaf.area,  # Create Leaf Mass per area
     Leaf.height.ratio = No.leaves / Height.cm,  # Create Height to leaf ratio
     leaf_chl = 0.53 * exp(1)^(0.0364 * SPAD.mean),  # Create Chl-a
@@ -59,7 +60,8 @@ seedlings_clean <- seedlings %>%
     Comp.seed.total_scale = rescale(Comp.seed.total),
     Comp.adult.log.metric_scale = rescale(Comp.adult.log.metric),
     Elevation_scale = rescale(Elevation),
-    num_leaves = No.leaves + No.cot) %>%  # Create total number leaves
+    num_leaves = No.leaves + No.cot,
+    Species = factor(Species)) %>%  # Create total number leaves
   dplyr::select(-Adult.Seedling,  # Remove columns unused in analysis
     -Soil.temp.1, -Soil.temp.2, -Soil.temp.3,
     -Soil.mois.1, -Soil.mois.2, -Soil.mois.3,
@@ -121,7 +123,7 @@ seedlings_traits <- seedlings_clean %>%
   dplyr::select(species, elev_code, elev,
     leaf_area_cm2, stem_vol_cm3, 
     leaf_height_ratio, leaf_thick_mean_mm, leaf_chl, d_fvfm) %>%
-  group_by(species, elev_code) 
+  group_by(species, elev_code)
 
 # Create labels for plotting trait data
 traits_levels <- c("d_fvfm", "leaf_height_ratio", "leaf_area_cm2", "leaf_chl", 
@@ -198,17 +200,41 @@ ggsave(file="../manuscript/img/box.pdf", plot=box, width=10, height=5)
 # Table of where species are sampled
 species_site_summ <- species_site_elev %>%
   dplyr::select(-range) %>%
+  filter(!species %in% c("ID", "DL")) %>%
   spread(key = position, value = site)
 
-fileConn <- file("../manuscript/include/species_sample_loc.tex")
-writeLines(stargazer(species_site_summ, 
-  summary = FALSE, 
-  rownames = FALSE,
-  label = "species_sample_loc", digit.separate = 0), fileConn)
-close(fileConn)
-
 # How many individuals sampled at each elevation 
-species_elevcode_tally <- data.frame(table(seedlings_clean$species, seedlings_clean$elev_code) [,])
+species_elevcode_tally <- data.frame(table(seedlings_clean$species, seedlings_clean$elev_code) [,]) %>%
+  spread(key = Var2, value = Freq) %>%
+  mutate(species_full = case_when(
+    Var1 == "AV" ~ "Alzatea verticillata",
+    Var1 == "CR" ~ "Clethra revoluta",
+    Var1 == "CT" ~ "Clusia thurifera",
+    Var1 == "DL" ~ "Dictyocaryum lamarckianum",
+    Var1 == "HG" ~ "Hedyosmum goudotianum",
+    Var1 == "MS" ~ "Myrcia spp.",
+    Var1 == "SP" ~ "Schefflera patula",
+    Var1 == "TG" ~ "Tapirira guianensis"
+  )) %>%
+  rename(
+    "Species code" = "Var1",
+    "Species" = "species_full",
+    "Bottom" = "Bottom",
+    "Middle" = "Middle",
+    "Top" = "Top"
+  ) %>%
+  select("Species code", "Species", "Bottom", "Middle", "Top")
+
+species_elevcode_tally$Bottom <- paste0(species_site_summ$bottom, "=", species_elevcode_tally$Bottom)
+species_elevcode_tally$Middle <- paste0(species_site_summ$middle, "=", species_elevcode_tally$Middle)
+species_elevcode_tally$Top <- paste0(species_site_summ$top, "=", species_elevcode_tally$Top)
+
+species_elevcode_tally$Middle[2] <- "NA"
+species_elevcode_tally$Middle[7] <- "NA"
+species_elevcode_tally$Top[6] <- "NA"
+species_elevcode_tally$Top[3] <- "NA"
+
+
 
 fileConn <- file("../manuscript/include/species_elevcode_tally.tex")
 writeLines(stargazer(species_elevcode_tally, 
@@ -236,15 +262,22 @@ writeLines(stargazer(site_char, summary = FALSE, type = "latex",
 close(fileConn)
 
 # Plot ranges and sample locations
-ranges_spread <- ranges %>%
+ranges_clean <- ranges %>%
+  filter(!species %in% c("ID", "DL"))
+
+ranges_spread <- ranges_clean %>%
   spread(max_min, range)
 
 species_site_elev <- species_site_elev %>%
+  filter(!species %in% c("ID", "DL")) %>%
   mutate(position_exp = case_when(
     position == "top" ~ "Top",
     position == "middle" ~ "Middle",
     position == "bottom" ~ "Bottom"
   ))
+
+camp_loc$elev_exp <- c(406, 790, 890, 1497, 1750, 
+  1860, 2135, 2281, 2733, 3213)
 
 ranges_ggplot <- ggplot() + 
   geom_abline(aes(intercept = elev_mean, slope = 0), 
@@ -254,10 +287,12 @@ ranges_ggplot <- ggplot() +
     data = ranges_spread) + 
   geom_point(aes(x = species, y = range),
     shape = 15, size = 4, 
-    data = ranges) + 
+    data = ranges_clean) + 
   geom_point(aes(x = species, y = range, fill = position_exp), 
     size = 3, shape = 21, colour = "black",
     data = species_site_elev) + 
+  geom_label(aes(x = 7.4, y = elev_exp, label = site),
+    data = camp_loc) + 
   xlab("Species") + 
   ylab("Elevation (m)") + 
   scale_fill_discrete(name = "Plot position") +
@@ -417,7 +452,13 @@ aberg_census_summ <- aberg_census %>%
 
 rank_abund <- ggplot() + 
   geom_point(data = aberg_census_summ, 
-    aes(x = id, y = n, fill = sampled, size = sampled), shape = 21) + 
+    aes(x = id, y = n, fill = sampled, size = sampled), 
+    shape = 21) + 
+  geom_label_repel(data = filter(aberg_census_summ, sampled %in% c("Sampled", "Myrcia sp.")),
+    aes(x = id, y = n, label = genus_species),
+    min.segment.length = 0, nudge_x = 50, 
+    nudge_y = c(rep(20, times = 2), -50, rep(8, times = 8)), 
+    label.padding = 0.2, box.padding = 0.5, direction = "y") + 
   scale_size_manual(name = "", 
      values = c(1,4,4), labels = c("Not sampled", "Sampled", "Myrcia sp.")) + 
   theme_classic() + 
@@ -636,6 +677,7 @@ single_pred_daic <- ggplot(mod_output_best,
   aes(x = fixed_eff_exp, y = daic_rand)) + 
   geom_bar(stat = "identity", aes(fill = fixed_eff_exp), 
     colour = "black") + 
+  geom_hline(aes(yintercept = 0)) + 
   facet_wrap(~response_exp, scales = "free_y", labeller = label_parsed) + 
   theme_classic() + 
   theme(legend.position = "none") +
@@ -879,4 +921,3 @@ multi_pred_slope <- ggplot(best_model_effects_df) +
 
 ggsave(file="../manuscript/img/multi_pred_slope.pdf", plot=multi_pred_slope, width=10, height=5)
 
-  
