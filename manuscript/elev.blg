@@ -1,17 +1,17 @@
 This is BibTeX, Version 0.99d (TeX Live 2019)
 Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
 The top-level auxiliary file: elev.aux
-The style file: agsm.bst
-White space in argument---line 4 of file elev.aux
- : \citation{Corlett2013,McCain2011
- :                                  }
-I'm skipping whatever remains of this command
+The style file: agsmnourl.bst
 Database file #1: elev.bib
 Warning--I didn't find a database entry for "Genty1989"
 Warning--I didn't find a database entry for "Frazer2001"
+Warning--I didn't find a database entry for "Jupp2009"
+Warning--I didn't find a database entry for "Jonckheere2005"
 Warning--I didn't find a database entry for "Gadow1999"
 Warning--I didn't find a database entry for "Gelman2008"
 Warning--I didn't find a database entry for "Gelman2018"
+Warning--I didn't find a database entry for "Bolker_weevils"
+Warning--I didn't find a database entry for "MuMIn_weevils"
 Warning--I didn't find a database entry for "Clark2000"
 Warning--I didn't find a database entry for "Richardson2002"
 Warning--I didn't find a database entry for "Amissah2015"
@@ -54,45 +54,45 @@ Warning--I didn't find a database entry for "Lyons2005"
 Warning--I didn't find a database entry for "Mouillot2013"
 Warning--I didn't find a database entry for "Boulangeat2012"
 Warning--I didn't find a database entry for "Lyons2001"
-You've used 33 entries,
-            2909 wiz_defined-function locations,
-            969 strings with 12835 characters,
-and the built_in function-call counts, 256093 in all, are:
-= -- 42660
-> -- 3435
+You've used 34 entries,
+            2878 wiz_defined-function locations,
+            981 strings with 13088 characters,
+and the built_in function-call counts, 260070 in all, are:
+= -- 43330
+> -- 3482
 < -- 0
-+ -- 21224
-- -- 1078
-* -- 23174
-:= -- 49451
-add.period$ -- 34
-call.type$ -- 33
-change.case$ -- 460
-chr.to.int$ -- 33
-cite$ -- 33
-duplicate$ -- 538
-empty$ -- 1162
-format.name$ -- 1187
-if$ -- 46095
++ -- 21536
+- -- 1092
+* -- 23527
+:= -- 50267
+add.period$ -- 35
+call.type$ -- 34
+change.case$ -- 474
+chr.to.int$ -- 34
+cite$ -- 34
+duplicate$ -- 554
+empty$ -- 1164
+format.name$ -- 1207
+if$ -- 46796
 int.to.chr$ -- 5
 int.to.str$ -- 0
-missing$ -- 31
-newline$ -- 105
-num.names$ -- 353
-pop$ -- 86
+missing$ -- 32
+newline$ -- 106
+num.names$ -- 363
+pop$ -- 89
 preamble$ -- 1
-purify$ -- 495
+purify$ -- 510
 quote$ -- 0
-skip$ -- 462
+skip$ -- 443
 stack$ -- 0
-substring$ -- 62051
-swap$ -- 106
-text.length$ -- 462
+substring$ -- 62994
+swap$ -- 109
+text.length$ -- 476
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 132
+type$ -- 136
 warning$ -- 0
-while$ -- 756
+while$ -- 779
 width$ -- 0
-write$ -- 451
-(There was 1 error message)
+write$ -- 461
+(There were 51 warnings)

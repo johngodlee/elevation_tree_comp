@@ -53,6 +53,12 @@ Colwell, R.~K., Brehm, G., Cardel\'{u}s, C.~L., Gilman, A.~C. \harvardand\
   elevational range shifts and lowland biotic attrition in the wet tropics',
   {\em Science} {\bf 322},~258--261.
 
+\harvarditem{Coomes \harvardand\ Grubb}{2000}{Coomes2000}
+Coomes, D.~A. \harvardand\ Grubb, P.~J.  \harvardyearleft 2000\harvardyearright
+  , `Impacts of root competition in forests and woodlands: a theoretical
+  framework and review of experiments', {\em Ecological Monographs} {\bf
+  70}(2),~171--207.
+
 \harvarditem{Corlett \harvardand\ Westcott}{2013}{Corlett2013}
 Corlett, R.~T. \harvardand\ Westcott, D.~A.  \harvardyearleft
   2013\harvardyearright , `Will plant movemenets keep up with climate change',
@@ -99,7 +105,6 @@ Feeley, K.~J., Silman, M.~R., Bush, M.~B., Farfan, W., Cabrera, K.~G., Malhi,
 Gelman, A. \harvardand\ Su, Y.-S.  \harvardyearleft 2018\harvardyearright ,
   {\em arm: Data analysis using regression and multilevel/hierarchical models}.
 \newblock R package version 1.10-1.
-\newline\harvardurl{https://CRAN.R-project.org/package=arm}
 
 \harvarditem[Girardin et~al.]{Girardin, Espejob, Doughty, Huasco, Metcalfe,
   {Durand-Baca}, Marthews, Aragao, {Farf\`{a}n-Rios}, {Garc\`{i}a-Cabrera},
@@ -126,12 +131,6 @@ Gruber, C.~E., Nakagawa, S., Laws, R.~J. \harvardand\ Jamieson, I.~G.
 Hegyi, F.  \harvardyearleft 1974\harvardyearright , A simulation model for
   managing jack-pine stands, {\em in} `Royal College of Forestry, editor',
   Royal College of Forestry, Stockholm, Sweden, pp.~74--90.
-
-\harvarditem{Hillyer \harvardand\ Silman}{2010}{Hillyer2010}
-Hillyer, R. \harvardand\ Silman, M.~R.  \harvardyearleft 2010\harvardyearright
-  , `Changes in species interactions across a 2.5 km elevation gradient:
-  effects on plant migration in response to climate change', {\em Global Change
-  Biology} {\bf 16},~3205--3214.
 
 \harvarditem{Hughes}{2000}{Hughes2000}
 Hughes, L.  \harvardyearleft 2000\harvardyearright , `Biological consequences
@@ -166,6 +165,12 @@ Maxwell, K. \harvardand\ Johnson, G.~N.  \harvardyearleft 2000\harvardyearright
   , `Chlorophyll fluorescence - a practical guide', {\em Journal of
   Experimental Botany} {\bf 51}(345),~659--668.
 
+\harvarditem{{McCain} \harvardand\ Colwell}{2011}{McCain2011}
+{McCain}, C.~M. \harvardand\ Colwell, R.~K.  \harvardyearleft
+  2011\harvardyearright , `Assessing the threat to montane biodiversity from
+  discordant shifts in temperature and precipitation in a changing climate',
+  {\em Ecology Letters} {\bf 14},~1236--1245.
+
 \harvarditem[Myers et~al.]{Myers, Mittermeier, Mittermeier, {da Fonseca}
   \harvardand\ Kent}{2000}{Myers2000}
 Myers, N., Mittermeier, R.~A., Mittermeier, C.~G., {da Fonseca}, G. A.~B.
@@ -193,7 +198,6 @@ Peterson, A.~T., Ball, L.~G. \harvardand\ Cohoon, K.~P.  \harvardyearleft
 {R Core Team}  \harvardyearleft 2019\harvardyearright , {\em R: A Language and
   Environment for Statistical Computing}, R Foundation for Statistical
   Computing, Vienna, Austria.
-\newline\harvardurl{https://www.R-project.org/}
 
 \harvarditem[Seifert et~al.]{Seifert, Seifert, Seydack, Durrheim \harvardand\
   {von Gadow}}{2014}{Seifert2014}

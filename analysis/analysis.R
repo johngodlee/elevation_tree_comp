@@ -798,15 +798,6 @@ multi_mod_stargaze <- function(x){
     stargazer(
       x %>%
         mutate(
-          fixed_eff_exp = str_replace_all(
-            fixed_eff,
-            c(
-              "elev_scale" = "Elev",
-              "comp_adult_metric_log_scale" = "ISI",
-              "lai_scale" = "LAI",
-              "." = " + "
-            )
-          ),
           daicr = x$AIC[grepl("NA\\.", x$model)] - AIC,
           AIC = round(AIC, digits = 1),
           daicr = round(daicr, digits = 1),
@@ -817,7 +808,7 @@ multi_mod_stargaze <- function(x){
           model_se = round(model_slope, digits = 3)
         ) %>%
         dplyr::select(
-          fixed_eff_exp,
+          fixed_eff,
           AIC,
           daicr,
           akaike_weight,
