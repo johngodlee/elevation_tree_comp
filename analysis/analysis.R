@@ -126,16 +126,16 @@ seedlings_traits <- seedlings_clean %>%
   group_by(species, elev_code)
 
 # Create labels for plotting trait data
-traits_levels <- c("d_fvfm", "leaf_height_ratio", "leaf_area_cm2", "leaf_chl", 
-  "leaf_thick_mean_mm", "stem_vol_cm3")
+traits_levels <- c("d_fvfm",  "leaf_chl", "leaf_height_ratio", "leaf_area_cm2",
+  "stem_vol_cm3", "leaf_thick_mean_mm")
   
 traits_labels <- c(  
   expression("D" ~ F[v] / F[m]), 
+  expression("Chlorophyll-"*alpha), 
   expression("Leaf:height" ~ "ratio" ~ (n ~ cm^-1)), 
   expression("Leaf" ~ "area" ~ (cm^2)),
-  expression("Chlorophyll-"*alpha), 
-  expression("Mean" ~ "leaf" ~ "thickness" ~ "(mm)"),
-  expression("Stem" ~ "vol." ~ (cm^3))
+  expression("Stem" ~ "vol." ~ (cm^3)),
+  expression("Mean" ~ "leaf" ~ "thickness" ~ "(mm)")
   )
 
 # Summarise data by taking mean trait values per site
@@ -257,9 +257,22 @@ mig <- ggplot(genus_mig_rates, aes(x = genus, y = mig_rate_basal_m, fill = genus
 ggsave(file="../manuscript/img/mig.pdf", plot=mig, width=10, height=5)
 
 # Site level environmental variables (Whitaker?)
+site_char_clean <- site_char %>%
+  mutate(
+    Elevation = round(Elevation, digits = 0),
+    Annual_Precip = round(Annual_Precip, digits = 0),
+    Annual_Air_Temp = round(Annual_Air_Temp, digits = 1),
+    Slope_deg = round(Slope_deg, digits = 1),
+    Total_C = round(Total_C, digits = 1),
+    Total_N = round(Total_N, digits = 1), 
+    Soil_pH = round(Soil_pH, digits = 1),
+    trees_ha = round(trees_ha, digits = 0)) %>%
+  select(-Slope_deg)
+
+
 fileConn <- file("../manuscript/include/site_char.tex")
-writeLines(stargazer(site_char, summary = FALSE, type = "latex", 
-  rownames = F, label = "site_char", digit.separate = 0), fileConn)
+writeLines(stargazer(site_char_clean, summary = FALSE, type = "latex", 
+  rownames = F, label = "site_char", digits = NA, digit.separate = 0), fileConn)
 close(fileConn)
 
 # Plot ranges and sample locations
@@ -927,3 +940,83 @@ seedlings_clean %>%
 
 ## What is the R2m of the best single pred model
 max(mod_output_best$r2m)
+
+# Linear model of species range against slope of trait~elev.
+
+## Make a dataframe of ranges for each response
+ranges_clean <- ranges_spread %>%
+  mutate(range = max - min) %>%
+  select(species, range)
+
+# Make a list of linear models for each species trait combination
+seedlings_traits_gather_list_split <- lapply(seedlings_traits_gather_list, function(x){
+  split(x, x$species)
+  })
+
+seedlings_traits_gather_list_split_unlist <- unlist(seedlings_traits_gather_list_split, recursive = FALSE)
+
+trait_elev_lm_list <- lapply(seedlings_traits_gather_list_split_unlist, function(x){
+  lm(x$value ~ x$elev)
+})
+
+slope <- sapply(trait_elev_lm_list, function(x){
+  x$coefficients[2]
+})
+
+## Create a dataframe of slopes and ranges
+mod <- gsub("\\..*", "", names(trait_elev_lm_list))
+
+species <- gsub(".*\\.", "", names(trait_elev_lm_list))
+
+elev_lm_slopes_df <- data.frame(species, mod, slope)
+
+elev_lm_slopes_ranges_df <- left_join(elev_lm_slopes_df, ranges_clean, by = "species")
+
+## Split into list by trait
+elev_lm_slopes_ranges_df_split <- split(elev_lm_slopes_ranges_df, elev_lm_slopes_ranges_df$mod)
+
+## Run linear models of slope vs. range
+range_slope_lm_list <- lapply(elev_lm_slopes_ranges_df_split, function(x){
+  lm(slope ~ range, data = x)
+})
+
+## Extract model coefficients for each model
+slope <- sapply(range_slope_lm_list, function(x){
+  x$coefficients[2]
+})
+
+p_val <- sapply(range_slope_lm_list, function(x){
+  summary(x)$coefficients[2,4]
+})
+
+r2 <-  sapply(range_slope_lm_list, function(x){
+  summary(x)$adj.r.squared
+})
+
+f_val <- sapply(range_slope_lm_list, function(x){
+  summary(x)$fstatistic[1]
+})
+
+deg_f <- sapply(range_slope_lm_list, function(x){
+  summary(x)$fstatistic[3]
+})
+
+range_slope_lm_output <- data.frame(trait = names(range_slope_lm_list), slope, p_val, r2, f_val, deg_f)
+
+elev_lm_slopes_ranges_df <- elev_lm_slopes_ranges_df %>%
+  mutate(mod = factor(mod,
+    levels = traits_levels,
+    labels = traits_labels))
+
+## Make a plot 
+slope_elev_scatter <- ggplot(elev_lm_slopes_ranges_df, aes(x = range, y = slope)) + 
+  geom_point(aes(fill = species), 
+    colour = "black", shape = 21, size = 2) + 
+  stat_smooth(method = "lm", colour = "black") + 
+  facet_wrap(~mod, scales = "free_y", labeller = label_parsed) + 
+  theme_classic() + 
+  scale_fill_discrete(name = "Species") +
+  labs(x = "Elev. range (m)", y = "Slope (Trait~Elev.)")
+
+ggsave(file="../manuscript/img/slope_elev_scatter.pdf", plot=slope_elev_scatter, width=10, height=5)
+

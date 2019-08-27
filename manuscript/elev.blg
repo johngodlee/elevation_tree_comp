@@ -5,6 +5,7 @@ The style file: agsmnourl.bst
 Database file #1: elev.bib
 Warning--I didn't find a database entry for ""
 Warning--I didn't find a database entry for "Prado2011"
+Warning--I didn't find a database entry for "Whitaker2014"
 Warning--I didn't find a database entry for "Genty1989"
 Warning--I didn't find a database entry for "Frazer2001"
 Warning--I didn't find a database entry for "Jupp2009"
@@ -55,7 +56,7 @@ Warning--I didn't find a database entry for "Boulangeat2012"
 Warning--I didn't find a database entry for "Lyons2001"
 You've used 53 entries,
             2878 wiz_defined-function locations,
-            1102 strings with 17590 characters,
+            1104 strings with 17614 characters,
 and the built_in function-call counts, 434357 in all, are:
 = -- 72486
 > -- 5846
@@ -94,4 +95,4 @@ warning$ -- 0
 while$ -- 1214
 width$ -- 0
 write$ -- 719
-(There were 50 warnings)
+(There were 51 warnings)
