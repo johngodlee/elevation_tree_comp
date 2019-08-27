@@ -3,6 +3,8 @@ Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
 The top-level auxiliary file: elev.aux
 The style file: agsmnourl.bst
 Database file #1: elev.bib
+Warning--I didn't find a database entry for ""
+Warning--I didn't find a database entry for "Prado2011"
 Warning--I didn't find a database entry for "Genty1989"
 Warning--I didn't find a database entry for "Frazer2001"
 Warning--I didn't find a database entry for "Jupp2009"
@@ -10,8 +12,6 @@ Warning--I didn't find a database entry for "Jonckheere2005"
 Warning--I didn't find a database entry for "Gadow1999"
 Warning--I didn't find a database entry for "Gelman2008"
 Warning--I didn't find a database entry for "Gelman2018"
-Warning--I didn't find a database entry for "Bolker_weevils"
-Warning--I didn't find a database entry for "MuMIn_weevils"
 Warning--I didn't find a database entry for "Clark2000"
 Warning--I didn't find a database entry for "Richardson2002"
 Warning--I didn't find a database entry for "Amissah2015"
@@ -28,7 +28,6 @@ Warning--I didn't find a database entry for "Asner2003"
 Warning--I didn't find a database entry for "Reu2011"
 Warning--I didn't find a database entry for "Russo2005"
 Warning--I didn't find a database entry for "Kuprewicz2013"
-Warning--I didn't find a database entry for "Lewis2000"
 Warning--I didn't find a database entry for "Palik1997"
 Warning--I didn't find a database entry for "Barberis2005"
 Warning--I didn't find a database entry for "Rodriguez-Castaeda2010"
@@ -54,45 +53,45 @@ Warning--I didn't find a database entry for "Lyons2005"
 Warning--I didn't find a database entry for "Mouillot2013"
 Warning--I didn't find a database entry for "Boulangeat2012"
 Warning--I didn't find a database entry for "Lyons2001"
-You've used 34 entries,
+You've used 53 entries,
             2878 wiz_defined-function locations,
-            981 strings with 13088 characters,
-and the built_in function-call counts, 260070 in all, are:
-= -- 43330
-> -- 3482
+            1102 strings with 17590 characters,
+and the built_in function-call counts, 434357 in all, are:
+= -- 72486
+> -- 5846
 < -- 0
-+ -- 21536
-- -- 1092
-* -- 23527
-:= -- 50267
-add.period$ -- 35
-call.type$ -- 34
-change.case$ -- 474
-chr.to.int$ -- 34
-cite$ -- 34
-duplicate$ -- 554
-empty$ -- 1164
-format.name$ -- 1207
-if$ -- 46796
++ -- 36188
+- -- 1841
+* -- 39436
+:= -- 83715
+add.period$ -- 55
+call.type$ -- 53
+change.case$ -- 739
+chr.to.int$ -- 53
+cite$ -- 53
+duplicate$ -- 855
+empty$ -- 1804
+format.name$ -- 2016
+if$ -- 78146
 int.to.chr$ -- 5
 int.to.str$ -- 0
-missing$ -- 32
-newline$ -- 106
-num.names$ -- 363
-pop$ -- 89
+missing$ -- 50
+newline$ -- 164
+num.names$ -- 567
+pop$ -- 133
 preamble$ -- 1
-purify$ -- 510
+purify$ -- 795
 quote$ -- 0
-skip$ -- 443
+skip$ -- 681
 stack$ -- 0
-substring$ -- 62994
-swap$ -- 109
-text.length$ -- 476
+substring$ -- 105624
+swap$ -- 164
+text.length$ -- 742
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 136
+type$ -- 212
 warning$ -- 0
-while$ -- 779
+while$ -- 1214
 width$ -- 0
-write$ -- 461
-(There were 51 warnings)
+write$ -- 719
+(There were 50 warnings)

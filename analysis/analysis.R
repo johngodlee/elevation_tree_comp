@@ -200,8 +200,9 @@ ggsave(file="../manuscript/img/box.pdf", plot=box, width=10, height=5)
 # Table of where species are sampled
 species_site_summ <- species_site_elev %>%
   dplyr::select(-range) %>%
+  
   filter(!species %in% c("ID", "DL")) %>%
-  spread(key = position, value = site)
+  spread(key = position, value = site) 
 
 # How many individuals sampled at each elevation 
 species_elevcode_tally <- data.frame(table(seedlings_clean$species, seedlings_clean$elev_code) [,]) %>%
@@ -678,6 +679,7 @@ single_pred_daic <- ggplot(mod_output_best,
   geom_bar(stat = "identity", aes(fill = fixed_eff_exp), 
     colour = "black") + 
   geom_hline(aes(yintercept = 0)) + 
+  geom_hline(aes(yintercept = 2), linetype = 5, colour = "red") + 
   facet_wrap(~response_exp, scales = "free_y", labeller = label_parsed) + 
   theme_classic() + 
   theme(legend.position = "none") +
@@ -912,3 +914,16 @@ multi_pred_slope <- ggplot(best_model_effects_df) +
 
 ggsave(file="../manuscript/img/multi_pred_slope.pdf", plot=multi_pred_slope, width=10, height=5)
 
+# Miscellaneous stats
+
+## How many seedlings were "stressed"?
+length(which(seedlings_clean$d_fvfm < 0.7))
+
+## Species of those stressed seedling
+seedlings_clean %>%
+  filter(d_fvfm < 0.7) %>%
+  group_by(species) %>%
+  summarise(n = n())
+
+## What is the R2m of the best single pred model
+max(mod_output_best$r2m)

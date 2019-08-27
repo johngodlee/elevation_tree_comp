@@ -5,17 +5,29 @@ Akaike, H.  \harvardyearleft 1992\harvardyearright , `Information theory and an
   extension of the maximum likelihood principle', {\em Breakthroughs in
   Statistics} pp.~610--624.
 
-\harvarditem[Ara\'{u}jo et~al.]{Ara\'{u}jo, Thuiller \harvardand\
+\harvarditem[Ara{\'u}jo et~al.]{Ara{\'u}jo, Thuiller \harvardand\
   Pearson}{2006}{Araujo2006}
-Ara\'{u}jo, M.~B., Thuiller, W. \harvardand\ Pearson, R.~G.  \harvardyearleft
+Ara{\'u}jo, M.~B., Thuiller, W. \harvardand\ Pearson, R.~G.  \harvardyearleft
   2006\harvardyearright , `Climate warming and the decline of amphibians and
   reptiles in europe', {\em Journal of Biogeography} {\bf 33},~1712--1728.
+
+\harvarditem{Bartoń}{2019}{MuMIn}
+Bartoń, K.  \harvardyearleft 2019\harvardyearright , {\em MuMIn: Multi-Model
+  Inference}.
+\newblock R package version 1.43.6.
 
 \harvarditem[Bates et~al.]{Bates, M\"{a}chler, Bolker \harvardand\
   Walker}{2015}{Bates2015}
 Bates, D., M\"{a}chler, M., Bolker, B.~M. \harvardand\ Walker, S.~C.
   \harvardyearleft 2015\harvardyearright , `Fitting linear mixed-effects models
   using lme4', {\em Journal of Statistical Software} {\bf 67}(1),~1--48.
+
+\harvarditem[Bell et~al.]{Bell, Bradford \harvardand\
+  Lauenroth}{2014}{Bell2014}
+Bell, D.~M., Bradford, J.~B. \harvardand\ Lauenroth, W.~K.  \harvardyearleft
+  2014\harvardyearright , `Early indicators of change: diversgent climate
+  envelopes between tree life stages imply range shifts in the western united
+  states', {\em Global Ecology and Biogeography} {\bf 23},~168--180.
 
 \harvarditem[Bellard et~al.]{Bellard, Bertelsmeier, Leadley, Thuiller
   \harvardand\ Courchamp}{2012}{Bellard2012}
@@ -31,6 +43,14 @@ Berry, P.~M., Dawson, T.~P., Harrison, P.~A. \harvardand\ Pearson, R.~G.
   climate change on the bioclimatic envelope of species in britain and
   ireland', {\em Global Ecology \& Biogeography} {\bf 11},~453--462.
 
+\harvarditem[Bolker et~al.]{Bolker, Brooks, Clark, Geange, Poulsen, Stevens
+  \harvardand\ White}{2008}{Bolker2008}
+Bolker, B.~M., Brooks, M.~E., Clark, C.~J., Geange, S.~W., Poulsen, J.~R.,
+  Stevens, M. H.~H. \harvardand\ White, J.~S.  \harvardyearleft
+  2008\harvardyearright , `Generalized linear mixed models: a practical guide
+  for ecology and evolution', {\em Trends in Ecology and Evolution} {\bf
+  24}(3),~127--135.
+
 \harvarditem[Campbell et~al.]{Campbell, Atkinson, {Zaragoza-Castells},
   Lundmark, Atkin \harvardand\ Hurry}{2007}{Campbell2007}
 Campbell, C., Atkinson, L., {Zaragoza-Castells}, J., Lundmark, M., Atkin, O.
@@ -39,16 +59,16 @@ Campbell, C., Atkinson, L., {Zaragoza-Castells}, J., Lundmark, M., Atkin, O.
   temperature regardless of plant functional group', {\em New Phytologist} {\bf
   176},~375--389.
 
-\harvarditem[Chen et~al.]{Chen, Hill, Ohlem\"{u}ller, Roy \harvardand\
+\harvarditem[Chen et~al.]{Chen, Hill, Ohlem{\"u}ller, Roy \harvardand\
   Thomas}{2011}{Chen2011}
-Chen, I., Hill, J.~K., Ohlem\"{u}ller, R., Roy, D.~B. \harvardand\ Thomas,
+Chen, I., Hill, J.~K., Ohlem{\"u}ller, R., Roy, D.~B. \harvardand\ Thomas,
   C.~D.  \harvardyearleft 2011\harvardyearright , `Rapid range of species
   associated with high levels of climate warming', {\em Science} {\bf
   333},~1024--1026.
 
-\harvarditem[Colwell et~al.]{Colwell, Brehm, Cardel\'{u}s, Gilman \harvardand\
+\harvarditem[Colwell et~al.]{Colwell, Brehm, Cardel{\'u}s, Gilman \harvardand\
   Longino}{2008}{Colwell2008}
-Colwell, R.~K., Brehm, G., Cardel\'{u}s, C.~L., Gilman, A.~C. \harvardand\
+Colwell, R.~K., Brehm, G., Cardel{\'u}s, C.~L., Gilman, A.~C. \harvardand\
   Longino, J.~T.  \harvardyearleft 2008\harvardyearright , `Global warming,
   elevational range shifts and lowland biotic attrition in the wet tropics',
   {\em Science} {\bf 322},~258--261.
@@ -64,11 +84,27 @@ Corlett, R.~T. \harvardand\ Westcott, D.~A.  \harvardyearleft
   2013\harvardyearright , `Will plant movemenets keep up with climate change',
   {\em Trends in Ecology \& Evolution} {\bf 28}(8),~482--488.
 
+\harvarditem[Coste et~al.]{Coste, Baraloto, Leroy, Marcon, Renaud, Richardson,
+  Roggy, Schimann, Uddling \harvardand\ H\'{e}rault}{2010}{Coste2010}
+Coste, S., Baraloto, C., Leroy, C., Marcon, {\'E}., Renaud, A., Richardson,
+  A.~D., Roggy, J., Schimann, H., Uddling, J. \harvardand\ H\'{e}rault, B.
+  \harvardyearleft 2010\harvardyearright , `Assessing foliar chlorophyll
+  contents with the spad-502 chlorophyll meter: a calibration test with
+  thirteen tree species of tropical rainforest in french guiana', {\em Annals
+  of Forest Science} {\bf 67}(6),~607--607.
+
 \harvarditem[Davis et~al.]{Davis, Wrage \harvardand\ Reich}{1998}{Davis1998}
 Davis, M.~A., Wrage, K.~J. \harvardand\ Reich, P.~B.  \harvardyearleft
   1998\harvardyearright , `Competition between tree seedlings and herbaceous
   vegetation: support for a theory of resource supply and demand', {\em Journal
   of Ecology} {\bf 86},~652--661.
+
+\harvarditem[Dawson et~al.]{Dawson, Jackson, House, Prentice \harvardand\
+  Mace}{2011}{Dawson2011}
+Dawson, T.~P., Jackson, S.~T., House, J.~I., Prentice, I.~C. \harvardand\ Mace,
+  G.~M.  \harvardyearleft 2011\harvardyearright , `Beyond predictions:
+  biodiversity conservation in a changing climate', {\em Science} {\bf
+  332},~53--58.
 
 \harvarditem[Dobson et~al.]{Dobson, Lodge, Alder, Cumming, Keymer, McGlade,
   Mooney, Rusak, Sala, Wolters, Wall, Winfree \harvardand\
@@ -100,11 +136,6 @@ Feeley, K.~J., Silman, M.~R., Bush, M.~B., Farfan, W., Cabrera, K.~G., Malhi,
   Y., Meir, P., Revilla, N.~S., Quisiyupanqui, M. N.~R. \harvardand\ Saatchi,
   S.  \harvardyearleft 2011\harvardyearright , `Upslope migration of andean
   trees', {\em Journal of Biogeography} {\bf 38},~783--791.
-
-\harvarditem{Gelman \harvardand\ Su}{2018}{}
-Gelman, A. \harvardand\ Su, Y.-S.  \harvardyearleft 2018\harvardyearright ,
-  {\em arm: Data analysis using regression and multilevel/hierarchical models}.
-\newblock R package version 1.10-1.
 
 \harvarditem[Girardin et~al.]{Girardin, Espejob, Doughty, Huasco, Metcalfe,
   {Durand-Baca}, Marthews, Aragao, {Farf\`{a}n-Rios}, {Garc\`{i}a-Cabrera},
@@ -146,6 +177,13 @@ Isbell, F., Calcagno, V., Hector, A., Connolly, J., Harpole, W.~S., Reich,
   \harvardyearleft 2011\harvardyearright , `Hugh plant diversity is needed to
   maintain ecosystem services', {\em Nature} {\bf 477},~199--203.
 
+\harvarditem[Krause et~al.]{Krause, Koroleva, Dalling \harvardand\
+  Winter}{2001}{Krause2001}
+Krause, G.~H., Koroleva, O.~Y., Dalling, J.~W. \harvardand\ Winter, K.
+  \harvardyearleft 2001\harvardyearright , `Acclimation of tropical tree
+  seedlings to excessive light in simulated tree-fall gaps', {\em Plant, Cell
+  and Environment} {\bf 24},~1245--1352.
+
 \harvarditem[Lee et~al.]{Lee, {von Gadow}, Chung, Lee \harvardand\
   Shin}{2004}{Lee2004}
 Lee, W., {von Gadow}, K., Chung, D., Lee, J. \harvardand\ Shin, M.
@@ -153,12 +191,58 @@ Lee, W., {von Gadow}, K., Chung, D., Lee, J. \harvardand\ Shin, M.
   densiflora} and \textit{Quercus variabilis} mixed forests in central korea',
   {\em Ecological Modelling} {\bf 176},~187--200.
 
+\harvarditem[Lenoir et~al.]{Lenoir, G\'{e}gout, Pierrat, Bontemps \harvardand\
+  Dh\^{o}te}{2009}{Lenoir2009}
+Lenoir, J., G\'{e}gout, J., Pierrat, J., Bontemps, J. \harvardand\ Dh\^{o}te,
+  J.  \harvardyearleft 2009\harvardyearright , `Differences between tree
+  species seedling and adult altitudinal distribution in mountain forests
+  during the recent warm period (1986-2006)', {\em Ecography} {\bf
+  32},~765--777.
+
+\harvarditem{Lenoir \harvardand\ Svenning}{2015}{Lenoir2015}
+Lenoir, J. \harvardand\ Svenning, J.~C.  \harvardyearleft 2015\harvardyearright
+  , `Climate-related range shifts - a global multidimensional synthesis and new
+  research directions', {\em Ecography} {\bf 38},~15--28.
+
+\harvarditem{Lewis \harvardand\ Tanner}{2000}{Lewis2000}
+Lewis, S.~L. \harvardand\ Tanner, E. V.~J.  \harvardyearleft
+  2000\harvardyearright , `Effects of above- and belowground competition on
+  growth and survival of rain forest tree seedlings', {\em Ecology} {\bf
+  81}(9),~2525--2538.
+
+\harvarditem{MacLean \harvardand\ Beissinger}{2017}{MacLean2017}
+MacLean, S.~A. \harvardand\ Beissinger, S.~R.  \harvardyearleft
+  2017\harvardyearright , `Species' traits as predictors of range shifts under
+  contemporary climate change: a review and meta-analysis', {\em Global Change
+  Biology} {\bf 23},~4094--4105.
+
 \harvarditem[Malhi et~al.]{Malhi, Silman, Salinas, Bush, Meir \harvardand\
   Saatchi}{2010}{Malhi2010}
 Malhi, Y., Silman, M., Salinas, N., Bush, M., Meir, P. \harvardand\ Saatchi, S.
    \harvardyearleft 2010\harvardyearright , `Introduction: elevation gradients
   in the tropics: laboratories for ecosystem ecology and global change
   research', {\em Global Change Biology} {\bf 16},~3171--3175.
+
+\harvarditem[Mantyka et~al.]{Mantyka, Martin \harvardand\
+  Rhodes}{2012}{Mantyka2012}
+Mantyka, C.~S., Martin, T.~G. \harvardand\ Rhodes, J.~R.  \harvardyearleft
+  2012\harvardyearright , `Interactions between climate and habitat loss
+  effects on biodiversity: a systematic review and meta-analysis', {\em Global
+  Change Biology} {\bf 18},~1239--1252.
+
+\harvarditem[Martin et~al.]{Martin, Fahey \harvardand\
+  Sherman}{2010}{Martin2010}
+Martin, P.~H., Fahey, T.~J. \harvardand\ Sherman, R.~E.  \harvardyearleft
+  2010\harvardyearright , `Vegetation zonation in a neotropical montane forest:
+  environment, disturbance and ecotones', {\em Biotropica} {\bf
+  43}(5),~533--543.
+
+\harvarditem[Matsuraba et~al.]{Matsuraba, Krause, Aranda, Virgo, Beisel, Jahns
+  \harvardand\ Winter}{2009}{Matsubara2009}
+Matsuraba, S., Krause, G.~H., Aranda, J., Virgo, J., Beisel, K.~G., Jahns, P.
+  \harvardand\ Winter, K.  \harvardyearleft 2009\harvardyearright , `Sun-shade
+  patterns of leaf carotenoid composition in 86 species of neotropical forest
+  plants', {\em Functional Plant Biology} {\bf 36},~20--36.
 
 \harvarditem{Maxwell \harvardand\ Johnson}{2000}{Maxwell2000}
 Maxwell, K. \harvardand\ Johnson, G.~N.  \harvardyearleft 2000\harvardyearright
@@ -170,6 +254,14 @@ Maxwell, K. \harvardand\ Johnson, G.~N.  \harvardyearleft 2000\harvardyearright
   2011\harvardyearright , `Assessing the threat to montane biodiversity from
   discordant shifts in temperature and precipitation in a changing climate',
   {\em Ecology Letters} {\bf 14},~1236--1245.
+
+\harvarditem[McMahon et~al.]{McMahon, Harrison, Armbruster, Bartlein, Beale,
+  Edwards, Kattge, Midgley, Morin \harvardand\ Prentice}{2011}{McMahon2011}
+McMahon, S.~M., Harrison, S.~P., Armbruster, W.~C., Bartlein, P.~J., Beale,
+  C.~M., Edwards, M.~E., Kattge, J., Midgley, G., Morin, X. \harvardand\
+  Prentice, I.~C.  \harvardyearleft 2011\harvardyearright , `Improving
+  assessment and modelling of climate change impacts on global terrestrial
+  biodiversity', {\em Trends in Ecology and Evolution} {\bf 26}(5),~249--259.
 
 \harvarditem[Myers et~al.]{Myers, Mittermeier, Mittermeier, {da Fonseca}
   \harvardand\ Kent}{2000}{Myers2000}
@@ -199,11 +291,22 @@ Peterson, A.~T., Ball, L.~G. \harvardand\ Cohoon, K.~P.  \harvardyearleft
   Environment for Statistical Computing}, R Foundation for Statistical
   Computing, Vienna, Austria.
 
+\harvarditem[Schneider et~al.]{Schneider, Rasband \harvardand\
+  Eliceiri}{2012}{Schneider2012}
+Schneider, C.~A., Rasband, W.~S. \harvardand\ Eliceiri, K.~W.  \harvardyearleft
+  2012\harvardyearright , `Nih image to imagej: 25 years of image analysis',
+  {\em Nat Methods} {\bf 9}(7),~671--675.
+
 \harvarditem[Seifert et~al.]{Seifert, Seifert, Seydack, Durrheim \harvardand\
   {von Gadow}}{2014}{Seifert2014}
 Seifert, T., Seifert, S., Seydack, A., Durrheim, G. \harvardand\ {von Gadow},
   K.  \harvardyearleft 2014\harvardyearright , `Competition effects in an
   afrotemperate forest', {\em Forest Ecosystems} {\bf 1}(13),~1--15.
+
+\harvarditem{Serrano}{2008}{Serrano2008}
+Serrano, L.  \harvardyearleft 2008\harvardyearright , `Effects of leaf
+  structure on reflectance estimates of chlorophyll content', {\em
+  International Journal of Remote Sensing} {\bf 29},~17--18.
 
 \harvarditem[Sinclair et~al.]{Sinclair, White \harvardand\
   Newell}{2010}{Sinclair2010}
@@ -211,6 +314,13 @@ Sinclair, S.~J., White, M.~D. \harvardand\ Newell, G.~R.  \harvardyearleft
   2010\harvardyearright , `How useful are species distribution models for
   managing biodiversity under future climates?', {\em Ecology and Society} {\bf
   15}(1),~1--13.
+
+\harvarditem{{ter Steege}}{2018}{hemiphot}
+{ter Steege}, H.  \harvardyearleft 2018\harvardyearright , {\em Hemiphot.R:
+  Free R scripts to analyse hemispherical photographs for canopy openness, leaf
+  area index and photosynthetic active radiation under forest canopies},
+  Leiden, The Netherlands.
+\newblock Unpublished report.
 
 \harvarditem[Thuiller et~al.]{Thuiller, Richardson, Py\v{s}ek, Midgley, Hughes
   \harvardand\ Rouget}{2005}{Thuiller2005}
@@ -220,6 +330,22 @@ Thuiller, W., Richardson, D.~M., Py\v{s}ek, P., Midgley, G.~F., Hughes, G.~O.
   invasions at a global scale', {\em Global Change Biology} {\bf
   11},~2234--2250.
 
+\harvarditem[Travis et~al.]{Travis, Delgado, Bocedi, Baguette, Barto\'{n},
+  Bonte, Boulangeat, Hodgson, Kubisch, Penteriani, Saastamoinen, Stevens
+  \harvardand\ Bullock}{2013}{Travis2013}
+Travis, J. M.~J., Delgado, M., Bocedi, G., Baguette, M., Barto\'{n}, K., Bonte,
+  D., Boulangeat, I., Hodgson, J.~A., Kubisch, A., Penteriani, V.,
+  Saastamoinen, M., Stevens, V.~M. \harvardand\ Bullock, J.~M.
+  \harvardyearleft 2013\harvardyearright , `Dispersal and species' responses to
+  climate change', {\em Oikos} {\bf 122},~1532--1540.
+
+\harvarditem[Valladares et~al.]{Valladares, Laanisto, Niinemets \harvardand\
+  Zavala}{2016}{Valladares2016}
+Valladares, F., Laanisto, L., Niinemets, {\"U}. \harvardand\ Zavala, M.~A.
+  \harvardyearleft 2016\harvardyearright , `Shedding light on shade: ecological
+  perspectives of understorey plant life', {\em Plant Ecology \& Diversity}
+  {\bf 9}(3),~237--251.
+
 \harvarditem[{Van der Putten} et~al.]{{Van der Putten}, Macel \harvardand\
   Visser}{2010}{Putten2010}
 {Van der Putten}, W.~H., Macel, M. \harvardand\ Visser, M.~E.  \harvardyearleft
@@ -227,5 +353,18 @@ Thuiller, W., Richardson, D.~M., Py\v{s}ek, P., Midgley, G.~F., Hughes, G.~O.
   responses to climate change: why it is essential to include biotic
   interactions across trophic levels', {\em Philosophical Transactions of the
   Royal Society B: Biological Sciences} {\bf 365},~2025--2034.
+
+\harvarditem[Wisz et~al.]{Wisz, Pottier, Kissling, Pellissier, Lenoir,
+  Damgaard, Dormann, Forchhammer, Grytnes, Guisan, Heikkinen, Hoye, K{\"a}hn,
+  Luoto, Maiorano, Nilsson, Normand, {\"O}ckinger, Termansen, Timmermann,
+  Wardle, Aastrup \harvardand\ Svenning}{2013}{Wisz2013}
+Wisz, M.~S., Pottier, J., Kissling, W.~D., Pellissier, L., Lenoir, J.,
+  Damgaard, C.~F., Dormann, C.~F., Forchhammer, M.~C., Grytnes, J., Guisan, A.,
+  Heikkinen, R.~K., Hoye, T.~T., K{\"a}hn, I., Luoto, M., Maiorano, L.,
+  Nilsson, M., Normand, S., {\"O}ckinger, Schmidt, N.~M., Termansen, M.,
+  Timmermann, A., Wardle, D.~A., Aastrup, P. \harvardand\ Svenning, J.
+  \harvardyearleft 2013\harvardyearright , `The role of biotic interactions in
+  shaping distributions and realised assemblages of species: implications for
+  species distribution modelling', {\em Biological Reviews} {\bf 88},~15--30.
 
 \end{thebibliography}
