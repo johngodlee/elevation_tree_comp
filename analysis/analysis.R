@@ -927,6 +927,63 @@ multi_pred_slope <- ggplot(best_model_effects_df) +
 
 ggsave(file="../manuscript/img/multi_pred_slope.pdf", plot=multi_pred_slope, width=10, height=5)
 
+# Plot fit statistics table for best multi-predictor mixed effects models
+
+best_mod_multi_output <- as.data.frame(t(as.data.frame(lapply(best_models, function(i){
+  AIC(i)
+  }))))
+names(best_mod_multi_output)[names(best_mod_multi_output) == 'V1'] <- "AIC"
+
+## Convert rownames to columns
+best_mod_multi_output <- rownames_to_column(best_mod_multi_output, "model")
+
+## Create column of response variables, fixed effects, and slope/intercept for grouping
+best_mod_multi_output$fixed_eff <- gsub('.[^.]*$', '', best_mod_multi_output$model)
+
+best_mod_multi_output$response <- gsub(".*\\.", "", best_mod_multi_output$model)
+
+## Calculate fit statistics
+best_mod_multi_output <- best_mod_multi_output %>%
+  group_by(response) %>%
+  mutate(akaike_weight = Weights(AIC)) %>%
+  ungroup() %>%
+  mutate(r2m = unlist(unname(lapply(best_models, function(i) r.squaredGLMM(i)[1]))),
+    r2c = unlist(unname(lapply(best_models, function(i) r.squaredGLMM(i)[2]))))
+
+## Calculate dAICr
+best_mod_multi_output$daicr <- best_mod_multi_output$AIC - filter(mod_multi_output, is_rand == TRUE)$AIC
+
+best_mod_multi_output_clean <- best_mod_multi_output %>%
+  select(response, fixed_eff, daicr, akaike_weight, r2c, r2m) %>%
+  mutate(daicr = round(daicr, digits = 2),
+    akaike_weight = round(akaike_weight, digits = 1),
+    r2c = round(r2c, digits = 2),
+    r2m = round(r2m, digits = 2))
+
+## Make stargazer table
+fileConn <- file("../manuscript/include/best_mod_multi_output.tex")
+writeLines(stargazer(best_mod_multi_output_clean, 
+  summary = FALSE, rownames = FALSE,
+  label = "best_mod_multi_output", digit.separate = 0), fileConn)
+close(fileConn)
+
+
+## Extract fixed effect slopes with standard error bars
+mod_list_summ <- lapply(mod_list_multi_collapse, function(i){
+  summary(i)
+})
+
+get_coeffs <- function(x){
+  stopifnot(x$objClass == "lmerMod")
+  slope = x$coefficients[2]
+  se = x$coefficients[4]
+  
+  coeffs = c(slope, se)
+  return(coeffs)
+}
+
+
+
 # Miscellaneous stats
 
 ## How many seedlings were "stressed"?
