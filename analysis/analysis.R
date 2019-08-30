@@ -293,6 +293,9 @@ species_site_elev <- species_site_elev %>%
 camp_loc$elev_exp <- c(406, 790, 890, 1497, 1750, 
   1860, 2135, 2281, 2733, 3213)
 
+camp_loc <- camp_loc %>%
+  filter(site != "PA400")
+
 ranges_ggplot <- ggplot() + 
   geom_abline(aes(intercept = elev_mean, slope = 0), 
     linetype = 2, size = 0.5, 
