@@ -499,13 +499,6 @@ responses <- seedlings_clean %>%
     leaf_area_cm2_log, stem_vol_cm3, leaf_thick_mean_mm)
 
 ## Create models
-mod_list_intercept <- lapply(responses, function(x){
-  lapply(predictors[3:5], function(y){
-    lmer(x ~ y + (1|predictors$species) + (1|predictors$site),
-      REML = F)
-  })
-})
-
 mod_list_slope <- lapply(responses, function(x){
   lapply(predictors[3:5], function(y){
     lmer(x ~ y + (y|predictors$species) + (1|predictors$site),
@@ -514,17 +507,11 @@ mod_list_slope <- lapply(responses, function(x){
 })
 
 ## Rename models
-for(x in 1:length(mod_list_intercept)){
-  names(mod_list_intercept[[x]]) <- paste0(names(mod_list_intercept[[x]]), "-", names(mod_list_intercept[x]), "-intercept")
-  }
-
 for(x in 1:length(mod_list_slope)){
   names(mod_list_slope[[x]]) <- paste0(names(mod_list_slope[[x]]), "-", names(mod_list_slope[x]), "-slope")
 }
 
-
 ## Collapse list of lists and rename
-mod_list_intercept_collapse <- unlist(mod_list_intercept)
 mod_list_slope_collapse <- unlist(mod_list_slope)
 
 ## Random effects models for each of the response variables
@@ -536,7 +523,7 @@ rand_mod_list <- lapply(responses, function(x){
 names(rand_mod_list) <- paste0("NA-", names(rand_mod_list))
 
 ## Combine models
-mod_list_all <- c(mod_list_intercept_collapse, mod_list_slope_collapse, rand_mod_list)
+mod_list_all <- c(mod_list_slope_collapse, rand_mod_list)
 
 ## Clean names
 names(mod_list_all) <- gsub(".*\\.", "", names(mod_list_all))
@@ -554,7 +541,7 @@ mod_output$fixed_eff <- gsub("\\..*", "", mod_output$model)
 mod_output$response <- str_extract(mod_output$model, "(?<=\\.)(.*?)(?=\\.)|(?<=\\.)(.*?)$")
 
 mod_output$rsri <- gsub(".*\\.", "", mod_output$model)
-mod_output$rsri <- ifelse(mod_output$rsri %in% c("intercept", "slope"),
+mod_output$rsri <- ifelse(mod_output$rsri == "slope",
   mod_output$rsri, 
   "intercept")
 
@@ -589,47 +576,12 @@ mod_output$model_se <- unname(unlist(lapply(mod_list_coeff, "[[", 2)))
 ## Mark random effects models
 mod_output$is_rand <- ifelse(mod_output$fixed_eff == "NA", TRUE, FALSE)
 
-
-# Choose slope or intercept, for each model
-daic_intercept_slope <- mod_output %>%
-  filter(is_rand == FALSE) %>%
-  mutate(fixed_eff_response = paste0(fixed_eff, "-", response)) %>%
-  dplyr::select(-akaike_weight, -r2m, -r2c, -model_slope, 
-    -model_se, -is_rand, -fixed_eff, -response, -model) %>%
-  spread(key = fixed_eff_response, value = AIC) %>%
-  column_to_rownames(var = "rsri") %>%
-  as.data.frame() %>%
-  t() %>%
-  as.data.frame() %>%
-  rownames_to_column(var = "fixed_eff_response") %>%
-  rename(aic_intercept = intercept, 
-    aic_slope = slope) %>%
-  mutate(
-    fixed_eff = c(
-      rep("comp_adult_metric_log_scale", times = 6),
-      rep("elev_scale", times = 6),
-      rep("lai_scale", times = 6)
-      ),
-    response = c(
-      rep(c("d_fvfm", "leaf_area_cm2_log", "leaf_chl", 
-        "leaf_height_ratio", "leaf_thick_mean_mm", "stem_vol_cm3"), times = 3)
-    ),
-    daic_rsri = abs(aic_intercept) - abs(aic_slope)) %>%
-  mutate(best_model = case_when(
-    daic_rsri > 0 ~ "slope",
-    daic_rsri < 0 ~ "intercept"
-  )) %>%
-  mutate(best_model_name = paste0(fixed_eff_response, "-", best_model)) %>%
-  mutate(best_model_name = gsub("-", ".", best_model_name))
-
-
 # Create new model list which chooses the optimal random effect structure for each combination of fixed and random effects
 
 # Plot slopes of best single predictor models
 ## Rename factor levels for plotting
-mod_output_best <- mod_output %>%
+mod_output_clean <- mod_output %>%
   filter(is_rand == FALSE) %>%
-  filter(model %in% daic_intercept_slope$best_model_name) %>%
   mutate(response_exp = factor(response, 
     levels = c("d_fvfm", "leaf_chl", "leaf_height_ratio", 
       "leaf_area_cm2_log", "stem_vol_cm3", "leaf_thick_mean_mm"), 
@@ -644,32 +596,28 @@ mod_output_best <- mod_output %>%
     fixed_eff_exp = factor(fixed_eff, 
       levels = c("comp_adult_metric_log_scale", "elev_scale",
         "lai_scale", "comp_seed_total_scale"),
-      labels = c("ISI", "Elev.", "LAI", "Herb."))) %>% 
-  mutate(rsri_exp = factor(rsri, 
-    levels = c("intercept", "slope"),
-    labels = c("Intercept", "Slope")))
+      labels = c("ISI", "Elev.", "LAI", "Herb."))) 
 
 ## Plot the slopes of each model
-single_pred_slope <- ggplot(mod_output_best, 
+single_pred_slope <- ggplot(mod_output_clean, 
   aes(x = fixed_eff_exp, y = model_slope)) + 
   geom_errorbar(
     aes(ymin = model_slope-model_se, ymax = model_slope+model_se, 
     colour = fixed_eff_exp)) + 
-  geom_point(aes(fill = fixed_eff_exp, shape = rsri_exp),
-    colour = "black", size = 2) + 
+  geom_point(aes(fill = fixed_eff_exp),
+    colour = "black", size = 3, shape = 21) + 
   geom_hline(aes(yintercept = 0), linetype = 2) + 
   facet_wrap(~response_exp, scales = "free_y", labeller = label_parsed) + 
   theme_classic() + 
   theme(legend.position = "right") +
   labs(x = "Fixed effect", y = "Slope") + 
-  scale_shape_manual(name = "Random\neffects\nstructure", values = c(21, 23)) +
   scale_fill_discrete(guide = FALSE) + 
   scale_colour_discrete(guide = FALSE)
 
 ggsave(file="../manuscript/img/single_pred_slope.pdf", plot=single_pred_slope, width=10, height=5)
 
 # Plot the R2m for each single predictor model
-single_pred_r2m <- ggplot(filter(mod_output_best), 
+single_pred_r2m <- ggplot(filter(mod_output_clean), 
   aes(x = fixed_eff_exp, y = r2m)) + 
   geom_bar(stat = "identity", aes(fill = fixed_eff_exp), colour = "black") +
   facet_wrap(~response_exp, scales = "fixed", labeller = label_parsed) + 
@@ -686,11 +634,11 @@ rand_mod_aic <- mod_output %>%
   dplyr::select(response, AIC) %>%
   rename(AIC_rand = AIC)
 
-mod_output_best <- mod_output_best %>%
+mod_output_clean <- mod_output_clean %>%
   left_join(., rand_mod_aic, by = "response") %>%
   mutate(daic_rand = AIC_rand - AIC)
 
-single_pred_daic <- ggplot(mod_output_best, 
+single_pred_daic <- ggplot(mod_output_clean, 
   aes(x = fixed_eff_exp, y = daic_rand)) + 
   geom_bar(stat = "identity", aes(fill = fixed_eff_exp), 
     colour = "black") + 
@@ -985,8 +933,6 @@ get_coeffs <- function(x){
   return(coeffs)
 }
 
-
-
 # Miscellaneous stats
 
 ## How many seedlings were "stressed"?
@@ -999,7 +945,7 @@ seedlings_clean %>%
   summarise(n = n())
 
 ## What is the R2m of the best single pred model
-max(mod_output_best$r2m)
+max(mod_output_clean$r2m)
 
 # Linear model of species range against slope of trait~elev.
 
