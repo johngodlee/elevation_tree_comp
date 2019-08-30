@@ -3,49 +3,13 @@ Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
 The top-level auxiliary file: elev.aux
 The style file: agsmnourl.bst
 Database file #1: elev.bib
-Warning--I didn't find a database entry for "Clark2000"
-Warning--I didn't find a database entry for "Amissah2015"
-Warning--I didn't find a database entry for "Larcher2003"
-Warning--I didn't find a database entry for "Rozendaal2006"
-Warning--I didn't find a database entry for "Poorter2010"
-Warning--I didn't find a database entry for "Dobrikova2013"
-Warning--I didn't find a database entry for "Seidel2005"
-Warning--I didn't find a database entry for "Piazena1996"
-Warning--I didn't find a database entry for "Flint2003"
-Warning--I didn't find a database entry for "Kitayama2002"
-Warning--I didn't find a database entry for "Moser2008"
-Warning--I didn't find a database entry for "Asner2003"
-Warning--I didn't find a database entry for "Reu2011"
-Warning--I didn't find a database entry for "Russo2005"
-Warning--I didn't find a database entry for "Kuprewicz2013"
-Warning--I didn't find a database entry for "Palik1997"
-Warning--I didn't find a database entry for "Barberis2005"
-Warning--I didn't find a database entry for "Rodriguez-Castaeda2010"
-Warning--I didn't find a database entry for "Moles2004"
-Warning--I didn't find a database entry for "Powers2004"
-Warning--I didn't find a database entry for "Paine2008"
-Warning--I didn't find a database entry for "Ghouil2003"
-Warning--I didn't find a database entry for "Brand1997"
-Warning--I didn't find a database entry for "Rijkers2000"
-Warning--I didn't find a database entry for "Dai2009"
-Warning--I didn't find a database entry for "Zervoudakis2012"
-Warning--I didn't find a database entry for "Cechin2004"
-Warning--I didn't find a database entry for "Niinemets2001"
-Warning--I didn't find a database entry for "Milla2011"
-Warning--I didn't find a database entry for "Vass1997"
-Warning--I didn't find a database entry for "Szilard2007"
-Warning--I didn't find a database entry for "Pan2013"
-Warning--I didn't find a database entry for "Mediavilla2009"
-Warning--I didn't find a database entry for "Onoda2011"
-Warning--I didn't find a database entry for "Myster1995"
-Warning--I didn't find a database entry for "Porcar-Castell2008"
 Warning--I didn't find a database entry for "Lyons2005"
 Warning--I didn't find a database entry for "Mouillot2013"
 Warning--I didn't find a database entry for "Boulangeat2012"
 Warning--I didn't find a database entry for "Lyons2001"
 You've used 63 entries,
             2878 wiz_defined-function locations,
-            1149 strings with 19789 characters,
+            1077 strings with 19011 characters,
 and the built_in function-call counts, 517391 in all, are:
 = -- 86284
 > -- 7055
@@ -84,4 +48,4 @@ warning$ -- 0
 while$ -- 1444
 width$ -- 0
 write$ -- 861
-(There were 40 warnings)
+(There were 4 warnings)

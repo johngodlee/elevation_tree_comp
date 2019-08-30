@@ -245,10 +245,10 @@ close(fileConn)
 
 # Genus level migration rates plot
 mig <- ggplot(genus_mig_rates, aes(x = genus, y = mig_rate_basal_m, fill = genus)) + 
+  geom_hline(aes(yintercept = 0)) + 
   geom_bar(stat = "identity", colour = "black") + 
   geom_text(aes(x = genus, y = mig_rate_basal_m, 
     label = mig_rate_basal_m, vjust = ifelse(mig_rate_basal_m > 0, -0.6, 1.5))) +
-  geom_hline(aes(yintercept = 0)) + 
   theme_classic() + 
   labs(x = "Genus", y = expression("Migration" ~ "rate" ~ (m ~ y^-1))) + 
   theme(legend.position = "none") + 
@@ -386,13 +386,13 @@ lm_df <- lm_df %>%
 
 ## Plot
 traits_elev_slopes <- ggplot() + 
+  geom_hline(yintercept = 0, linetype = 5) + 
   geom_point(data = lm_df, 
     aes(x = species, y = slope, colour = species),
     size = 2) + 
   geom_errorbar(data = lm_df, 
     aes(x = species, ymin = slope - se, ymax = slope + se, colour = species),
     width = 1) + 
-  geom_hline(yintercept = 0, linetype = 5) + 
   facet_wrap(~response_exp, scales = "free_y", labeller = label_parsed) + 
   labs(x = "Species", y = "Slope") + 
   theme_classic() + 
@@ -596,21 +596,33 @@ mod_output_clean <- mod_output %>%
     fixed_eff_exp = factor(fixed_eff, 
       levels = c("comp_adult_metric_log_scale", "elev_scale",
         "lai_scale", "comp_seed_total_scale"),
-      labels = c("ISI", "Elev.", "LAI", "Herb."))) 
+      labels = c("ISI", "Elev.", "LAI", "Herb.")))
+
+rand_mod_aic <- mod_output %>%
+  filter(is_rand == TRUE) %>%
+  dplyr::select(response, AIC) %>%
+  rename(AIC_rand = AIC)
+
+mod_output_clean <- mod_output_clean %>%
+  left_join(., rand_mod_aic, by = "response") %>%
+  mutate(daic_rand = AIC_rand - AIC) %>%
+  mutate(daic_thresh = if_else(daic_rand > 2, TRUE, FALSE))
+
 
 ## Plot the slopes of each model
 single_pred_slope <- ggplot(mod_output_clean, 
   aes(x = fixed_eff_exp, y = model_slope)) + 
+  geom_hline(aes(yintercept = 0), linetype = 2) + 
   geom_errorbar(
     aes(ymin = model_slope-model_se, ymax = model_slope+model_se, 
     colour = fixed_eff_exp)) + 
-  geom_point(aes(fill = fixed_eff_exp),
-    colour = "black", size = 3, shape = 21) + 
-  geom_hline(aes(yintercept = 0), linetype = 2) + 
+  geom_point(aes(fill = fixed_eff_exp, shape = daic_thresh),
+    colour = "black", size = 3) + 
   facet_wrap(~response_exp, scales = "free_y", labeller = label_parsed) + 
   theme_classic() + 
   theme(legend.position = "right") +
   labs(x = "Fixed effect", y = "Slope") + 
+  scale_shape_manual(name = expression(delta*"AIC"[r] > 2), values = c(8, 21)) +
   scale_fill_discrete(guide = FALSE) + 
   scale_colour_discrete(guide = FALSE)
 
@@ -626,30 +638,6 @@ single_pred_r2m <- ggplot(filter(mod_output_clean),
   labs(x = "Fixed effect", y = expression(R[m]^2))
 
 ggsave(file="../manuscript/img/single_pred_r2m.pdf", plot=single_pred_r2m, width=10, height=5)
-
-# Calculate the dAIC against a null model for each best single predictor
-
-rand_mod_aic <- mod_output %>%
-  filter(is_rand == TRUE) %>%
-  dplyr::select(response, AIC) %>%
-  rename(AIC_rand = AIC)
-
-mod_output_clean <- mod_output_clean %>%
-  left_join(., rand_mod_aic, by = "response") %>%
-  mutate(daic_rand = AIC_rand - AIC)
-
-single_pred_daic <- ggplot(mod_output_clean, 
-  aes(x = fixed_eff_exp, y = daic_rand)) + 
-  geom_bar(stat = "identity", aes(fill = fixed_eff_exp), 
-    colour = "black") + 
-  geom_hline(aes(yintercept = 0)) + 
-  geom_hline(aes(yintercept = 2), linetype = 5, colour = "red") + 
-  facet_wrap(~response_exp, scales = "free_y", labeller = label_parsed) + 
-  theme_classic() + 
-  theme(legend.position = "none") +
-  labs(x = "Fixed effect", y = expression(delta*"AIC"[r]))  
-  
-ggsave(file = "../manuscript/img/single_pred_daic.pdf", plot = single_pred_daic, width = 10, height = 5)
 
 # Find best multiple predictor model for each response variable
 
@@ -863,6 +851,7 @@ best_model_effects_df <- best_model_effects_df %>%
 
 # Plot slopes and standard errors
 multi_pred_slope <- ggplot(best_model_effects_df) + 
+  geom_hline(aes(yintercept = 0), linetype = 5) + 
   geom_errorbar(aes(x = fixed_eff_exp, ymin = slope - se, ymax = slope + se, 
     colour = fixed_eff_exp)) + 
   geom_point(aes(x = fixed_eff_exp, y = slope, fill = fixed_eff_exp), 
@@ -870,7 +859,6 @@ multi_pred_slope <- ggplot(best_model_effects_df) +
   geom_text(data = filter(best_model_effects_df, is.na(slope)), 
     aes(x = fixed_eff_exp, y = 0, label = "NA"),
     size = 5) + 
-  geom_hline(aes(yintercept = 0), linetype = 5) + 
   facet_wrap(~response_exp, scales = "free_y", labeller = label_parsed) + 
   labs(x = "Fixed Effect", y = "Slope") + 
   theme_classic() + 

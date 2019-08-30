@@ -89,5 +89,6 @@ sed -i 's/caption{}/caption{Site environmental characteristics for each 1 ha plo
 
 sed -i 's/caption{}/caption{The sites at which tree seedlings were sampled for each species, with the number of seedlings successfully sampled per site.}/g' manuscript/include/species_elevcode_tally.tex
 
+
 # Run latex
 latexmk -pdf -quiet -bibtex -cd manuscript/elev.tex
