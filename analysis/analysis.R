@@ -56,6 +56,7 @@ seedlings_clean <- seedlings %>%
   mutate(LMA = Leaf.mass.dry.g / Leaf.area,  # Create Leaf Mass per area
     Leaf.height.ratio = No.leaves / Height.cm,  # Create Height to leaf ratio
     leaf_chl = 0.53 * exp(1)^(0.0364 * SPAD.mean),  # Create Chl-a
+    Leaf.area.log = log(Leaf.area),  # Log transform leaf area for normality
     LAI.4.ring_scale = rescale(LAI.4.ring),  # Rescale fixed effects
     Comp.seed.total_scale = rescale(Comp.seed.total),
     Comp.adult.log.metric_scale = rescale(Comp.adult.log.metric),
@@ -103,6 +104,7 @@ seedlings_clean <- seedlings %>%
     "leaf_mass_faa_g"  = "Leaf.mass.FAA.g",
     "leaf_mass_dry_g" = "Leaf.mass.dry.g",
     "leaf_area_cm2" = "Leaf.area",
+    "leaf_area_cm2_log" = "Leaf.area.log",
     "lma" = "LMA",
     "comp_seed_same_sp" = "Comp.seed.same.sp",
     "comp_seed_diff_sp" = "Comp.seed.diff.sp",
@@ -121,19 +123,19 @@ seedlings_clean <- seedlings %>%
 # Create traits only dataframe, for plotting and analysis
 seedlings_traits <- seedlings_clean %>%
   dplyr::select(species, elev_code, elev,
-    leaf_area_cm2, stem_vol_cm3, 
+    leaf_area_cm2_log, stem_vol_cm3, 
     leaf_height_ratio, leaf_thick_mean_mm, leaf_chl, d_fvfm) %>%
   group_by(species, elev_code)
 
 # Create labels for plotting trait data
-traits_levels <- c("d_fvfm",  "leaf_chl", "leaf_height_ratio", "leaf_area_cm2",
+traits_levels <- c("d_fvfm",  "leaf_chl", "leaf_height_ratio", "leaf_area_cm2_log",
   "stem_vol_cm3", "leaf_thick_mean_mm")
   
 traits_labels <- c(  
   expression("D" ~ F[v] / F[m]), 
   expression("Chlorophyll-"*alpha), 
   expression("Leaf:height" ~ "ratio" ~ (n ~ cm^-1)), 
-  expression("Leaf" ~ "area" ~ (cm^2)),
+  expression("log(Leaf" ~ "area)" ~ (cm^2)),
   expression("Stem" ~ "vol." ~ (cm^3)),
   expression("Mean" ~ "leaf" ~ "thickness" ~ "(mm)")
   )
@@ -200,7 +202,7 @@ ggsave(file="../manuscript/img/box.pdf", plot=box, width=10, height=5)
 # Table of where species are sampled
 species_site_summ <- species_site_elev %>%
   dplyr::select(-range) %>%
-  
+  filter(site != "VC") %>%
   filter(!species %in% c("ID", "DL")) %>%
   spread(key = position, value = site) 
 
@@ -234,8 +236,6 @@ species_elevcode_tally$Middle[2] <- "NA"
 species_elevcode_tally$Middle[7] <- "NA"
 species_elevcode_tally$Top[6] <- "NA"
 species_elevcode_tally$Top[3] <- "NA"
-
-
 
 fileConn <- file("../manuscript/include/species_elevcode_tally.tex")
 writeLines(stargazer(species_elevcode_tally, 
@@ -375,12 +375,12 @@ lm_df$species <- gsub(".*\\.", "", lm_df$mod)
 lm_df <- lm_df %>%
   mutate(response_exp = factor(response, 
   levels = c("d_fvfm", "leaf_chl", "leaf_height_ratio", 
-    "leaf_area_cm2", "stem_vol_cm3", "leaf_thick_mean_mm"), 
+    "leaf_area_cm2_log", "stem_vol_cm3", "leaf_thick_mean_mm"), 
   labels = c(
     expression("D" ~ F[v] / F[m]), 
     expression("Chlorophyll-"*alpha), 
     expression("Leaf:height" ~ "ratio" ~ (n ~ cm^-1)), 
-    expression("Leaf" ~ "area" ~ (cm^2)),
+    expression("log(Leaf" ~ "area)" ~ (cm^2)),
     expression("Stem" ~ "vol." ~ (cm^3)),
     expression("Mean" ~ "leaf" ~ "thickness" ~ "(mm)"))))
 
@@ -419,11 +419,11 @@ trees_ha_elev <- lm(trees_ha~elev_mean, data = comp_radius_vc)
 comp_radius_fit <- ggplot(comp_radius, aes(x = elev_mean, y = trees_ha)) + 
   geom_smooth(method = lm, colour = "#8F1811") + 
   geom_label_repel(aes(label = site), 
-    colour = c(rep("black", 2),"red",rep("black", 7)),
+    colour = c("black","red",rep("black", 7)),
     label.padding = 0.2, point.padding = 0.2, hjust = -0.2, 
     min.segment.length = 0, size = 4) + 
-  geom_point(colour = c(rep("black", 2),"red",rep("black", 7))) +
-  scale_x_continuous(limits = c(0, 3600)) + 
+  geom_point(colour = c("black","red",rep("black", 7))) +
+  scale_x_continuous(limits = c(800, 3600)) + 
   ylab(expression(Trees~ha^"-1")) + xlab("Elevation (m)") + 
   theme_classic()
 
@@ -496,7 +496,7 @@ elev_scale, lai_scale)
 ## Create responses
 responses <- seedlings_clean %>%
   dplyr::select(d_fvfm, leaf_chl, leaf_height_ratio, 
-    leaf_area_cm2, stem_vol_cm3, leaf_thick_mean_mm)
+    leaf_area_cm2_log, stem_vol_cm3, leaf_thick_mean_mm)
 
 ## Create models
 mod_list_intercept <- lapply(responses, function(x){
@@ -611,7 +611,7 @@ daic_intercept_slope <- mod_output %>%
       rep("lai_scale", times = 6)
       ),
     response = c(
-      rep(c("d_fvfm", "leaf_area_cm2", "leaf_chl", 
+      rep(c("d_fvfm", "leaf_area_cm2_log", "leaf_chl", 
         "leaf_height_ratio", "leaf_thick_mean_mm", "stem_vol_cm3"), times = 3)
     ),
     daic_rsri = abs(aic_intercept) - abs(aic_slope)) %>%
@@ -632,7 +632,7 @@ mod_output_best <- mod_output %>%
   filter(model %in% daic_intercept_slope$best_model_name) %>%
   mutate(response_exp = factor(response, 
     levels = c("d_fvfm", "leaf_chl", "leaf_height_ratio", 
-      "leaf_area_cm2", "stem_vol_cm3", "leaf_thick_mean_mm"), 
+      "leaf_area_cm2_log", "stem_vol_cm3", "leaf_thick_mean_mm"), 
     labels = c(
       expression("D" ~ F[v] / F[m]), 
       expression("Chlorophyll-"*alpha), 
@@ -903,7 +903,7 @@ best_model_effects_df <- best_model_effects_df %>%
     response = gsub("-", "", str_extract(.$model, "-.*$"))) %>%
   mutate(response_exp = factor(response, 
     levels = c("d_fvfm", "leaf_chl", "leaf_height_ratio", 
-      "leaf_area_cm2", "stem_vol_cm3", "leaf_thick_mean_mm"), 
+      "leaf_area_cm2_log", "stem_vol_cm3", "leaf_thick_mean_mm"), 
     labels = c(
       expression("D" ~ F[v] / F[m]), 
       expression("Chlorophyll-"*alpha), 
