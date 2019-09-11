@@ -133,7 +133,7 @@ traits_levels <- c("d_fvfm",  "leaf_chl", "leaf_height_ratio", "leaf_area_cm2_lo
   
 traits_labels <- c(  
   expression("D" ~ F[v] / F[m]), 
-  expression("Chlorophyll-"*alpha), 
+  expression("Chl"[alpha] ~ (mu*g ~ cm^-2)), 
   expression("Leaf:height" ~ "ratio" ~ (n ~ cm^-1)), 
   expression("log(Leaf" ~ "area)" ~ (cm^2)),
   expression("Stem" ~ "vol." ~ (cm^3)),
@@ -320,7 +320,7 @@ ggsave(file = "../manuscript/img/ranges.pdf", plot = ranges_ggplot, width = 10, 
 # Trait variables scatterplots with linear model fits
 traits_elev_scatter <- ggplot(seedlings_traits_gather, aes(x=elev, y = value, colour = species)) + 
   geom_point() + 
-  geom_smooth(aes(fill = species, colour = species), method = lm, se = T) + 
+  stat_smooth(aes(fill = species, colour = species), method = lm, se = T) + 
   facet_wrap(~var_exp, scales = "free", labeller = label_parsed) + 
   scale_fill_discrete(name = "Species") +
   scale_colour_discrete(name = "Species") +
@@ -378,7 +378,7 @@ lm_df <- lm_df %>%
     "leaf_area_cm2_log", "stem_vol_cm3", "leaf_thick_mean_mm"), 
   labels = c(
     expression("D" ~ F[v] / F[m]), 
-    expression("Chlorophyll-"*alpha), 
+    expression("Chl"[alpha] ~ (mu*g ~ cm^-2)), 
     expression("Leaf:height" ~ "ratio" ~ (n ~ cm^-1)), 
     expression("log(Leaf" ~ "area)" ~ (cm^2)),
     expression("Stem" ~ "vol." ~ (cm^3)),
@@ -417,7 +417,7 @@ trees_ha_elev <- lm(trees_ha~elev_mean, data = comp_radius_vc)
 
 ## Make a plot of with a linear regression - filling in VC
 comp_radius_fit <- ggplot(comp_radius, aes(x = elev_mean, y = trees_ha)) + 
-  geom_smooth(method = lm, colour = "#8F1811") + 
+  stat_smooth(method = lm, colour = "#8F1811") + 
   geom_label_repel(aes(label = site), 
     colour = c("black","red",rep("black", 7)),
     label.padding = 0.2, point.padding = 0.2, hjust = -0.2, 
@@ -452,16 +452,14 @@ aberg_census_summ <- aberg_census %>%
   arrange(n) %>%
   mutate(id = seq(from =  length(.$n), to = 1, by = -1),
     sampled = case_when(genus_species == "Alzatea verticillata" ~ "Sampled", 
-        genus_species == "Tapirira guianensis"~ "Sampled",
-        genus_species == "Clethra revoluta"~ "Sampled",
-        genus_species == "Clusia thurifera"~ "Sampled",
-        genus_species == "Hedyosmum goudotianum"~ "Sampled",
-        genus_species == "Schefflera patula" ~ "Sampled",
-        genus_species == "Iriartea deltoidea" ~ "Sampled",
-        genus_species == "Dictyocaryum lamarckianum" ~ "Sampled",
+      genus_species == "Tapirira guianensis"~ "Sampled",
+      genus_species == "Clethra revoluta"~ "Sampled",
+      genus_species == "Clusia thurifera"~ "Sampled",
+      genus_species == "Hedyosmum goudotianum"~ "Sampled",
+      genus_species == "Schefflera patula" ~ "Sampled",
       genus_species == "Myrcia splendens"~ "Myrcia sp.",
-        genus_species == "Myrcia fallax"~ "Myrcia sp.",
-        genus_species == "Myrcia rostrata" ~ "Myrcia sp.",
+      genus_species == "Myrcia fallax"~ "Myrcia sp.",
+      genus_species == "Myrcia rostrata" ~ "Myrcia sp.",
       TRUE ~ "Not sampled")) %>%
   mutate(sampled = factor(sampled, 
     levels = c("Not sampled", "Sampled", "Myrcia sp."),
@@ -473,8 +471,8 @@ rank_abund <- ggplot() +
     shape = 21) + 
   geom_label_repel(data = filter(aberg_census_summ, sampled %in% c("Sampled", "Myrcia sp.")),
     aes(x = id, y = n, label = genus_species),
-    min.segment.length = 0, nudge_x = 50, 
-    nudge_y = c(rep(20, times = 2), -50, rep(8, times = 8)), 
+    min.segment.length = 0,
+    nudge_x = 50, nudge_y = c(rep(50, times = 3), rep(0, times = 6)),
     label.padding = 0.2, box.padding = 0.5, direction = "y") + 
   scale_size_manual(name = "", 
      values = c(1,4,4), labels = c("Not sampled", "Sampled", "Myrcia sp.")) + 
@@ -587,16 +585,16 @@ mod_output_clean <- mod_output %>%
       "leaf_area_cm2_log", "stem_vol_cm3", "leaf_thick_mean_mm"), 
     labels = c(
       expression("D" ~ F[v] / F[m]), 
-      expression("Chlorophyll-"*alpha), 
+      expression("Chl"[alpha] ~ (mu*g ~ cm^-2)), 
       expression("Leaf:height" ~ "ratio" ~ (n ~ cm^-1)), 
       expression("Leaf" ~ "area" ~ (cm^2)),
       expression("Stem" ~ "vol." ~ (cm^3)),
       expression("Mean" ~ "leaf" ~ "thickness" ~ "(mm)")
     )),
     fixed_eff_exp = factor(fixed_eff, 
-      levels = c("comp_adult_metric_log_scale", "elev_scale",
+      levels = c( "elev_scale", "comp_adult_metric_log_scale",
         "lai_scale", "comp_seed_total_scale"),
-      labels = c("ISI", "Elev.", "LAI", "Herb.")))
+      labels = c("Elev.", "ISI", "LAI", "Herb.")))
 
 rand_mod_aic <- mod_output %>%
   filter(is_rand == TRUE) %>%
@@ -842,7 +840,7 @@ best_model_effects_df <- best_model_effects_df %>%
       "leaf_area_cm2_log", "stem_vol_cm3", "leaf_thick_mean_mm"), 
     labels = c(
       expression("D" ~ F[v] / F[m]), 
-      expression("Chlorophyll-"*alpha), 
+      expression("Chl"[alpha] ~ (mu*g ~ cm^-2)), 
       expression("Leaf:height" ~ "ratio" ~ (n ~ cm^-1)), 
       expression("Leaf" ~ "area" ~ (cm^2)),
       expression("Stem" ~ "vol." ~ (cm^3)),
@@ -884,7 +882,6 @@ best_mod_multi_output$response <- gsub(".*\\.", "", best_mod_multi_output$model)
 ## Calculate fit statistics
 best_mod_multi_output <- best_mod_multi_output %>%
   group_by(response) %>%
-  mutate(akaike_weight = Weights(AIC)) %>%
   ungroup() %>%
   mutate(r2m = unlist(unname(lapply(best_models, function(i) r.squaredGLMM(i)[1]))),
     r2c = unlist(unname(lapply(best_models, function(i) r.squaredGLMM(i)[2]))))
@@ -893,9 +890,8 @@ best_mod_multi_output <- best_mod_multi_output %>%
 best_mod_multi_output$daicr <- best_mod_multi_output$AIC - filter(mod_multi_output, is_rand == TRUE)$AIC
 
 best_mod_multi_output_clean <- best_mod_multi_output %>%
-  select(response, fixed_eff, daicr, akaike_weight, r2c, r2m) %>%
+  select(response, fixed_eff, daicr, r2c, r2m) %>%
   mutate(daicr = round(daicr, digits = 2),
-    akaike_weight = round(akaike_weight, digits = 1),
     r2c = round(r2c, digits = 2),
     r2m = round(r2m, digits = 2))
 
@@ -1013,4 +1009,47 @@ slope_elev_scatter <- ggplot(elev_lm_slopes_ranges_df, aes(x = range, y = slope)
   labs(x = "Elev. range (m)", y = "Slope (Trait~Elev.)")
 
 ggsave(file="../manuscript/img/slope_elev_scatter.pdf", plot=slope_elev_scatter, width=10, height=5)
+
+
+# How do competition variables vary with elevation?
+seedlings_gather_comp <- seedlings_clean %>%
+  select(species, elev, comp_adult_metric_log, lai) %>%
+  gather(key = "var", value = "value", -species, -elev) %>%
+  mutate(var_exp = factor(var,
+    levels = c("comp_adult_metric_log", "lai"),
+    labels = c(
+      expression("Iterative" ~ "Seedling" ~ "Index"),
+      expression("LAI" ~ (m^2 ~ m^{-2}))
+    )))
+
+comp_elev <- ggplot(seedlings_gather_comp, aes(x = elev, y = value)) + 
+  geom_point(aes(fill = species), 
+    colour = "black", shape = 21, size = 2) + 
+  stat_smooth(method = "lm", aes(colour = species), se = FALSE) + 
+  stat_smooth(method = "lm", se = TRUE, colour = "black") + 
+  facet_wrap(~var_exp, scales = "free_y", labeller = label_parsed) + 
+  theme_classic() + 
+  labs(x = "Elevation (m)", y = "Value") + 
+  scale_fill_discrete(name = "Species") + 
+  scale_colour_discrete(name = "Species")
+
+ggsave(file="../manuscript/img/comp_elev.pdf", plot=comp_elev, width=10, height=5)
+
+elev_isi_lm <- cor.test(seedlings_clean$comp_adult_metric_log, seedlings_clean$elev)
+
+elev_lai_lm <- cor.test(seedlings_clean$lai, seedlings_clean$elev)
+
+summary(elev_isi_lm)
+
+# Where was the highest and lowest LAI?
+
+seedlings_clean %>%
+  filter(lai == max(lai))
+
+seedlings_clean %>%
+  filter(lai == min(lai))
+
+
+
+
 

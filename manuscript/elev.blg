@@ -3,49 +3,46 @@ Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
 The top-level auxiliary file: elev.aux
 The style file: agsmnourl.bst
 Database file #1: elev.bib
-Warning--I didn't find a database entry for "Lyons2005"
-Warning--I didn't find a database entry for "Mouillot2013"
-Warning--I didn't find a database entry for "Boulangeat2012"
-Warning--I didn't find a database entry for "Lyons2001"
-You've used 63 entries,
+Warning--I didn't find a database entry for ""
+You've used 77 entries,
             2878 wiz_defined-function locations,
-            1077 strings with 19011 characters,
-and the built_in function-call counts, 517391 in all, are:
-= -- 86284
-> -- 7055
+            1155 strings with 22360 characters,
+and the built_in function-call counts, 647033 in all, are:
+= -- 108007
+> -- 8775
 < -- 0
-+ -- 43113
-- -- 2221
-* -- 46983
-:= -- 99724
-add.period$ -- 65
-call.type$ -- 63
-change.case$ -- 878
-chr.to.int$ -- 63
-cite$ -- 63
-duplicate$ -- 1023
-empty$ -- 2146
-format.name$ -- 2429
-if$ -- 93095
++ -- 54022
+- -- 2764
+* -- 58791
+:= -- 124580
+add.period$ -- 79
+call.type$ -- 77
+change.case$ -- 1074
+chr.to.int$ -- 77
+cite$ -- 77
+duplicate$ -- 1255
+empty$ -- 2622
+format.name$ -- 3019
+if$ -- 116442
 int.to.chr$ -- 5
 int.to.str$ -- 0
-missing$ -- 61
-newline$ -- 194
-num.names$ -- 678
-pop$ -- 163
+missing$ -- 75
+newline$ -- 236
+num.names$ -- 831
+pop$ -- 203
 preamble$ -- 1
-purify$ -- 945
+purify$ -- 1155
 quote$ -- 0
-skip$ -- 813
+skip$ -- 1003
 stack$ -- 0
-substring$ -- 125693
-swap$ -- 196
-text.length$ -- 882
+substring$ -- 157422
+swap$ -- 242
+text.length$ -- 1078
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 250
+type$ -- 306
 warning$ -- 0
-while$ -- 1444
+while$ -- 1763
 width$ -- 0
-write$ -- 861
-(There were 4 warnings)
+write$ -- 1052
+(There was 1 warning)
