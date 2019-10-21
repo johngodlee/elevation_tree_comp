@@ -294,7 +294,7 @@ camp_loc$elev_exp <- c(406, 790, 890, 1497, 1750,
   1860, 2135, 2281, 2733, 3213)
 
 camp_loc <- camp_loc %>%
-  filter(site != "PA400")
+  filter(site != "PA1")
 
 ranges_ggplot <- ggplot() + 
   geom_abline(aes(intercept = elev_mean, slope = 0), 
@@ -410,8 +410,8 @@ comp_radius$c_r <- comp_radius$k * (sqrt(10000 / comp_radius$trees_ha))
 
 ## Linear regression of trees / ha vs elevation to get VC
 comp_radius_vc <- filter(comp_radius,  
-  site %in% c("PA400", "PA800", "SP1500", "SP1750", "TRU08",
-    "TRU07", "TRU06", "TRU04", "TRU02"))
+  site %in% c("PA1", "PA2", "SP1", "SP2", "TU8",
+    "TU7", "TU6", "TU4", "TU2"))
 
 trees_ha_elev <- lm(trees_ha~elev_mean, data = comp_radius_vc)
 

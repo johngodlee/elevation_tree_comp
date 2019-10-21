@@ -1,3 +1,6 @@
+# Making a map of plot locations
+# John Godlee (johngodlee@gmail.com)
+# 2019_10_21
 
 # Packages
 library(ggmap)
@@ -5,7 +8,6 @@ library(dplyr)
 
 # setwd ----
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
-
 
 ## Remade maps for new pres
 seedlings <- read.csv("R_Seedlings.csv")

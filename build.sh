@@ -87,7 +87,7 @@ sed -i 's/caption{}/caption{Competition radius ($C_R$) used for adult competitio
 
 sed -i 's/caption{}/caption{Site environmental characteristics for each 1 ha plot sampled. NA indicates that no data was available. Adapted from \\citet{Whitaker2014}.}/g' manuscript/include/site_char.tex
 
-sed -i 's/caption{}/caption{The sites at which tree seedlings were sampled for each species, with the number of seedlings successfully sampled per site.}/g' manuscript/include/species_elevcode_tally.tex
+sed -i 's/caption{}/caption{The site names at which tree seedlings were sampled for each species, with the number of seedlings successfully sampled per site for each species.}/g' manuscript/include/species_elevcode_tally.tex
 
 
 # Run latex
