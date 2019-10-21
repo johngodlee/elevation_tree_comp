@@ -19,7 +19,7 @@ library(ggrepel)  # geom_label_repel()
 
 # Set working directory
 # setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
-setwd("~/google_drive/postgrad/extra_projects/elevation_tree_comp/analysis/")
+setwd("~/git_proj/elevation_tree_comp/analysis/")
 
 # Load and clean data
 
@@ -202,7 +202,7 @@ ggsave(file="../manuscript/img/box.pdf", plot=box, width=10, height=5)
 # Table of where species are sampled
 species_site_summ <- species_site_elev %>%
   dplyr::select(-range) %>%
-  filter(site != "VC") %>%
+  filter(site != "VC1") %>%
   filter(!species %in% c("ID", "DL")) %>%
   spread(key = position, value = site) 
 

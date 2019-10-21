@@ -11,6 +11,11 @@ Ara{\'u}jo, M.~B., Thuiller, W. \harvardand\ Pearson, R.~G.  \harvardyearleft
   2006\harvardyearright , `Climate warming and the decline of amphibians and
   reptiles in europe', {\em Journal of Biogeography} {\bf 33},~1712--1728.
 
+\harvarditem{Baker}{2008}{Baker2008}
+Baker, N.  \harvardyearleft 2008\harvardyearright , `Chlorophyll fluorescence:
+  A probe of photosynthesis in vivo', {\em Annual Review of Plant Biology} {\bf
+  59},~89--113.
+
 \harvarditem{Bartoń}{2019}{MuMIn}
 Bartoń, K.  \harvardyearleft 2019\harvardyearright , {\em MuMIn: Multi-Model
   Inference}.
@@ -380,6 +385,13 @@ McMahon, S.~M., Harrison, S.~P., Armbruster, W.~C., Bartlein, P.~J., Beale,
   assessment and modelling of climate change impacts on global terrestrial
   biodiversity', {\em Trends in Ecology and Evolution} {\bf 26}(5),~249--259.
 
+\harvarditem[Messinger et~al.]{Messinger, Asner \harvardand\
+  Silman}{2016}{Messinger2016}
+Messinger, M., Asner, G.~P. \harvardand\ Silman, M.  \harvardyearleft
+  2016\harvardyearright , `Rapid assessments of amazon forest structure and
+  biomass using small unmanned aerial systems', {\em Remote Sensing} {\bf
+  8}(615),~1--15.
+
 \harvarditem[Mouillot et~al.]{Mouillot, Bellwood, Baraloto, Chave, Galzin,
   Harmelin-Vivien, Kulbicki, Lavergne, Lavorel, Mouquet, Pain, Renaud
   \harvardand\ Thuiller}{2013}{Mouillot2013}
@@ -409,6 +421,14 @@ Nicotra, A.~B., Atkin, O.~K., Bonser, S.~P., Davidson, A.~M., Finnegan, E.~J.,
   \harvardand\ {van Kleunen}, M.  \harvardyearleft 2010\harvardyearright ,
   `Plant phenotypic plasticity in a changing climate', {\em Trends in Plant
   Science} {\bf 15}(12),~684--692.
+
+\harvarditem[Palace et~al.]{Palace, Sullivan, Ducey, Treuhaft, Herrick, Shimbo
+  \harvardand\ Mota-E-Silva}{2015}{Palace2015}
+Palace, M.~W., Sullivan, F.~B., Ducey, M.~J., Treuhaft, R.~N., Herrick, C.,
+  Shimbo, J.~Z. \harvardand\ Mota-E-Silva, J.  \harvardyearleft
+  2015\harvardyearright , `Estimating forest structure in a tropical forest
+  using field measurements, a synthetic model and discrete return lidar data',
+  {\em Remote Sensing of Environment} {\bf 161},~1--11.
 
 \harvarditem{Parmesan}{2006}{Parmesan2006}
 Parmesan, C.  \harvardyearleft 2006\harvardyearright , `Ecological and

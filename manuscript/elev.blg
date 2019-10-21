@@ -4,45 +4,46 @@ The top-level auxiliary file: elev.aux
 The style file: agsmnourl.bst
 Database file #1: elev.bib
 Warning--I didn't find a database entry for ""
-You've used 77 entries,
+Warning--I didn't find a database entry for "Herzog2011"
+You've used 80 entries,
             2878 wiz_defined-function locations,
-            1155 strings with 22360 characters,
-and the built_in function-call counts, 647033 in all, are:
-= -- 108007
-> -- 8775
+            1176 strings with 22985 characters,
+and the built_in function-call counts, 665146 in all, are:
+= -- 110999
+> -- 9023
 < -- 0
-+ -- 54022
-- -- 2764
-* -- 58791
-:= -- 124580
-add.period$ -- 79
-call.type$ -- 77
-change.case$ -- 1074
-chr.to.int$ -- 77
-cite$ -- 77
-duplicate$ -- 1255
-empty$ -- 2622
-format.name$ -- 3019
-if$ -- 116442
++ -- 55493
+- -- 2841
+* -- 60413
+:= -- 128130
+add.period$ -- 82
+call.type$ -- 80
+change.case$ -- 1116
+chr.to.int$ -- 80
+cite$ -- 80
+duplicate$ -- 1303
+empty$ -- 2718
+format.name$ -- 3104
+if$ -- 119691
 int.to.chr$ -- 5
 int.to.str$ -- 0
-missing$ -- 75
-newline$ -- 236
-num.names$ -- 831
-pop$ -- 203
+missing$ -- 78
+newline$ -- 245
+num.names$ -- 863
+pop$ -- 210
 preamble$ -- 1
-purify$ -- 1155
+purify$ -- 1200
 quote$ -- 0
-skip$ -- 1003
+skip$ -- 1041
 stack$ -- 0
-substring$ -- 157422
-swap$ -- 242
-text.length$ -- 1078
+substring$ -- 161737
+swap$ -- 251
+text.length$ -- 1120
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 306
+type$ -- 318
 warning$ -- 0
-while$ -- 1763
+while$ -- 1832
 width$ -- 0
-write$ -- 1052
-(There was 1 warning)
+write$ -- 1092
+(There were 2 warnings)
