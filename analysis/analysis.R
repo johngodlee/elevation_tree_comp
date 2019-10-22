@@ -466,21 +466,48 @@ aberg_census_summ <- aberg_census %>%
     labels = c("Not sampled", "Sampled", "Myrcia sp.")))
 
 rank_abund <- ggplot() + 
-  geom_point(data = aberg_census_summ, 
+  geom_point(
+    data = aberg_census_summ, 
     aes(x = id, y = n, fill = sampled, size = sampled), 
     shape = 21) + 
-  geom_label_repel(data = filter(aberg_census_summ, sampled %in% c("Sampled", "Myrcia sp.")),
+  geom_label_repel(
+    data =  subset(
+      filter(aberg_census_summ, sampled %in% c("Sampled", "Myrcia sp.")), 
+      genus_species == "Myrcia splendens"),
     aes(x = id, y = n, label = genus_species),
     min.segment.length = 0,
-    nudge_x = 50, nudge_y = c(rep(50, times = 3), rep(0, times = 6)),
-    label.padding = 0.2, box.padding = 0.5, direction = "y") + 
-  scale_size_manual(name = "", 
-     values = c(1,4,4), labels = c("Not sampled", "Sampled", "Myrcia sp.")) + 
+    label.padding = 0.2,
+    nudge_y = 50, ylim = c(0, 50),
+    point.padding = NA) + 
+  geom_label_repel(
+    data =  subset(
+      filter(aberg_census_summ, sampled %in% c("Sampled", "Myrcia sp.")), 
+      genus_species == "Schefflera patula"),
+    aes(x = id, y = n, label = genus_species),
+    min.segment.length = 0,
+    label.padding = 0.2,
+    nudge_y = -100, xlim = c(-10, 0),
+    point.padding = NA) + 
+  geom_label_repel(
+    data =  subset(
+      filter(aberg_census_summ, sampled %in% c("Sampled", "Myrcia sp.")),
+      !(genus_species %in% c("Schefflera patula", "Myrcia splendens"))),
+    aes(x = id, y = n, label = genus_species),
+    min.segment.length = 0,
+    label.padding = 0.2,
+    box.padding = 3,
+    hjust = 0.5, direction = "y") +
+  scale_size_manual(
+    name = "", 
+    values = c(1,4,4), labels = c("Not sampled", "Sampled", "Myrcia sp.")) + 
   theme_classic() + 
-  scale_fill_manual(name = "", values = c("#000000", "#5DAB41", "#B03333"),
+  scale_fill_manual(
+    name = "", values = c("#000000", "#5DAB41", "#B03333"),
     labels = c("Not sampled", "Sampled", "Myrcia sp.")) + 
   theme(legend.position = c(.8,.75)) + 
   labs(x = "Rank", y = "N")
+
+
 
 ggsave(file = "../manuscript/img/rank_abund.pdf", plot = rank_abund, width = 10, height = 5)
 
